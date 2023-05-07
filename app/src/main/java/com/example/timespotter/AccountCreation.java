@@ -21,6 +21,7 @@ public class AccountCreation {
                 .addOnCompleteListener(this::userAddedOnComplete);
     }
     private void userAddedOnComplete(Task<Void> task) {
+        Log.d("userAddedOnComplete", "OK?");
         if (task.isSuccessful()) {
             inter.onTaskComplete();
         } else {

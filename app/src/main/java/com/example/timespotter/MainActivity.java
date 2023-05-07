@@ -8,11 +8,15 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 public class MainActivity extends AppCompatActivity {
 
     private Button _Login, _SignUp, _ForgetPass;
+    private TextInputLayout _Username, _Password;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,11 +27,12 @@ public class MainActivity extends AppCompatActivity {
         bindViews();
         registerCallbackListeners();
     }
-
     private void bindViews() {
         _Login = findViewById(R.id.login);
         _SignUp = findViewById(R.id.signup);
         _ForgetPass = findViewById(R.id.forgetPass);
+        _Username = findViewById(R.id.username);
+        _Password = findViewById(R.id.password);
     }
     private void registerCallbackListeners() {
         _Login.setOnClickListener(this::loginOnClick);
@@ -35,7 +40,17 @@ public class MainActivity extends AppCompatActivity {
         _ForgetPass.setOnClickListener(this::loginOnClick);
     }
     private void loginOnClick(View view) {
-        makeToast("Dugme radi");
+        String username = _Username.getEditText().getText().toString();
+        String password = _Password.getEditText().getText().toString();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            makeToast("Prazna polja");
+        }
+        else {
+            new AccountLogin(() -> {
+                makeToast("User moze da se uloguje");
+            }).execute(username, password);
+        }
     }
 
     private void signUpOnClick(View view) {

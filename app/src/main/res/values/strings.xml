@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">TimeSpotter</string>
+    <string name="welcome_message">Hello there, Welcome back</string>
+    <string name="sign_in_to_continue">Sign In to continue</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="sign_up">Sign up</string>
+    <string name="log_in">Log in</string>
+    <string name="forget_password">Forget password?</string>
+    <string name="welcome">Welcome</string>
+    <string name="create_account_msg">Create your account today</string>
+    <string name="full_name">Full Name</string>
+    <string name="username">Username</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="phone">Phone</string>
+    <string name="sign_up_btn_msg">Sign up</string>
 </resources>

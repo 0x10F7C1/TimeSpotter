@@ -15,4 +15,9 @@
     <string name="password">Password</string>
     <string name="phone">Phone</string>
     <string name="sign_up_btn_msg">Sign up</string>
+    <string name="leaderboard">Leaderboard</string>
+    <string name="discover">Discover</string>
+    <string name="profile">Profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

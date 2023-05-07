@@ -48,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             new AccountLogin(() -> {
-                makeToast("User moze da se uloguje");
+                Intent intent = new Intent(MainActivity.this, HomeScreen.class);
+                startActivity(intent);
             }).execute(username, password);
         }
     }

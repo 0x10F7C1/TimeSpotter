@@ -7,13 +7,17 @@ public class User {
     private String password;
     private String phone;
 
+    //da li moze kao Long ili Integer?
+    private Long points;
+
     public User() {}
-    public User(String name, String username, String email, String password, String phone) {
+    public User(String name, String username, String email, String password, String phone, Long points) {
         this.name = name;
         this.username = username;
         this.email = email;
         this.password = password;
         this.phone = phone;
+        this.points = points;
     }
 
     public String getName() {
@@ -54,5 +58,13 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public Long getPoints() {
+        return points;
+    }
+
+    public void setPoints(Long points) {
+        this.points = points;
     }
 }

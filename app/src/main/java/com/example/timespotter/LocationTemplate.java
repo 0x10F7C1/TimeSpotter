@@ -14,14 +14,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
-import javax.xml.transform.OutputKeys;
+import java.time.LocalDate;
+import java.util.UUID;
 
 public class LocationTemplate extends AppCompatActivity {
     private static final int PHOTO_PICKER_REQUEST_CODE = 2;
@@ -31,12 +34,16 @@ public class LocationTemplate extends AppCompatActivity {
     private Button _UploadBtn, _CreateBtn, _CancelBtn;
     private Spinner _PlaceTypeSpinner;
     private MaterialTimePicker _TimePicker;
-
-    private Uri placeImageUri;
+    private Uri _PlaceImageUri;
+    private String _ImageId = "";
+    private String _Username;
+    private String _PartyId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_template);
+
+        _Username = getIntent().getStringExtra("username");
 
         bindViews();
         registerCallbackListeners();
@@ -68,50 +75,77 @@ public class LocationTemplate extends AppCompatActivity {
     }
     private void createBtnOnClick(View view) {
         //dodati kao progress indikator zbog baze? mozda?
-        String name, type, website, phone, startTime, closeTime;
-        final String[] imageURL = new String[1];
-
-        name = _PlaceName.getText().toString();
-        type = _PlaceTypeSpinner.getSelectedItem().toString();
-        website = _PlaceWebsite.getText().toString();
-        phone = _PlacePhoneNum.getText().toString();
-        startTime = _StartDateText.getText().toString();
-        closeTime = _CloseDateText.getText().toString();
-
         StorageReference storage = FirebaseStorage.getInstance().getReference();
+        _ImageId = UUID.randomUUID().toString();
         storage.child("Place photos")
-                .putFile(placeImageUri)
-                .addOnCompleteListener(taskUploadImage -> {
-                   if (taskUploadImage.isSuccessful()) {
-                       taskUploadImage.getResult()
-                               .getStorage()
-                               .getDownloadUrl()
-                               .addOnCompleteListener(taskImageUri -> {
-                                   if (taskImageUri.isSuccessful()) {
-                                       imageURL[0] = taskImageUri.getResult().toString();
-                                       Place place = new Place(name, type, website, phone, startTime, closeTime, imageURL[0]);
-                                       DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-                                       database.child("Places")
-                                               .push()
-                                               .setValue(place)
-                                               .addOnCompleteListener(task -> {
-                                                   if (task.isSuccessful()) {
-                                                       Toast.makeText(this, "Place uspesno dodat!", Toast.LENGTH_LONG).show();
-                                                   }
-                                                   else {
-                                                       //obrada greske
-                                                   }
-                                               });
-                                   }
-                                   else {
-                                       //obrada greske
-                                   }
-                               });
-                   }
-                   else {
-                       //obrada greske
-                   }
-                });
+                .child(_ImageId)
+                .putFile(_PlaceImageUri)
+                .addOnCompleteListener(this::uploadImageOnComplete);
+    }
+    private void uploadImageOnComplete(Task<UploadTask.TaskSnapshot> task) {
+        if (task.isSuccessful()) {
+            task.getResult()
+                    .getStorage()
+                    .getDownloadUrl()
+                    .addOnCompleteListener(this::getDownloadUrlOnComplete);
+        }
+        else {
+            //obrada greske
+        }
+    }
+    private void getDownloadUrlOnComplete(Task<Uri> task) {
+        if (task.isSuccessful()) {
+            String name, type, website, phone, startTime, closeTime;
+            final String imageURL = task.getResult().toString();
+
+            name = _PlaceName.getText().toString();
+            type = _PlaceTypeSpinner.getSelectedItem().toString().toLowerCase();
+            website = _PlaceWebsite.getText().toString();
+            phone = _PlacePhoneNum.getText().toString();
+            startTime = _StartDateText.getText().toString();
+            closeTime = _CloseDateText.getText().toString();
+
+            LocalDate currentDate = LocalDate.now();
+            int day = currentDate.getDayOfMonth();
+            int month = currentDate.getMonthValue();
+            int year = currentDate.getYear();
+
+            Place place = new Place(name,
+                    type,
+                    website,
+                    phone,
+                    startTime,
+                    closeTime,
+                    imageURL,
+                    getIntent().getDoubleExtra("latitude", 0),
+                    getIntent().getDoubleExtra("longitude", 0),
+                    day,
+                    month,
+                    year,
+                    _Username);
+            DatabaseReference database =
+                    FirebaseDatabase.getInstance().getReference().child("Places").push();
+            _PartyId = database.getKey();
+            database.setValue(place).addOnCompleteListener(this::placeAddedOnComplete);
+        }
+        else {
+            //obrada greske
+        }
+    }
+    private void placeAddedOnComplete(Task<Void> task) {
+        if (task.isSuccessful()) {
+            //resiti ovo sa progress barom
+            Toast.makeText(this, "Place je uspesno dodat", Toast.LENGTH_SHORT).show();
+            DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+            database.child("Users")
+                    .child(_Username)
+                    .child("places")
+                    .push()
+                    .setValue(_PartyId);
+        }
+        else {
+            //obrada greske
+        }
     }
     private void cancelBtnOnClick(View view) {
         finish();
@@ -155,7 +189,6 @@ public class LocationTemplate extends AppCompatActivity {
         });
         _TimePicker.show(getSupportFragmentManager(), "TAG");
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -163,7 +196,7 @@ public class LocationTemplate extends AppCompatActivity {
         //za sada neka bude galerija, ali kasnije dodati da bude zapravo kamera da se koristi
         if (requestCode == PHOTO_PICKER_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                placeImageUri = data.getData();
+                _PlaceImageUri = data.getData();
             }
         }
     }

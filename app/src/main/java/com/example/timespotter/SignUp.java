@@ -50,7 +50,7 @@ public class SignUp extends AppCompatActivity {
             password = _Password.getEditText().getText().toString();
             phone = _Phone.getEditText().getText().toString();
 
-            User user = new User(name, username, email, password, phone);
+            User user = new User(name, username, email, password, phone, 0l);
 
             new AccountCreation(() -> makeToast("User je dodat")).execute(user);
         }

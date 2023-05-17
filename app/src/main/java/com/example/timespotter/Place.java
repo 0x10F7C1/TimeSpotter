@@ -1,5 +1,7 @@
 package com.example.timespotter;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public class Place {
     private String name;
     private String type;
@@ -8,9 +10,28 @@ public class Place {
     private String startTime;
     private String closeTime;
     private String imageUri;
+    private double latitude;
+    private double longitude;
+    private int day;
+    private int month;
+    private int year;
+    private String creator;
 
     public Place() {}
-    public Place(String name, String type, String website, String phone, String startTime, String closeTime, String imageUri) {
+    public Place(
+            String name,
+            String type,
+            String website,
+            String phone,
+            String startTime,
+            String closeTime,
+            String imageUri,
+            double latitude,
+            double longitude,
+            int day,
+            int month,
+            int year,
+            String creator) {
         this.name = name;
         this.type = type;
         this.website = website;
@@ -18,6 +39,12 @@ public class Place {
         this.startTime = startTime;
         this.closeTime = closeTime;
         this.imageUri = imageUri;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.day = day;
+        this.month = month;
+        this.year = year;
+        this.creator = creator;
     }
     public String getName() {
         return name;
@@ -73,5 +100,53 @@ public class Place {
 
     public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public int getDay() {
+        return day;
+    }
+
+    public void setDay(int day) {
+        this.day = day;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public void setMonth(int month) {
+        this.month = month;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 }

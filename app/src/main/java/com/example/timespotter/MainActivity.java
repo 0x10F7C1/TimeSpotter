@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         else {
             new AccountLogin(() -> {
                 Intent intent = new Intent(MainActivity.this, HomeScreen.class);
+                intent.putExtra("username", username);
                 startActivity(intent);
             }).execute(username, password);
         }

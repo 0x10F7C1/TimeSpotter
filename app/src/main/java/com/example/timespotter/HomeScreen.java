@@ -40,6 +40,7 @@ public class HomeScreen extends AppCompatActivity {
             case R.id.discover:
                 //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, _Discover).commit();
                 Intent intent = new Intent(HomeScreen.this, MapActivity.class);
+                intent.putExtra("username", getIntent().getStringExtra("username"));
                 startActivity(intent);
                 break;
             case R.id.profile:

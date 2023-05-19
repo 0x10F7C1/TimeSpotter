@@ -1,4 +1,4 @@
-package com.example.timespotter;
+package com.example.timespotter.DataModels;
 
 public class User {
     private String name;
@@ -10,7 +10,9 @@ public class User {
     //da li moze kao Long ili Integer?
     private Long points;
 
-    public User() {}
+    public User() {
+    }
+
     public User(String name, String username, String email, String password, String phone, Long points) {
         this.name = name;
         this.username = username;

@@ -1,18 +1,20 @@
-package com.example.timespotter;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.example.timespotter.GeneralActivities;
 
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.timespotter.R;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
-public class HomeScreen extends AppCompatActivity {
+public class HomeScreenActivity extends AppCompatActivity {
 
     private ChipNavigationBar _BottomNav;
-    private Discover _Discover;
-    private Leaderboard _Leaderboard;
-    private Profile _Profile;
+    private DiscoverFragment _DiscoverFragment;
+    private LeaderboardFragment _LeaderboardFragment;
+    private ProfileFragment _Profile;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,26 +22,28 @@ public class HomeScreen extends AppCompatActivity {
 
         bindViews();
         registerCallbacks();
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, _Leaderboard).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, _LeaderboardFragment).commit();
     }
 
     private void bindViews() {
         _BottomNav = findViewById(R.id.bottom_nav);
     }
+
     private void registerCallbacks() {
         _BottomNav.setOnItemSelectedListener(this::bottomNavOnItemSelected);
-        _Discover = new Discover();
-        _Leaderboard = new Leaderboard();
-        _Profile = new Profile();
+        _DiscoverFragment = new DiscoverFragment();
+        _LeaderboardFragment = new LeaderboardFragment();
+        _Profile = new ProfileFragment();
     }
+
     private void bottomNavOnItemSelected(int position) {
         switch (position) {
             case R.id.leaderboard:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, _Leaderboard).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, _LeaderboardFragment).commit();
                 break;
             case R.id.discover:
                 //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, _Discover).commit();
-                Intent intent = new Intent(HomeScreen.this, MapActivity.class);
+                Intent intent = new Intent(HomeScreenActivity.this, MapActivity.class);
                 intent.putExtra("username", getIntent().getStringExtra("username"));
                 startActivity(intent);
                 break;

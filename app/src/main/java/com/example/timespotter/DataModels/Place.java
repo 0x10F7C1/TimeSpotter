@@ -1,8 +1,7 @@
-package com.example.timespotter;
-
-import com.google.android.gms.maps.model.LatLng;
+package com.example.timespotter.DataModels;
 
 public class Place {
+    private String key;
     private String name;
     private String type;
     private String website;
@@ -17,8 +16,11 @@ public class Place {
     private int year;
     private String creator;
 
-    public Place() {}
+    public Place() {
+    }
+
     public Place(
+            String key,
             String name,
             String type,
             String website,
@@ -32,6 +34,7 @@ public class Place {
             int month,
             int year,
             String creator) {
+        this.key = key;
         this.name = name;
         this.type = type;
         this.website = website;
@@ -46,6 +49,7 @@ public class Place {
         this.year = year;
         this.creator = creator;
     }
+
     public String getName() {
         return name;
     }
@@ -148,5 +152,13 @@ public class Place {
 
     public void setCreator(String creator) {
         this.creator = creator;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

@@ -1,20 +1,12 @@
-package com.example.timespotter;
+package com.example.timespotter.GeneralActivities;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
-import android.media.Image;
 import android.os.Bundle;
-import android.Manifest;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +15,16 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.example.timespotter.Adapters.MarkerInfoAdapter;
+import com.example.timespotter.DataModels.Place;
+import com.example.timespotter.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -41,6 +42,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MapActivity extends AppCompatActivity {
     private static final String TAG = "MapsActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -50,7 +54,7 @@ public class MapActivity extends AppCompatActivity {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 2;
     private static final float DEFAULT_ZOOM = 15f;
     private boolean _LocationEnabled;
-    private DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+    private final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     private GoogleMap _GoogleMap;
     private FusedLocationProviderClient _FusedClient;
     private ImageView _AddPlace;
@@ -59,15 +63,16 @@ public class MapActivity extends AppCompatActivity {
     private AlertDialog _RateDialog;
     private ImageButton _PlaceNameStar, _PlaceTypeStar, _PlaceWebsiteStar, _PlacePhoneStar, _PlaceTimeStar;
     private Button _RateDialogBtn, _CloseDialogBtn;
-    private String username;
+    private String _Username;
+    private final List<Marker> _ActiveMarkers = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        username = getIntent().getStringExtra("username");
-        initRateDialog();
+
+        _Username = getIntent().getStringExtra("username");
         _AddPlace = findViewById(R.id.add_place);
 
         //ovo ce biti add button posle
@@ -75,15 +80,14 @@ public class MapActivity extends AppCompatActivity {
             addPlace();
         });
 
-
         _Rate = findViewById(R.id.rate);
         _Rate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (_Marker != null && _Marker.isInfoWindowShown()) {
+                    initRateDialog();
                     _RateDialog.show();
-                }
-                else {
+                } else {
                     Toast.makeText(MapActivity.this, "Select a marker", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -115,7 +119,9 @@ public class MapActivity extends AppCompatActivity {
         _CloseDialogBtn = customDialog.findViewById(R.id.close_dialog_btn);
 
         _RateDialogBtn.setOnClickListener(this::rateDialogOnClick);
-        _CloseDialogBtn.setOnClickListener(view -> {_RateDialog.cancel();});
+        _CloseDialogBtn.setOnClickListener(view -> {
+            _RateDialog.cancel();
+        });
 
         _PlaceNameStar.setOnClickListener(this::dialogStarOnClick);
         _PlaceTypeStar.setOnClickListener(this::dialogStarOnClick);
@@ -123,44 +129,47 @@ public class MapActivity extends AppCompatActivity {
         _PlacePhoneStar.setOnClickListener(this::dialogStarOnClick);
         _PlaceTimeStar.setOnClickListener(this::dialogStarOnClick);
     }
+
     private void dialogStarOnClick(View view) {
         ImageButton btn = (ImageButton) view;
         if (btn.getTag().equals(EMPTY_STAR)) {
             btn.setImageResource(R.drawable.ic_filled_star);
             btn.setTag(FILLED_STAR);
-        }
-        else {
+        } else {
             btn.setImageResource(R.drawable.empty_star);
             btn.setTag(EMPTY_STAR);
         }
     }
+
     private void rateDialogOnClick(View view) {
         int starCount = 0;
-        starCount += (Integer)_PlaceNameStar.getTag();
-        starCount += (Integer)_PlaceTypeStar.getTag();
-        starCount += (Integer)_PlaceWebsiteStar.getTag();
-        starCount += (Integer)_PlacePhoneStar.getTag();
-        starCount += (Integer)_PlaceTimeStar.getTag();
+        starCount += (Integer) _PlaceNameStar.getTag();
+        starCount += (Integer) _PlaceTypeStar.getTag();
+        starCount += (Integer) _PlaceWebsiteStar.getTag();
+        starCount += (Integer) _PlacePhoneStar.getTag();
+        starCount += (Integer) _PlaceTimeStar.getTag();
 
         final int stars = starCount;
 
-        Place place = (Place)_Marker.getTag();
+        Place place = (Place) _Marker.getTag();
+        _Marker.remove();
+        _Marker = null;
         //DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         database.child("Users")
-                .child(username)
+                .child(_Username)
                 .child("points")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DataSnapshot> task) {
                         long result = task.getResult().getValue(Long.class);
-                        result += stars;
+                        result += 2;
                         database.child("Users")
-                                .child(username)
+                                .child(_Username)
                                 .child("points")
                                 .setValue(result);
                         database.child("Leaderboards")
-                                .child(username)
+                                .child(_Username)
                                 .child("points")
                                 .setValue(result);
                     }
@@ -173,78 +182,98 @@ public class MapActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<DataSnapshot> task) {
                         long result = task.getResult().getValue(Long.class);
-                        result += 2;
+                        result += stars;
                         database.child("Users")
                                 .child(place.getCreator())
                                 .child("points")
                                 .setValue(result);
                         database.child("Leaderboards")
-                                .child(username)
+                                .child(place.getCreator())
                                 .child("points")
                                 .setValue(result);
                     }
                 });
+        database.child("Excluded markers")
+                .child(_Username)
+                .child("places")
+                .child(place.getKey())
+                .setValue(true);
     }
 
     //funkcija za dodavanje mesta na mapi u odnosu na trenutnu lokaciju korisnika
     private void addPlace() {
         Task<Location> locationTask = _FusedClient.getLastLocation();
         locationTask.addOnCompleteListener(task -> {
-           if (task.isSuccessful()) {
-               Location currentLocation = locationTask.getResult();
-               Intent intent = new Intent(MapActivity.this, LocationTemplate.class);
-               intent.putExtra("longitude", currentLocation.getLongitude());
-               intent.putExtra("latitude", currentLocation.getLatitude());
-               intent.putExtra("username", getIntent().getStringExtra("username"));
-               startActivity(intent);
-           }
+            if (task.isSuccessful()) {
+                Location currentLocation = locationTask.getResult();
+                Intent intent = new Intent(MapActivity.this, LocationTemplateActivity.class);
+                intent.putExtra("longitude", currentLocation.getLongitude());
+                intent.putExtra("latitude", currentLocation.getLatitude());
+                intent.putExtra("username", getIntent().getStringExtra("username"));
+                startActivity(intent);
+            }
         });
     }
 
     private void loadMarkers() {
-        database.child("Places")
-                .addChildEventListener(new ChildEventListener() {
+        List<String> placesIds = new ArrayList<>();
+        database.child("Excluded markers").child(_Username).child("places").get()
+                .addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                     @Override
-                    public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                        Place place = snapshot.getValue(Place.class);
-                        LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
-                        MarkerOptions markerOptions = new MarkerOptions()
-                                .position(latLng)
-                                .title(place.getName());
+                    public void onComplete(@NonNull Task<DataSnapshot> task) {
+                        DataSnapshot snapshot = task.getResult();
+                        for (DataSnapshot data : snapshot.getChildren()) {
+                            placesIds.add(data.getKey());
+                        }
+                        database.child("Places")
+                                .addChildEventListener(new ChildEventListener() {
+                                    @Override
+                                    public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                                        Place place = snapshot.getValue(Place.class);
+                                        if (!place.getCreator().equals(_Username) && !placesIds.contains(snapshot.getKey())) {
+                                            LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
+                                            MarkerOptions markerOptions = new MarkerOptions()
+                                                    .position(latLng)
+                                                    .title(place.getName());
 
-                        Marker marker = _GoogleMap.addMarker(markerOptions);
-                        marker.setTag(place);
-                    }
+                                            Marker marker = _GoogleMap.addMarker(markerOptions);
+                                            marker.setTag(place);
+                                        }
+                                    }
 
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                                    @Override
+                                    public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                    }
+                                    }
 
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                                    @Override
+                                    public void onChildRemoved(@NonNull DataSnapshot snapshot) {
 
-                    }
+                                    }
 
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                                    @Override
+                                    public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                    }
+                                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
 
+                                    }
+                                });
                     }
                 });
     }
+
     private void initMap() {
         Log.d(TAG, "Setting up a mapFragment");
-        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(@NonNull GoogleMap googleMap) {
                 Log.d(TAG, "Getting map object");
                 _GoogleMap = googleMap;
+                _GoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
                 _GoogleMap.setInfoWindowAdapter(new MarkerInfoAdapter(MapActivity.this));
                 _GoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
@@ -263,6 +292,7 @@ public class MapActivity extends AppCompatActivity {
             }
         });
     }
+
     private void getDeviceLocation() {
         Log.d(TAG, "Getting devices current location");
         _FusedClient = LocationServices.getFusedLocationProviderClient(this);
@@ -272,21 +302,21 @@ public class MapActivity extends AppCompatActivity {
         if (_LocationEnabled) {
             Task<Location> location = _FusedClient.getLastLocation();
             location.addOnCompleteListener(task -> {
-               if (task.isSuccessful()) {
-                   Log.d(TAG, "Current location found");
-                   Location currentLocation = task.getResult();
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "Current location found");
+                    Location currentLocation = task.getResult();
 
-                   LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-                   _GoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
-                  //moveCamera(latLng, DEFAULT_ZOOM, "My location");
-               }
-               else {
-                   Log.d(TAG, "Current location is null");
-               }
+                    LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                    _GoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
+                    //moveCamera(latLng, DEFAULT_ZOOM, "My location");
+                } else {
+                    Log.d(TAG, "Current location is null");
+                }
             });
         }
 
     }
+
     private void moveCamera(LatLng latLng, float zoom, String title) {
         _GoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
         MarkerOptions marker = new MarkerOptions().position(latLng)
@@ -297,11 +327,10 @@ public class MapActivity extends AppCompatActivity {
     private void getLocationPermission() {
         String[] permissions = {FINE_LOCATION, COARSE_LOCATION};
         if (ContextCompat.checkSelfPermission(this, FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        && ContextCompat.checkSelfPermission(this, COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                && ContextCompat.checkSelfPermission(this, COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             _LocationEnabled = true;
             initMap();
-        }
-        else {
+        } else {
             ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
         }
     }

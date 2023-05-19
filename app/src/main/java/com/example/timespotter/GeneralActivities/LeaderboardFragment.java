@@ -1,25 +1,26 @@
-package com.example.timespotter;
+package com.example.timespotter.GeneralActivities;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.fragment.app.Fragment;
+
+import com.example.timespotter.R;
+
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link Leaderboard#newInstance} factory method to
+ * Use the {@link LeaderboardFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Leaderboard extends Fragment {
-    public Leaderboard() {
+public class LeaderboardFragment extends Fragment {
+    public LeaderboardFragment() {
         // Required empty public constructor
     }
 
-    public static Leaderboard newInstance(String param1, String param2) {
-        Leaderboard fragment = new Leaderboard();
+    public static LeaderboardFragment newInstance(String param1, String param2) {
+        LeaderboardFragment fragment = new LeaderboardFragment();
         //Bundle args = new Bundle();
         //args.putString(ARG_PARAM1, param1);
         //args.putString(ARG_PARAM2, param2);

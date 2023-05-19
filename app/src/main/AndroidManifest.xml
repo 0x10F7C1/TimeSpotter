@@ -16,10 +16,10 @@
         android:theme="@style/Theme.TimeSpotter"
         tools:targetApi="31">
         <activity
-            android:name=".LocationTemplate"
+            android:name=".GeneralActivities.LocationTemplateActivity"
             android:exported="false" />
         <activity
-            android:name=".MapActivity"
+            android:name=".GeneralActivities.MapActivity"
             android:exported="false" />
 
         <meta-data
@@ -33,13 +33,13 @@
             android:resource="@array/preloaded_fonts" />
 
         <activity
-            android:name=".HomeScreen"
+            android:name=".GeneralActivities.HomeScreenActivity"
             android:exported="false" />
         <activity
-            android:name=".SignUp"
+            android:name=".GeneralActivities.SignupActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".GeneralActivities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

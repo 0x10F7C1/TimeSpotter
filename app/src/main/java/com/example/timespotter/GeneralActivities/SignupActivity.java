@@ -1,25 +1,42 @@
-package com.example.timespotter;
+package com.example.timespotter.GeneralActivities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.example.timespotter.DataModels.Result;
+import com.example.timespotter.DataModels.User;
+import com.example.timespotter.R;
+import com.example.timespotter.ViewModels.SignupActivityViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
-public class SignUp extends AppCompatActivity {
+public class SignupActivity extends AppCompatActivity {
 
     private TextInputLayout _FullName, _Username, _Email, _Password, _Phone;
     private MaterialButton _SignUp;
+    private SignupActivityViewModel viewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+        viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(SignupActivityViewModel.class);
+        viewModel.getUserRegisterState().observe(this, userResult -> {
+            if (userResult.getStatus() == Result.OPERATION_SUCCESS) {
+                Intent intent = new Intent(SignupActivity.this, HomeScreenActivity.class);
+                intent.putExtra("username", userResult.getValue().getUsername());
+                startActivity(intent);
+            } else {
+                Log.d("viewModel for Signup", userResult.getError().getMessage());
+            }
+        });
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -35,6 +52,7 @@ public class SignUp extends AppCompatActivity {
         _Phone = findViewById(R.id.phoneNum);
         _SignUp = findViewById(R.id.signup);
     }
+
     private void registerCallbackListeners() {
         _SignUp.setOnClickListener(this::signUpOnClick);
     }
@@ -51,8 +69,8 @@ public class SignUp extends AppCompatActivity {
             phone = _Phone.getEditText().getText().toString();
 
             User user = new User(name, username, email, password, phone, 0l);
+            viewModel.userSignup(user);
 
-            new AccountCreation(() -> makeToast("User je dodat")).execute(user);
         }
     }
 
@@ -67,6 +85,7 @@ public class SignUp extends AppCompatActivity {
             return true;
         }
     }
+
     private boolean validateUsername() {
         String username = _Username.getEditText().getText().toString();
         String noWhiteSpace = "^[^\\s]+$";
@@ -86,6 +105,7 @@ public class SignUp extends AppCompatActivity {
             return true;
         }
     }
+
     private boolean validateEmail() {
         String email = _Email.getEditText().getText().toString();
         String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
@@ -103,6 +123,7 @@ public class SignUp extends AppCompatActivity {
         }
 
     }
+
     private boolean validatePassword() {
         String password = _Password.getEditText().getText().toString();
         String passwordPattern = "^" +
@@ -128,6 +149,7 @@ public class SignUp extends AppCompatActivity {
         }
 
     }
+
     private boolean validatePhone() {
         String phone = _Phone.getEditText().getText().toString();
 

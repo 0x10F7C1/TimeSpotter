@@ -1,24 +1,26 @@
-package com.example.timespotter;
+package com.example.timespotter.GeneralActivities;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.fragment.app.Fragment;
+
+import com.example.timespotter.R;
+
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link Profile#newInstance} factory method to
+ * Use the {@link ProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Profile extends Fragment {
-    public Profile() {
+public class ProfileFragment extends Fragment {
+    public ProfileFragment() {
         // Required empty public constructor
     }
-    public static Profile newInstance(String param1, String param2) {
-        Profile fragment = new Profile();
+
+    public static ProfileFragment newInstance(String param1, String param2) {
+        ProfileFragment fragment = new ProfileFragment();
         return fragment;
     }
 

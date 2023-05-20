@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     //TODO: Leaderboards, Filter, Switch(Mapa, Tabela), poboljsani UI, My Profile, Remember me
     //TODO: progress indikator na stvari koje rade sa bazom
     //TODO: videti kako poboljsati modularnost koda
+    //TODO: za sada ce filter biti u obliku dialogu, kasnije postaviti neki popup meni
     private Button _Login, _SignUp, _ForgetPass;
     private TextInputLayout _Username, _Password;
     private MainActivityViewModel viewModel;

@@ -11,6 +11,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -21,16 +24,23 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.timespotter.Adapters.MarkerInfoAdapter;
 import com.example.timespotter.DataModels.Place;
+import com.example.timespotter.DataModels.PlaceMarker;
+import com.example.timespotter.DataModels.Result;
 import com.example.timespotter.R;
+import com.example.timespotter.ViewModels.MapActivityViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -44,7 +54,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
-
 public class MapActivity extends AppCompatActivity {
     private static final String TAG = "MapsActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -53,38 +62,59 @@ public class MapActivity extends AppCompatActivity {
     private static final int FILLED_STAR = 1;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 2;
     private static final float DEFAULT_ZOOM = 15f;
+    private static final boolean FILTER_ON = true;
+    private static final boolean FILTER_OFF = false;
     private boolean _LocationEnabled;
     private final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     private GoogleMap _GoogleMap;
     private FusedLocationProviderClient _FusedClient;
     private ImageView _AddPlace;
-    private Marker _Marker;
+    private PlaceMarker _Marker;
     private ImageView _Rate;
     private AlertDialog _RateDialog;
     private ImageButton _PlaceNameStar, _PlaceTypeStar, _PlaceWebsiteStar, _PlacePhoneStar, _PlaceTimeStar;
     private Button _RateDialogBtn, _CloseDialogBtn;
     private String _Username;
-    private final List<Marker> _ActiveMarkers = new ArrayList<>();
-
+    private AlertDialog _FilterDialog;
+    private ImageView _FilterButton;
+    private final List<PlaceMarker> _ActiveMarkers = new ArrayList<>();
+    private MapActivityViewModel viewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-
         _Username = getIntent().getStringExtra("username");
         _AddPlace = findViewById(R.id.add_place);
+        _FilterButton = findViewById(R.id.filter_button);
+        viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(MapActivityViewModel.class);
+        viewModel.getUserPoints().observe(this, new Observer<Result<Integer>>() {
+            @Override
+            public void onChanged(Result<Integer> integerResult) {
+                if (integerResult.getStatus() == Result.OPERATION_SUCCESS) {
+                    Toast.makeText(MapActivity.this, "Poeni ubaci u bazi", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(MapActivity.this, integerResult.getError().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        initFilterDialog();
 
-        //ovo ce biti add button posle
+        _FilterButton.setOnClickListener(view -> {
+            _FilterDialog.show();
+        });
+
         _AddPlace.setOnClickListener(view -> {
             addPlace();
         });
+
 
         _Rate = findViewById(R.id.rate);
         _Rate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (_Marker != null && _Marker.isInfoWindowShown()) {
+                if (_Marker != null && _Marker.getMarker().isInfoWindowShown()) {
                     initRateDialog();
                     _RateDialog.show();
                 } else {
@@ -96,9 +126,101 @@ public class MapActivity extends AppCompatActivity {
         getLocationPermission();
         loadMarkers();
     }
+    private void initFilterDialog() {
+        View customDialog = LayoutInflater.from(this).inflate(R.layout.custom_filter_dialog, null);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setView(customDialog);
 
+        _FilterDialog = dialogBuilder.create();
+        _FilterDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        CheckBox usernameCheckBox, typeCheckBox;
+        EditText usernameText, typeText;
+        Button filterBtn;
+
+        usernameCheckBox = customDialog.findViewById(R.id.username_filter_checkbox);
+        typeCheckBox = customDialog.findViewById(R.id.type_filter_checkbox);
+        usernameText = customDialog.findViewById(R.id.username_filter_text);
+        typeText = customDialog.findViewById(R.id.type_filter_text);
+        filterBtn = customDialog.findViewById(R.id.filter_button);
+        usernameCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (compoundButton.isChecked()) {
+                    usernameText.setEnabled(true);
+                }
+                else {
+                    usernameText.setEnabled(false);
+                }
+            }
+        });
+        typeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (compoundButton.isChecked()) {
+                    typeText.setEnabled(true);
+                }
+                else {
+                    typeText.setEnabled(false);
+                }
+            }
+        });
+        filterBtn.setOnClickListener(view -> {
+            boolean usernameFilter = FILTER_OFF, typeFilter = FILTER_OFF;
+            if (typeCheckBox.isChecked()) {
+                Log.d("Type checkbox", typeText.getText().toString());
+                typeFilter = FILTER_ON;
+            }
+            else {
+                Log.d("Type checkbox", "off");
+            }
+            if (usernameCheckBox.isChecked()) {
+                Log.d("username checkbox", usernameText.getText().toString());
+                usernameFilter = FILTER_ON;
+            }
+            else {
+                Log.d("username checkbox", "off");
+            }
+            filter(usernameFilter, typeFilter, usernameText.getText().toString(), typeText.getText().toString());
+        });
+    }
+
+    private void filter(boolean usernameFilter, boolean typeFilter, String username, String type) {
+        Marker marker;
+        for (int i = 0; i < _ActiveMarkers.size(); i++) {
+            marker = _ActiveMarkers.get(i).getMarker();
+            marker.setVisible(toFilterByUsername(marker, username, usernameFilter)
+            && toFilterByType(marker, type, typeFilter));
+        }
+    }
+    private boolean toFilterByUsername(Marker marker, String creatorFilter, boolean filter) {
+        boolean showMarker = false;
+        String creator = ((Place)marker.getTag()).getCreator();
+        if (filter == FILTER_ON) {
+            if (creator.equals(creatorFilter)) {
+                showMarker = true;
+            }
+        }
+        else {
+            showMarker = true;
+        }
+        return showMarker;
+    }
+    private boolean toFilterByType(Marker marker, String typeFilter, boolean filter) {
+        boolean showMarker = false;
+        String type = ((Place)marker.getTag()).getType();
+        if (filter == FILTER_ON) {
+            if (type.equals(typeFilter)) {
+                showMarker = true;
+            }
+        }
+        else {
+            showMarker = true;
+        }
+        return showMarker;
+    }
     private void initRateDialog() {
-        View customDialog = LayoutInflater.from(this).inflate(R.layout.custom_dialog, null);
+        View customDialog = LayoutInflater.from(this).inflate(R.layout.custom_rate_dialog, null);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         dialogBuilder.setView(customDialog);
 
@@ -129,7 +251,6 @@ public class MapActivity extends AppCompatActivity {
         _PlacePhoneStar.setOnClickListener(this::dialogStarOnClick);
         _PlaceTimeStar.setOnClickListener(this::dialogStarOnClick);
     }
-
     private void dialogStarOnClick(View view) {
         ImageButton btn = (ImageButton) view;
         if (btn.getTag().equals(EMPTY_STAR)) {
@@ -140,7 +261,6 @@ public class MapActivity extends AppCompatActivity {
             btn.setTag(EMPTY_STAR);
         }
     }
-
     private void rateDialogOnClick(View view) {
         int starCount = 0;
         starCount += (Integer) _PlaceNameStar.getTag();
@@ -151,11 +271,11 @@ public class MapActivity extends AppCompatActivity {
 
         final int stars = starCount;
 
-        Place place = (Place) _Marker.getTag();
-        _Marker.remove();
+        Place place = (Place) _Marker.getMarker().getTag();
+        _Marker.nullifyMarker();
         _Marker = null;
-        //DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        database.child("Users")
+
+        /*database.child("Users")
                 .child(_Username)
                 .child("points")
                 .get()
@@ -173,8 +293,10 @@ public class MapActivity extends AppCompatActivity {
                                 .child("points")
                                 .setValue(result);
                     }
-                });
-        database.child("Users")
+                });*/
+        viewModel.updateUserPoints(_Username, 2);
+        viewModel.updateUserPoints(place.getCreator(), stars);
+        /*database.child("Users")
                 .child(place.getCreator())
                 .child("points")
                 .get()
@@ -192,15 +314,13 @@ public class MapActivity extends AppCompatActivity {
                                 .child("points")
                                 .setValue(result);
                     }
-                });
+                });*/
         database.child("Excluded markers")
                 .child(_Username)
                 .child("places")
                 .child(place.getKey())
                 .setValue(true);
     }
-
-    //funkcija za dodavanje mesta na mapi u odnosu na trenutnu lokaciju korisnika
     private void addPlace() {
         Task<Location> locationTask = _FusedClient.getLastLocation();
         locationTask.addOnCompleteListener(task -> {
@@ -214,7 +334,6 @@ public class MapActivity extends AppCompatActivity {
             }
         });
     }
-
     private void loadMarkers() {
         List<String> placesIds = new ArrayList<>();
         database.child("Excluded markers").child(_Username).child("places").get()
@@ -232,12 +351,23 @@ public class MapActivity extends AppCompatActivity {
                                         Place place = snapshot.getValue(Place.class);
                                         if (!place.getCreator().equals(_Username) && !placesIds.contains(snapshot.getKey())) {
                                             LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
+                                            BitmapDescriptor markerIcon = null;
+                                            if (place.getType().equals("restoran")) {
+                                                markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.restaurant48px);
+                                            }
+                                            else if (place.getType().equals("biblioteka")) {
+                                                markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.library48px);
+                                            }
                                             MarkerOptions markerOptions = new MarkerOptions()
                                                     .position(latLng)
-                                                    .title(place.getName());
+                                                    .title(place.getName())
+                                                    .icon(markerIcon);
 
                                             Marker marker = _GoogleMap.addMarker(markerOptions);
                                             marker.setTag(place);
+                                            PlaceMarker placeMarker = new PlaceMarker(marker, _ActiveMarkers.size());
+                                            _Marker = placeMarker;
+                                            _ActiveMarkers.add(placeMarker);
                                         }
                                     }
 
@@ -264,7 +394,6 @@ public class MapActivity extends AppCompatActivity {
                     }
                 });
     }
-
     private void initMap() {
         Log.d(TAG, "Setting up a mapFragment");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -279,7 +408,7 @@ public class MapActivity extends AppCompatActivity {
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
                         marker.showInfoWindow();
-                        _Marker = marker;
+                        _Marker.setMarker(marker);
                         return true;
                     }
                 });
@@ -292,13 +421,9 @@ public class MapActivity extends AppCompatActivity {
             }
         });
     }
-
     private void getDeviceLocation() {
         Log.d(TAG, "Getting devices current location");
         _FusedClient = LocationServices.getFusedLocationProviderClient(this);
-        if (_FusedClient != null) {
-            Log.d(TAG, "FusedClient acquired");
-        }
         if (_LocationEnabled) {
             Task<Location> location = _FusedClient.getLastLocation();
             location.addOnCompleteListener(task -> {

@@ -11,7 +11,6 @@ import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 public class HomeScreenActivity extends AppCompatActivity {
 
     private ChipNavigationBar _BottomNav;
-    private DiscoverFragment _DiscoverFragment;
     private LeaderboardFragment _LeaderboardFragment;
     private ProfileFragment _Profile;
 
@@ -31,7 +30,6 @@ public class HomeScreenActivity extends AppCompatActivity {
 
     private void registerCallbacks() {
         _BottomNav.setOnItemSelectedListener(this::bottomNavOnItemSelected);
-        _DiscoverFragment = new DiscoverFragment();
         _LeaderboardFragment = new LeaderboardFragment();
         _Profile = new ProfileFragment();
     }
@@ -42,7 +40,6 @@ public class HomeScreenActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, _LeaderboardFragment).commit();
                 break;
             case R.id.discover:
-                //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, _Discover).commit();
                 Intent intent = new Intent(HomeScreenActivity.this, MapActivity.class);
                 intent.putExtra("username", getIntent().getStringExtra("username"));
                 startActivity(intent);

@@ -22,7 +22,6 @@ public class SignupActivity extends AppCompatActivity {
     private TextInputLayout _FullName, _Username, _Email, _Password, _Phone;
     private MaterialButton _SignUp;
     private SignupActivityViewModel viewModel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,7 +148,6 @@ public class SignupActivity extends AppCompatActivity {
         }
 
     }
-
     private boolean validatePhone() {
         String phone = _Phone.getEditText().getText().toString();
 

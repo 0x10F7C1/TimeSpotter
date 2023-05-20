@@ -19,7 +19,6 @@ public class UserLoginRepository {
     public MutableLiveData<Result<User>> getUserLoginState() {
         return _UserLoginState;
     }
-
     public void userLogin(String username, String password) {
         database
                 .child("Users")

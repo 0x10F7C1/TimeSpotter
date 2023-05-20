@@ -65,7 +65,6 @@ public class MapActivity extends AppCompatActivity {
     private static final boolean FILTER_ON = true;
     private static final boolean FILTER_OFF = false;
     private boolean _LocationEnabled;
-    private final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     private GoogleMap _GoogleMap;
     private FusedLocationProviderClient _FusedClient;
     private ImageView _AddPlace;
@@ -96,6 +95,44 @@ public class MapActivity extends AppCompatActivity {
                 }
                 else {
                     Toast.makeText(MapActivity.this, integerResult.getError().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        viewModel.getExcludeMarker().observe(this, new Observer<Result<Void>>() {
+            @Override
+            public void onChanged(Result<Void> voidResult) {
+                if (voidResult.getStatus() == Result.OPERATION_SUCCESS) {
+                    //staviti nekakvu poruku za uspeh
+                }
+                else {
+                    Toast.makeText(MapActivity.this, voidResult.getError().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        viewModel.getPlace().observe(this, new Observer<Result<Place>>() {
+            @Override
+            public void onChanged(Result<Place> placeResult) {
+                if (placeResult.getStatus() == Result.OPERATION_SUCCESS) {
+                    Place place = placeResult.getValue();
+                    LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
+                    BitmapDescriptor markerIcon = null;
+                    if (place.getType().equals("restoran")) {
+                        markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.restaurant48px);
+                    }
+                    else if (place.getType().equals("biblioteka")) {
+                        markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.library48px);
+                    }
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            .position(latLng)
+                            .title(place.getName())
+                            .icon(markerIcon);
+
+                    Marker marker = _GoogleMap.addMarker(markerOptions);
+                    marker.setTag(place);
+                    PlaceMarker placeMarker = new PlaceMarker(marker, _ActiveMarkers.size());
+                    _Marker = placeMarker;
+                    _ActiveMarkers.add(placeMarker);
                 }
             }
         });
@@ -269,57 +306,13 @@ public class MapActivity extends AppCompatActivity {
         starCount += (Integer) _PlacePhoneStar.getTag();
         starCount += (Integer) _PlaceTimeStar.getTag();
 
-        final int stars = starCount;
-
         Place place = (Place) _Marker.getMarker().getTag();
         _Marker.nullifyMarker();
         _Marker = null;
 
-        /*database.child("Users")
-                .child(_Username)
-                .child("points")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DataSnapshot> task) {
-                        long result = task.getResult().getValue(Long.class);
-                        result += 2;
-                        database.child("Users")
-                                .child(_Username)
-                                .child("points")
-                                .setValue(result);
-                        database.child("Leaderboards")
-                                .child(_Username)
-                                .child("points")
-                                .setValue(result);
-                    }
-                });*/
         viewModel.updateUserPoints(_Username, 2);
-        viewModel.updateUserPoints(place.getCreator(), stars);
-        /*database.child("Users")
-                .child(place.getCreator())
-                .child("points")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DataSnapshot> task) {
-                        long result = task.getResult().getValue(Long.class);
-                        result += stars;
-                        database.child("Users")
-                                .child(place.getCreator())
-                                .child("points")
-                                .setValue(result);
-                        database.child("Leaderboards")
-                                .child(place.getCreator())
-                                .child("points")
-                                .setValue(result);
-                    }
-                });*/
-        database.child("Excluded markers")
-                .child(_Username)
-                .child("places")
-                .child(place.getKey())
-                .setValue(true);
+        viewModel.updateUserPoints(place.getCreator(), starCount);
+        viewModel.excludeUserMarker(_Username, place.getKey());
     }
     private void addPlace() {
         Task<Location> locationTask = _FusedClient.getLastLocation();
@@ -335,89 +328,29 @@ public class MapActivity extends AppCompatActivity {
         });
     }
     private void loadMarkers() {
-        List<String> placesIds = new ArrayList<>();
-        database.child("Excluded markers").child(_Username).child("places").get()
-                .addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DataSnapshot> task) {
-                        DataSnapshot snapshot = task.getResult();
-                        for (DataSnapshot data : snapshot.getChildren()) {
-                            placesIds.add(data.getKey());
-                        }
-                        database.child("Places")
-                                .addChildEventListener(new ChildEventListener() {
-                                    @Override
-                                    public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                                        Place place = snapshot.getValue(Place.class);
-                                        if (!place.getCreator().equals(_Username) && !placesIds.contains(snapshot.getKey())) {
-                                            LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
-                                            BitmapDescriptor markerIcon = null;
-                                            if (place.getType().equals("restoran")) {
-                                                markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.restaurant48px);
-                                            }
-                                            else if (place.getType().equals("biblioteka")) {
-                                                markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.library48px);
-                                            }
-                                            MarkerOptions markerOptions = new MarkerOptions()
-                                                    .position(latLng)
-                                                    .title(place.getName())
-                                                    .icon(markerIcon);
-
-                                            Marker marker = _GoogleMap.addMarker(markerOptions);
-                                            marker.setTag(place);
-                                            PlaceMarker placeMarker = new PlaceMarker(marker, _ActiveMarkers.size());
-                                            _Marker = placeMarker;
-                                            _ActiveMarkers.add(placeMarker);
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-                                    }
-
-                                    @Override
-                                    public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
-                                    }
-
-                                    @Override
-                                    public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                    }
-                                });
-                    }
-                });
+        viewModel.loadMarkers(_Username);
     }
     private void initMap() {
         Log.d(TAG, "Setting up a mapFragment");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(@NonNull GoogleMap googleMap) {
-                Log.d(TAG, "Getting map object");
-                _GoogleMap = googleMap;
-                _GoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
-                _GoogleMap.setInfoWindowAdapter(new MarkerInfoAdapter(MapActivity.this));
-                _GoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(@NonNull Marker marker) {
-                        marker.showInfoWindow();
-                        _Marker.setMarker(marker);
-                        return true;
-                    }
-                });
-                Log.d(TAG, "Map object acquired");
-
-                if (_LocationEnabled) {
-                    getDeviceLocation();
-                    _GoogleMap.setMyLocationEnabled(true);
+        mapFragment.getMapAsync(googleMap -> {
+            Log.d(TAG, "Getting map object");
+            _GoogleMap = googleMap;
+            _GoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
+            _GoogleMap.setInfoWindowAdapter(new MarkerInfoAdapter(MapActivity.this));
+            _GoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(@NonNull Marker marker) {
+                    marker.showInfoWindow();
+                    _Marker.setMarker(marker);
+                    return true;
                 }
+            });
+            Log.d(TAG, "Map object acquired");
+
+            if (_LocationEnabled) {
+                getDeviceLocation();
+                _GoogleMap.setMyLocationEnabled(true);
             }
         });
     }

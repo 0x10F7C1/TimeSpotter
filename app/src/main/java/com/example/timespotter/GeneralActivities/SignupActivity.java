@@ -12,22 +12,29 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.timespotter.DataModels.Result;
 import com.example.timespotter.DataModels.User;
+import com.example.timespotter.MainActivityDb;
 import com.example.timespotter.R;
+import com.example.timespotter.UserSignupEvent;
 import com.example.timespotter.ViewModels.SignupActivityViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class SignupActivity extends AppCompatActivity {
 
     private TextInputLayout _FullName, _Username, _Email, _Password, _Phone;
     private MaterialButton _SignUp;
     private SignupActivityViewModel viewModel;
+    private MainActivityDb mainActivityDb = new MainActivityDb();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(SignupActivityViewModel.class);
-        viewModel.getUserRegisterState().observe(this, userResult -> {
+        /*viewModel.getUserRegisterState().observe(this, userResult -> {
             if (userResult.getStatus() == Result.OPERATION_SUCCESS) {
                 Intent intent = new Intent(SignupActivity.this, HomeScreenActivity.class);
                 intent.putExtra("username", userResult.getValue().getUsername());
@@ -35,7 +42,7 @@ public class SignupActivity extends AppCompatActivity {
             } else {
                 Log.d("viewModel for Signup", userResult.getError().getMessage());
             }
-        });
+        });*/
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -67,9 +74,18 @@ public class SignupActivity extends AppCompatActivity {
             password = _Password.getEditText().getText().toString();
             phone = _Phone.getEditText().getText().toString();
 
-            User user = new User(name, username, email, password, phone, 0l);
-            viewModel.userSignup(user);
+            User user = new User(name, username, email, password, phone, 0l, "");
+            //viewModel.userSignup(user);
+            mainActivityDb.userSignup(user);
 
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void userSignupEvent(UserSignupEvent result) {
+        if (result.getStatus() == UserSignupEvent.OPERATION_SUCCESS) {
+            Intent intent = new Intent(SignupActivity.this, MainActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -163,5 +179,14 @@ public class SignupActivity extends AppCompatActivity {
 
     private void makeToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 }

@@ -1,4 +1,7 @@
 package com.example.timespotter.Repositories;
+import com.example.timespotter.CustomQueue;
+
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +29,8 @@ public class PlaceRepository {
     private MutableLiveData<Result<Place>> _Place;
     private MutableLiveData<Result<Void>> excludeMarker;
     private DatabaseReference database;
+    private MutableLiveData<Result<CustomQueue>> _Red = new MutableLiveData<>();
+    private CustomQueue red = new CustomQueue();
 
     public PlaceRepository() {
         excludeMarker = new MutableLiveData<>();
@@ -38,6 +43,7 @@ public class PlaceRepository {
     public MutableLiveData<Result<Void>> getExcludeMarker() {
         return excludeMarker;
     }
+    public MutableLiveData<Result<CustomQueue>> getRed() {return _Red;}
     public void excludeUserMarker(String username, String placeKey) {
         final Result<Void> result = new Result<>();
         database
@@ -62,7 +68,7 @@ public class PlaceRepository {
                 .child("places")
                 .get()
                 .addOnSuccessListener(snapshot -> {
-                    List<String> excludedPlacesKeys = new ArrayList<String>((int) snapshot.getChildrenCount());
+                    List<String> excludedPlacesKeys = new ArrayList<>((int) snapshot.getChildrenCount());
                     for (DataSnapshot data : snapshot.getChildren()) {
                         excludedPlacesKeys.add(data.getKey());
                     }
@@ -75,6 +81,7 @@ public class PlaceRepository {
     }
     private void filterMarkers(String username, List<String> excludedPlacesKeys) {
         final Result<Place> result = new Result<>();
+        final Result<CustomQueue> proba = new Result<>();
         database
                 .child("Places")
                 .addChildEventListener(new ChildEventListener() {
@@ -82,8 +89,13 @@ public class PlaceRepository {
                     public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                         Place place = snapshot.getValue(Place.class);
                         if (!place.getCreator().equals(username) && !excludedPlacesKeys.contains(snapshot.getKey())) {
-                            result.setOperationSuccess(Result.OPERATION_SUCCESS).setValue(place);
-                            _Place.postValue(result);
+                            //result.setOperationSuccess(Result.OPERATION_SUCCESS).setValue(place);
+                            proba.setOperationSuccess(Result.OPERATION_SUCCESS);
+                            Log.d("Ide na mapu", "Marker ide");
+                            //_Place.getValue().getValue().
+                            red.addValue(place);
+                            proba.setValue(red);
+                            _Red.postValue(proba);
                         }
                     }
 

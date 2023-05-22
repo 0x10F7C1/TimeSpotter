@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/dialog_shape">
@@ -19,10 +18,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
+        android:enabled="false"
         android:hint="Enter username"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:enabled="false"/>
+        app:layout_constraintTop_toTopOf="parent" />
+
     <CheckBox
         android:id="@+id/type_filter_checkbox"
         android:layout_width="wrap_content"
@@ -36,19 +36,66 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
+        android:enabled="false"
         android:hint="Enter type"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/username_filter_text"
-        android:enabled="false"/>
+        app:layout_constraintTop_toBottomOf="@+id/username_filter_text" />
+
+    <CheckBox
+        android:id="@+id/radius_filter_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@+id/radius_filter_text"
+        app:layout_constraintTop_toTopOf="@+id/radius_filter_text" />
+
+    <EditText
+        android:id="@+id/radius_filter_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:enabled="false"
+        android:hint="Enter type"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/type_filter_text" />
+
+    <CheckBox
+        android:id="@+id/date_filter_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@+id/start_date_filter_text"
+        app:layout_constraintTop_toTopOf="@+id/start_date_filter_text" />
+
+    <EditText
+        android:id="@+id/start_date_filter_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:enabled="false"
+        android:hint="Select a start date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/radius_filter_text" />
+
+    <EditText
+        android:id="@+id/end_date_filter_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:enabled="false"
+        android:hint="Select a end date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/start_date_filter_text" />
 
     <Button
         android:id="@+id/filter_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Filter"
-        android:layout_marginTop="15dp"
         android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:text="Filter"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/type_filter_text" />
+        app:layout_constraintTop_toBottomOf="@+id/end_date_filter_text" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

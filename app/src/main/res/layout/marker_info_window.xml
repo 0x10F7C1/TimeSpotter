@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/purple_200">
@@ -11,11 +10,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
         android:maxLines="1"
         android:text="Nesto"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_marginTop="15dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/window_place_image" />
 
@@ -23,55 +22,56 @@
         android:id="@+id/window_place_website"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:layout_marginStart="15dp"
-        android:textSize="20sp"
+        android:layout_marginTop="15dp"
         android:text="Website: "
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/window_place_name"/>
+        app:layout_constraintTop_toBottomOf="@+id/window_place_name" />
 
     <TextView
         android:id="@+id/window_place_phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:layout_marginStart="15dp"
-        android:textSize="20sp"
+        android:layout_marginTop="15dp"
         android:text="Phone: "
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/window_place_website"/>
+        app:layout_constraintTop_toBottomOf="@+id/window_place_website" />
 
     <TextView
         android:id="@+id/window_place_start_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:layout_marginStart="15dp"
-        android:textSize="20sp"
+        android:layout_marginTop="15dp"
         android:text="Opens at: "
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/window_place_phone"/>
+        app:layout_constraintTop_toBottomOf="@+id/window_place_phone" />
 
     <TextView
         android:id="@+id/window_place_close_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:layout_marginStart="15dp"
-        android:textSize="20sp"
+        android:layout_marginTop="15dp"
         android:text="Closes at: "
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/window_place_start_time"/>
+        app:layout_constraintTop_toBottomOf="@+id/window_place_start_time" />
+
     <TextView
         android:id="@+id/window_place_metadata"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:layout_marginStart="15dp"
-        android:textSize="20sp"
+        android:layout_marginTop="15dp"
         android:text="Added by: "
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/window_place_close_time"/>
+        app:layout_constraintTop_toBottomOf="@+id/window_place_close_time" />
 
     <ImageView
         android:id="@+id/window_place_image"
@@ -79,5 +79,5 @@
         android:layout_height="150dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

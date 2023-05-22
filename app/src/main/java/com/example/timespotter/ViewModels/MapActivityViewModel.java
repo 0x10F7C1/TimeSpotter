@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.timespotter.CustomQueue;
 import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.DataModels.Result;
 import com.example.timespotter.Repositories.LeaderboardRepository;
@@ -24,6 +25,9 @@ public class MapActivityViewModel extends AndroidViewModel {
     }
     public MutableLiveData<Result<Void>> getExcludeMarker() {
         return _PlaceRepository.getExcludeMarker();
+    }
+    public MutableLiveData<Result<CustomQueue>> getRed() {
+        return _PlaceRepository.getRed();
     }
     public MutableLiveData<Result<Place>> getPlace() {
         return _PlaceRepository.getPlace();

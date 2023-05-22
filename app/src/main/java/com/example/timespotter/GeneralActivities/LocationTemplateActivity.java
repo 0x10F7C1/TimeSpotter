@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.timespotter.DataModels.Place;
+import com.example.timespotter.DataModels.User;
 import com.example.timespotter.R;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.timepicker.MaterialTimePicker;
@@ -40,12 +41,14 @@ public class LocationTemplateActivity extends AppCompatActivity {
     private String _ImageId = "";
     private String _Username;
     private String _PartyId;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_template);
 
+        user = (User) getIntent().getSerializableExtra("user");
         _Username = getIntent().getStringExtra("username");
 
         bindViews();
@@ -100,7 +103,6 @@ public class LocationTemplateActivity extends AppCompatActivity {
             //obrada greske
         }
     }
-
     private void getDownloadUrlOnComplete(Task<Uri> task) {
         if (task.isSuccessful()) {
             String name, type, website, phone, startTime, closeTime;
@@ -134,7 +136,7 @@ public class LocationTemplateActivity extends AppCompatActivity {
                     day,
                     month,
                     year,
-                    _Username);
+                    user.getKey());
             database.setValue(place).addOnCompleteListener(this::placeAddedOnComplete);
         } else {
             //obrada greske
@@ -152,7 +154,7 @@ public class LocationTemplateActivity extends AppCompatActivity {
                     .push()
                     .setValue(_PartyId);*/
             database.child("Excluded markers")
-                    .child(_Username)
+                    .child(user.getKey())
                     .child("places")
                     .child(_PartyId)
                     .setValue(true);

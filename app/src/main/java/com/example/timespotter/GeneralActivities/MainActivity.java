@@ -12,34 +12,50 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.timespotter.DataModels.Result;
+import com.example.timespotter.DataModels.User;
+import com.example.timespotter.MainActivityDb;
 import com.example.timespotter.R;
+import com.example.timespotter.UserLoginEvent;
 import com.example.timespotter.ViewModels.MainActivityViewModel;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.io.Serializable;
+
 public class MainActivity extends AppCompatActivity {
-    //TODO: Leaderboards, Filter, Switch(Mapa, Tabela), poboljsani UI, My Profile, Remember me
-    //TODO: progress indikator na stvari koje rade sa bazom
-    //TODO: videti kako poboljsati modularnost koda
-    //TODO: za sada ce filter biti u obliku dialogu, kasnije postaviti neki popup meni
+    //TODO -> Leaderboards: UI + baza
+    //TODO -> Filter: poboljsati UI dijalog
+    //TODO -> Switch(Mapa, Tabela) ili pak u bottom navigaciji dodati jos jedan fragmenat za priakaz tabele
+    //TODO -> LocationTemplate poboljsati UI
+    //TODO -> MyProfile: UI + baza
+    //TODO -> Remember me implementirati
+    //TODO -> Progres inidikator na stari koje cekaju na bazu
     private Button _Login, _SignUp, _ForgetPass;
     private TextInputLayout _Username, _Password;
     private MainActivityViewModel viewModel;
+    private MainActivityDb mainActivityDb = new MainActivityDb();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(MainActivityViewModel.class);
-        viewModel.getUserLoginState().observe(this, userResult -> {
+        /*viewModel.getUserLoginState().observe(this, userResult -> {
             if (userResult.getStatus() == Result.OPERATION_SUCCESS) {
                 Intent intent = new Intent(MainActivity.this, HomeScreenActivity.class);
                 intent.putExtra("username", userResult.getValue().getUsername());
+                User dummyUser = new User("Oke", "Oke", "email", "pass", "phone", 10l);
+                intent.putExtra("user", (Serializable) dummyUser);
                 startActivity(intent);
             } else {
                 Log.d("ViewModel", userResult.getError().getMessage());
             }
-        });
+        });*/
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -68,7 +84,9 @@ public class MainActivity extends AppCompatActivity {
         if (username.isEmpty() || password.isEmpty()) {
             makeToast("Empty fields");
         } else {
-            viewModel.userLogin(username, password);
+            //viewModel.userLogin(username, password);
+            mainActivityDb.userLogin(username, password);
+
         }
     }
 
@@ -79,5 +97,26 @@ public class MainActivity extends AppCompatActivity {
 
     private void makeToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void userLoginEvent(UserLoginEvent result) {
+        if (result.getStatus() == UserLoginEvent.OPERATION_SUCCESS) {
+            Intent intent = new Intent(MainActivity.this, HomeScreenActivity.class);
+            intent.putExtra("user", (Serializable) result.getUser());
+            startActivity(intent);
+        }
+        else {
+            System.out.println(result.getError());
+        }
+    }
+
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 }

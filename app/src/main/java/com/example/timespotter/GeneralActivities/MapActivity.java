@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -28,32 +27,40 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.timespotter.Adapters.MarkerInfoAdapter;
+import com.example.timespotter.CustomQueue;
 import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.DataModels.PlaceMarker;
 import com.example.timespotter.DataModels.Result;
+import com.example.timespotter.DataModels.User;
+import com.example.timespotter.MapActivityDb;
 import com.example.timespotter.R;
 import com.example.timespotter.ViewModels.MapActivityViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
 public class MapActivity extends AppCompatActivity {
     private static final String TAG = "MapsActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -78,43 +85,73 @@ public class MapActivity extends AppCompatActivity {
     private ImageView _FilterButton;
     private final List<PlaceMarker> _ActiveMarkers = new ArrayList<>();
     private MapActivityViewModel viewModel;
+    private MaterialDatePicker<Long> _DatePicker;
+    private Calendar calendar = Calendar.getInstance();
+    private static final int START_DATE_PICKER = 0;
+    private static final int END_DATE_PICKER = 1;
+    private static int DATE_PICKER;
+    private int startDay, startMonth, startYear, endDay, endMonth, endYear;
+    private User user;
+    private MapActivityDb mapActivityDb = new MapActivityDb();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+        _DatePicker = MaterialDatePicker.Builder.datePicker().setTitleText("Select date").build();
+
+        user = (User)getIntent().getSerializableExtra("user");
+
         _Username = getIntent().getStringExtra("username");
         _AddPlace = findViewById(R.id.add_place);
         _FilterButton = findViewById(R.id.filter_button);
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(MapActivityViewModel.class);
-        viewModel.getUserPoints().observe(this, new Observer<Result<Integer>>() {
-            @Override
-            public void onChanged(Result<Integer> integerResult) {
-                if (integerResult.getStatus() == Result.OPERATION_SUCCESS) {
-                    Toast.makeText(MapActivity.this, "Poeni ubaci u bazi", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(MapActivity.this, integerResult.getError().getMessage(), Toast.LENGTH_SHORT).show();
-                }
+        viewModel.getUserPoints().observe(this, integerResult -> {
+            if (integerResult.getStatus() == Result.OPERATION_SUCCESS) {
+                Toast.makeText(MapActivity.this, "Poeni ubaci u bazi", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(MapActivity.this, integerResult.getError().getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
-        viewModel.getExcludeMarker().observe(this, new Observer<Result<Void>>() {
-            @Override
-            public void onChanged(Result<Void> voidResult) {
-                if (voidResult.getStatus() == Result.OPERATION_SUCCESS) {
-                    //staviti nekakvu poruku za uspeh
-                }
-                else {
-                    Toast.makeText(MapActivity.this, voidResult.getError().getMessage(), Toast.LENGTH_SHORT).show();
-                }
+        /*viewModel.getExcludeMarker().observe(this, voidResult -> {
+            if (voidResult.getStatus() == Result.OPERATION_SUCCESS) {
+                //staviti nekakvu poruku za uspeh
             }
-        });
-        viewModel.getPlace().observe(this, new Observer<Result<Place>>() {
-            @Override
-            public void onChanged(Result<Place> placeResult) {
-                if (placeResult.getStatus() == Result.OPERATION_SUCCESS) {
-                    Place place = placeResult.getValue();
+            else {
+                Toast.makeText(MapActivity.this, voidResult.getError().getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });*/
+        /*viewModel.getPlace().observe(this, placeResult -> {
+            if (placeResult.getStatus() == Result.OPERATION_SUCCESS) {
+                Place place = placeResult.getValue();
+                LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
+                BitmapDescriptor markerIcon = null;
+                if (place.getType().equals("restoran")) {
+                    markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.restaurant48px);
+                }
+                else if (place.getType().equals("biblioteka")) {
+                    markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.library48px);
+                }
+                MarkerOptions markerOptions = new MarkerOptions()
+                        .position(latLng)
+                        .title(place.getName())
+                        .icon(markerIcon);
+
+                Marker marker = _GoogleMap.addMarker(markerOptions);
+                marker.setTag(place);
+                PlaceMarker placeMarker = new PlaceMarker(marker, _ActiveMarkers.size());
+                _Marker = placeMarker;
+                _ActiveMarkers.add(placeMarker);
+            }
+        });*/
+       /* viewModel.getRed().observe(this, customQueueResult -> {
+            if (customQueueResult.getStatus() == Result.OPERATION_SUCCESS) {
+                CustomQueue proba = customQueueResult.getValue();
+                for (int i = 0; i < proba.len; i++) {
+                    Place place = proba.getPlace();
                     LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
                     BitmapDescriptor markerIcon = null;
                     if (place.getType().equals("restoran")) {
@@ -135,7 +172,7 @@ public class MapActivity extends AppCompatActivity {
                     _ActiveMarkers.add(placeMarker);
                 }
             }
-        });
+        });*/
         initFilterDialog();
 
         _FilterButton.setOnClickListener(view -> {
@@ -161,7 +198,8 @@ public class MapActivity extends AppCompatActivity {
         });
 
         getLocationPermission();
-        loadMarkers();
+        //loadMarkers();
+        mapActivityDb.loadMarkers(user);
     }
     private void initFilterDialog() {
         View customDialog = LayoutInflater.from(this).inflate(R.layout.custom_filter_dialog, null);
@@ -171,64 +209,102 @@ public class MapActivity extends AppCompatActivity {
         _FilterDialog = dialogBuilder.create();
         _FilterDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        CheckBox usernameCheckBox, typeCheckBox;
-        EditText usernameText, typeText;
+        CheckBox usernameCheckBox, typeCheckBox, radiusCheckBox, dateCheckBox;
+        EditText usernameText, typeText, radiusText, startDateText, endDateText;
         Button filterBtn;
 
+        startDateText = customDialog.findViewById(R.id.start_date_filter_text);
+        endDateText = customDialog.findViewById(R.id.end_date_filter_text);
         usernameCheckBox = customDialog.findViewById(R.id.username_filter_checkbox);
         typeCheckBox = customDialog.findViewById(R.id.type_filter_checkbox);
+        radiusCheckBox = customDialog.findViewById(R.id.radius_filter_checkbox);
         usernameText = customDialog.findViewById(R.id.username_filter_text);
         typeText = customDialog.findViewById(R.id.type_filter_text);
+        radiusText = customDialog.findViewById(R.id.radius_filter_text);
+        dateCheckBox = customDialog.findViewById(R.id.date_filter_checkbox);
+
         filterBtn = customDialog.findViewById(R.id.filter_button);
+
+        _DatePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Long>() {
+            @Override
+            public void onPositiveButtonClick(Long selection) {
+                calendar.setTimeInMillis(selection);
+                if (DATE_PICKER == START_DATE_PICKER) {
+                    startDay = calendar.get(Calendar.DAY_OF_MONTH);
+                    startMonth = calendar.get(Calendar.MONTH) + 1;
+                    startYear = calendar.get(Calendar.YEAR);
+                    startDateText.setText(startDay + "/" + startMonth + "/" + startYear);
+                }
+                else {
+                    endDay = calendar.get(Calendar.DAY_OF_MONTH);
+                    endMonth = calendar.get(Calendar.MONTH) + 1;
+                    endYear = calendar.get(Calendar.YEAR);
+                    endDateText.setText(endDay + "/" + endMonth + "/" + endYear);
+                }
+            }
+        });
+        startDateText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DATE_PICKER = START_DATE_PICKER;
+                _DatePicker.show(getSupportFragmentManager(), "DatePicker");
+            }
+        });
+        endDateText.setOnClickListener(view -> {
+            DATE_PICKER = END_DATE_PICKER;
+            _DatePicker.show(getSupportFragmentManager(), "Different fragment");
+        });
         usernameCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (compoundButton.isChecked()) {
-                    usernameText.setEnabled(true);
-                }
-                else {
-                    usernameText.setEnabled(false);
-                }
+                usernameText.setEnabled(compoundButton.isChecked());
             }
         });
         typeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (compoundButton.isChecked()) {
-                    typeText.setEnabled(true);
-                }
-                else {
-                    typeText.setEnabled(false);
-                }
+                typeText.setEnabled(compoundButton.isChecked());
+            }
+        });
+        radiusCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                radiusText.setEnabled(compoundButton.isChecked());
+            }
+        });
+        dateCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                startDateText.setEnabled(compoundButton.isChecked());
+                endDateText.setEnabled(compoundButton.isChecked());
             }
         });
         filterBtn.setOnClickListener(view -> {
-            boolean usernameFilter = FILTER_OFF, typeFilter = FILTER_OFF;
-            if (typeCheckBox.isChecked()) {
-                Log.d("Type checkbox", typeText.getText().toString());
-                typeFilter = FILTER_ON;
-            }
-            else {
-                Log.d("Type checkbox", "off");
-            }
-            if (usernameCheckBox.isChecked()) {
-                Log.d("username checkbox", usernameText.getText().toString());
-                usernameFilter = FILTER_ON;
-            }
-            else {
-                Log.d("username checkbox", "off");
-            }
-            filter(usernameFilter, typeFilter, usernameText.getText().toString(), typeText.getText().toString());
+            boolean usernameFilter, typeFilter, radiusFilter, dateRangeFilter;
+            usernameFilter = usernameCheckBox.isChecked();
+            typeFilter = typeCheckBox.isChecked();
+            radiusFilter = radiusCheckBox.isChecked();
+            dateRangeFilter = dateCheckBox.isChecked();
+            double radius = radiusFilter ? Double.parseDouble(radiusText.getText().toString()) : 0;
+            filter(usernameFilter, typeFilter, radiusFilter, dateRangeFilter, usernameText.getText().toString(), typeText.getText().toString(), radius);
         });
     }
+    private void filter(boolean usernameFilter, boolean typeFilter, boolean radiusFilter, boolean dateRangeFilter, String username, String type, double radius) {
+        _FusedClient.getLastLocation().addOnSuccessListener(location -> {
+            Marker marker;
+            LatLng currLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+            Log.d("Trenutan broj markera na mapi je: ", String.valueOf(_ActiveMarkers.size()));
+            for (int i = 0; i < _ActiveMarkers.size(); i++) {
+                marker = _ActiveMarkers.get(i).getMarker();
+                System.out.println("Broj markera je " + _ActiveMarkers.size());
+                boolean showMarker = toFilterByUsername(marker, username, usernameFilter)
+                        && toFilterByType(marker, type, typeFilter)
+                        && toFilterByRadius(currLatLng, marker.getPosition(), radiusFilter, radius)
+                        && toFilterByDateRange(marker, dateRangeFilter);
+                marker.setVisible(showMarker);
 
-    private void filter(boolean usernameFilter, boolean typeFilter, String username, String type) {
-        Marker marker;
-        for (int i = 0; i < _ActiveMarkers.size(); i++) {
-            marker = _ActiveMarkers.get(i).getMarker();
-            marker.setVisible(toFilterByUsername(marker, username, usernameFilter)
-            && toFilterByType(marker, type, typeFilter));
-        }
+            }
+        });
     }
     private boolean toFilterByUsername(Marker marker, String creatorFilter, boolean filter) {
         boolean showMarker = false;
@@ -256,6 +332,63 @@ public class MapActivity extends AppCompatActivity {
         }
         return showMarker;
     }
+    private boolean toFilterByRadius(LatLng currLocation, LatLng marker, boolean filter, double radius) {
+        boolean showMarker = false;
+        System.out.println("Distanca izmedju markera je " + calculateDistance(currLocation, marker));
+        if (filter == FILTER_ON) {
+            if (calculateDistance(currLocation, marker) < radius) {
+                showMarker = true;
+            }
+        }
+        else {
+            showMarker = true;
+        }
+        return showMarker;
+    }
+    private boolean toFilterByDateRange(Marker marker, boolean filter) {
+        boolean showMarker = false;
+        Place place = (Place) marker.getTag();
+        int day = place.getDay(), month = place.getMonth(), year = place.getYear();
+        int startNumOfMonths = (startYear - 1) * 12 + startMonth;
+        int endNumOfMonths = (endYear - 1) * 12 + endMonth;
+        int placeNumOfMonths = (year - 1) * 12 + month;
+
+        if (filter == FILTER_ON) {
+            if (placeNumOfMonths > startNumOfMonths && placeNumOfMonths < endNumOfMonths) {
+                showMarker = true;
+            }
+            else if (placeNumOfMonths == startNumOfMonths && placeNumOfMonths == endNumOfMonths && day > startDay && day < endDay) {
+                showMarker = true;
+            }
+            else if (placeNumOfMonths > startNumOfMonths && placeNumOfMonths == endNumOfMonths && day < endDay) {
+                showMarker = true;
+            }
+            else if (placeNumOfMonths < endNumOfMonths && placeNumOfMonths == startNumOfMonths && day > startDay) {
+                showMarker = true;
+            }
+        }
+        else {
+            showMarker = true;
+        }
+        return showMarker;
+    }
+    private double calculateDistance(LatLng currLocation, LatLng otherLocation) {
+        double currLatRad = Math.toRadians(currLocation.latitude);
+        double currLonRad = Math.toRadians(currLocation.longitude);
+        double otherLatRad = Math.toRadians(otherLocation.latitude);
+        double otherLonRad = Math.toRadians(otherLocation.longitude);
+
+        final double earthRadius = 6371000;
+
+        double dLat = otherLatRad - currLatRad;
+        double dLon = otherLonRad - currLonRad;
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(currLatRad) * Math.cos(otherLatRad) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return earthRadius * c;
+    }
     private void initRateDialog() {
         View customDialog = LayoutInflater.from(this).inflate(R.layout.custom_rate_dialog, null);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
@@ -265,15 +398,15 @@ public class MapActivity extends AppCompatActivity {
         _RateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         _PlaceNameStar = customDialog.findViewById(R.id.place_name_dialog_star);
-        _PlaceNameStar.setTag(new Integer(EMPTY_STAR));
+        _PlaceNameStar.setTag(EMPTY_STAR);
         _PlaceTypeStar = customDialog.findViewById(R.id.place_type_dialog_star);
-        _PlaceTypeStar.setTag(new Integer(EMPTY_STAR));
+        _PlaceTypeStar.setTag(EMPTY_STAR);
         _PlaceWebsiteStar = customDialog.findViewById(R.id.place_website_dialog_star);
-        _PlaceWebsiteStar.setTag(new Integer(EMPTY_STAR));
+        _PlaceWebsiteStar.setTag(EMPTY_STAR);
         _PlacePhoneStar = customDialog.findViewById(R.id.place_phone_dialog_star);
-        _PlacePhoneStar.setTag(new Integer(EMPTY_STAR));
+        _PlacePhoneStar.setTag(EMPTY_STAR);
         _PlaceTimeStar = customDialog.findViewById(R.id.place_time_dialog_star);
-        _PlaceTimeStar.setTag(new Integer(EMPTY_STAR));
+        _PlaceTimeStar.setTag(EMPTY_STAR);
         _RateDialogBtn = customDialog.findViewById(R.id.rate_dialog_btn);
         _CloseDialogBtn = customDialog.findViewById(R.id.close_dialog_btn);
 
@@ -320,6 +453,7 @@ public class MapActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 Location currentLocation = locationTask.getResult();
                 Intent intent = new Intent(MapActivity.this, LocationTemplateActivity.class);
+                intent.putExtra("user", (Serializable) user);
                 intent.putExtra("longitude", currentLocation.getLongitude());
                 intent.putExtra("latitude", currentLocation.getLatitude());
                 intent.putExtra("username", getIntent().getStringExtra("username"));
@@ -331,7 +465,6 @@ public class MapActivity extends AppCompatActivity {
         viewModel.loadMarkers(_Username);
     }
     private void initMap() {
-        Log.d(TAG, "Setting up a mapFragment");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(googleMap -> {
             Log.d(TAG, "Getting map object");
@@ -411,5 +544,39 @@ public class MapActivity extends AppCompatActivity {
                     initMap();
                 }
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMarkerAddEvent(Place place) {
+        LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
+        BitmapDescriptor markerIcon = null;
+        if (place.getType().equals("restoran")) {
+            markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.restaurant48px);
+        }
+        else if (place.getType().equals("biblioteka")) {
+            markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.library48px);
+        }
+        MarkerOptions markerOptions = new MarkerOptions()
+                .position(latLng)
+                .title(place.getName())
+                .icon(markerIcon);
+
+        Marker marker = _GoogleMap.addMarker(markerOptions);
+        marker.setTag(place);
+        PlaceMarker placeMarker = new PlaceMarker(marker, _ActiveMarkers.size());
+        _Marker = placeMarker;
+        _ActiveMarkers.add(placeMarker);
+        Log.d("Marker dodat", "Marker id " + place.getKey());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 }

@@ -17,7 +17,7 @@ public class HomeScreenActivity extends AppCompatActivity {
     private ChipNavigationBar _BottomNav;
     private LeaderboardFragment _LeaderboardFragment = new LeaderboardFragment();
     private ProfileFragment _Profile = new ProfileFragment();
-    private User user;
+    public static User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

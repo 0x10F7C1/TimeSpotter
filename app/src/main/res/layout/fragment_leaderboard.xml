@@ -5,10 +5,29 @@
     android:layout_height="match_parent"
     tools:context=".GeneralActivities.LeaderboardFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/leaderboard_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Leaderboards"
+            android:layout_marginTop="15dp"
+            android:textSize="30sp"
+            android:fontFamily="@font/bungee"
+            android:layout_centerHorizontal="true"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_below="@id/leaderboard_title"
+            android:id="@+id/leaderboard_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="15dp"/>
+
+    </RelativeLayout>
 
 </FrameLayout>

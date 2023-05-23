@@ -6,41 +6,78 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.timespotter.Adapters.LeaderboardAdapter;
+import com.example.timespotter.DataModels.UserLeaderboard;
+import com.example.timespotter.LeaderboardFragmentEvent;
 import com.example.timespotter.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link LeaderboardFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class LeaderboardFragment extends Fragment {
-    public LeaderboardFragment() {
-        // Required empty public constructor
-    }
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
-    public static LeaderboardFragment newInstance(String param1, String param2) {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+public class LeaderboardFragment extends Fragment {
+    private RecyclerView recyclerView;
+    private LeaderboardAdapter adapter;
+    private List<UserLeaderboard> _Users;
+    private static long DUMMY_POINTS_GENERATOR = 100;
+    public LeaderboardFragment() {}
+
+    public static LeaderboardFragment newInstance() {
         LeaderboardFragment fragment = new LeaderboardFragment();
-        //Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
-        //fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }*/
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_leaderboard, container, false);
+        View view =  inflater.inflate(R.layout.fragment_leaderboard, container, false);
+        recyclerView = view.findViewById(R.id.leaderboard_recycler);
+        _Users = new ArrayList<>();
+        adapter = new LeaderboardAdapter(requireContext(), _Users);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerView.setAdapter(adapter);
+
+        loadDummyUsers();
+        return view;
+    }
+
+    private void loadDummyUsers() {
+        _Users.add(new UserLeaderboard("Nesto", "Okeej", "", 100l));
+        _Users.add(new UserLeaderboard("Nesto", "Okeej", "", 200l));
+        _Users.add(new UserLeaderboard("Nesto", "Okeej", "", 90l));
+        _Users.add(new UserLeaderboard("Nesto", "Okeej", "", 30l));
+        sortDummyUsers();
+        //adapter.notifyDataSetChanged();
+    }
+    private void sortDummyUsers() {
+        Collections.sort(_Users, Collections.reverseOrder());
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        //EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        //EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 }

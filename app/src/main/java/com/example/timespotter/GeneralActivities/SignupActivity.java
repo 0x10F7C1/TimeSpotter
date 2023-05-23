@@ -14,6 +14,8 @@ import com.example.timespotter.DataModels.Result;
 import com.example.timespotter.DataModels.User;
 import com.example.timespotter.MainActivityDb;
 import com.example.timespotter.R;
+import com.example.timespotter.SignupActivityDb;
+import com.example.timespotter.SignupActivityEvent;
 import com.example.timespotter.UserSignupEvent;
 import com.example.timespotter.ViewModels.SignupActivityViewModel;
 import com.google.android.material.button.MaterialButton;
@@ -28,22 +30,14 @@ public class SignupActivity extends AppCompatActivity {
     private TextInputLayout _FullName, _Username, _Email, _Password, _Phone;
     private MaterialButton _SignUp;
     private SignupActivityViewModel viewModel;
+    private static final int USER_REGISTER_SUCCESS = 2;
+    private static int userRegisterCount = 0;
     private MainActivityDb mainActivityDb = new MainActivityDb();
+    private SignupActivityDb signupActivityDb = new SignupActivityDb();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-        viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(SignupActivityViewModel.class);
-        /*viewModel.getUserRegisterState().observe(this, userResult -> {
-            if (userResult.getStatus() == Result.OPERATION_SUCCESS) {
-                Intent intent = new Intent(SignupActivity.this, HomeScreenActivity.class);
-                intent.putExtra("username", userResult.getValue().getUsername());
-                startActivity(intent);
-            } else {
-                Log.d("viewModel for Signup", userResult.getError().getMessage());
-            }
-        });*/
-
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         bindViews();
@@ -75,20 +69,20 @@ public class SignupActivity extends AppCompatActivity {
             phone = _Phone.getEditText().getText().toString();
 
             User user = new User(name, username, email, password, phone, 0l, "");
-            //viewModel.userSignup(user);
-            mainActivityDb.userSignup(user);
+            signupActivityDb.userSignup(user);
 
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void userSignupEvent(UserSignupEvent result) {
-        if (result.getStatus() == UserSignupEvent.OPERATION_SUCCESS) {
+    public void userSignupEvent(SignupActivityEvent.RegisterUser result) {
+        userRegisterCount = userRegisterCount + 1;
+        if (userRegisterCount == USER_REGISTER_SUCCESS) {
+            userRegisterCount = 0;
             Intent intent = new Intent(SignupActivity.this, MainActivity.class);
             startActivity(intent);
         }
     }
-
     private boolean validateName() {
         String name = _FullName.getEditText().getText().toString();
         if (name.isEmpty()) {

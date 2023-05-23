@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.DataModels.Result;
 import com.example.timespotter.DataModels.User;
+import com.example.timespotter.GeneralActivities.HomeScreenActivity;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MapActivityDb {
+    private static final String TAG = MapActivityDb.class.getSimpleName();
     private final DatabaseReference database;
 
     public MapActivityDb() {
@@ -71,6 +73,74 @@ public class MapActivityDb {
                     public void onCancelled(@NonNull DatabaseError error) {
 
                     }
+                });
+    }
+
+
+    public void updateUserPoints(long pts) {
+        HomeScreenActivity.user.setPoints(HomeScreenActivity.user.getPoints() + pts);
+        database
+                .child("Leaderboards")
+                .child(HomeScreenActivity.user.getKey())
+                .child("points")
+                .setValue(HomeScreenActivity.user.getPoints())
+                .addOnSuccessListener(unused -> {
+                    EventBus.getDefault().post(new MapActivityEvent.UserPointsUpdate());
+                })
+                .addOnFailureListener(error -> {
+                    Log.d(TAG, error.getMessage());
+                });
+        database
+                .child("Users")
+                .child(HomeScreenActivity.user.getKey())
+                .child("points")
+                .setValue(HomeScreenActivity.user.getPoints())
+                .addOnSuccessListener(unused -> {
+                    EventBus.getDefault().post(new MapActivityEvent.UserPointsUpdate());
+                })
+                .addOnFailureListener(error -> {
+                    Log.d(TAG, error.getMessage());
+                });
+    }
+
+    public void updatePlaceCreatorPoints(String userKey, long pts) {
+        database
+                .child("Users")
+                .child(userKey)
+                .child("points")
+                .get()
+                .addOnSuccessListener(dataSnapshot -> {
+                    Long points = dataSnapshot.getValue(Long.class);
+                    points += pts;
+                    updateCreatorPoints(userKey, points);
+                })
+                .addOnFailureListener(error -> {
+                   Log.d(TAG, error.getMessage());
+                });
+    }
+
+    private void updateCreatorPoints(String userKey, long pts) {
+        database
+                .child("Users")
+                .child(userKey)
+                .child("points")
+                .setValue(pts)
+                .addOnSuccessListener(unused -> {
+                    EventBus.getDefault().post(new MapActivityEvent.CreatorPointsUpdate());
+                })
+                .addOnFailureListener(error -> {
+                    Log.d(TAG, error.getMessage());
+                });
+        database
+                .child("Leaderboards")
+                .child(userKey)
+                .child("points")
+                .setValue(pts)
+                .addOnSuccessListener(unused -> {
+                    EventBus.getDefault().post(new MapActivityEvent.CreatorPointsUpdate());
+                })
+                .addOnFailureListener(error -> {
+                   Log.d(TAG, error.getMessage());
                 });
     }
 }

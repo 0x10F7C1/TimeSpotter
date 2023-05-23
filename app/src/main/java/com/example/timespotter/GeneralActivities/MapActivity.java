@@ -32,6 +32,7 @@ import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.DataModels.PlaceMarker;
 import com.example.timespotter.DataModels.Result;
 import com.example.timespotter.DataModels.User;
+import com.example.timespotter.LeaderboardFragmentEvent;
 import com.example.timespotter.MapActivityDb;
 import com.example.timespotter.R;
 import com.example.timespotter.ViewModels.MapActivityViewModel;
@@ -443,9 +444,10 @@ public class MapActivity extends AppCompatActivity {
         _Marker.nullifyMarker();
         _Marker = null;
 
-        viewModel.updateUserPoints(_Username, 2);
-        viewModel.updateUserPoints(place.getCreator(), starCount);
-        viewModel.excludeUserMarker(_Username, place.getKey());
+        //viewModel.updateUserPoints(_Username, 2);
+        //viewModel.updateUserPoints(place.getCreator(), starCount);
+        //viewModel.excludeUserMarker(_Username, place.getKey());
+        mapActivityDb.updateUserPoints();
     }
     private void addPlace() {
         Task<Location> locationTask = _FusedClient.getLastLocation();
@@ -569,6 +571,10 @@ public class MapActivity extends AppCompatActivity {
         Log.d("Marker dodat", "Marker id " + place.getKey());
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUserPointsUpdate(LeaderboardFragmentEvent.UserPointsUpdate result) {
+        System.out.println("Poeni dodati");
+    }
     @Override
     protected void onStart() {
         super.onStart();

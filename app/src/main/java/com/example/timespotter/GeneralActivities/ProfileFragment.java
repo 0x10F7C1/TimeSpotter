@@ -1,48 +1,53 @@
 package com.example.timespotter.GeneralActivities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.example.timespotter.DataModels.Result;
 import com.example.timespotter.DataModels.User;
 import com.example.timespotter.MyProfileEvent;
 import com.example.timespotter.ProfileFragmentDb;
 import com.example.timespotter.R;
+import com.github.abdularis.civ.CircleImageView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.HashMap;
-
+//TODO: RESITI BUG GDE JE SVIM POLJIMA .length() == 0 i onda azurira podatke
 public class ProfileFragment extends Fragment {
-    private Button _UpdateProfile;
+    private static final int PHOTO_PICKER = 2;
+    private Button _UpdateProfile, _LogoutProfile;
     private TextInputLayout _UsernameText, _EmailText, _PasswordText, _PhoneText;
     private TextView _UserUsernameText, _UserFullNameText, _UserPtsText;
+    private CircleImageView _UserProfileImage;
     private User user;
-    private DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     private MyProfileEvent.AppendUser appendUserResult;
     private MyProfileEvent.RemoveUser removeUserResult;
     public ProfileFragment() {
     }
-
     public static ProfileFragment newInstance(String param1, String param2) {
         ProfileFragment fragment = new ProfileFragment();
         return fragment;
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,9 +56,9 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         _UpdateProfile = view.findViewById(R.id.profile_update);
+        _LogoutProfile = view.findViewById(R.id.profile_logout);
         _UsernameText = view.findViewById(R.id.profile_username);
         _EmailText = view.findViewById(R.id.profile_email);
         _PhoneText = view.findViewById(R.id.profile_phone);
@@ -61,16 +66,19 @@ public class ProfileFragment extends Fragment {
         _UserUsernameText = view.findViewById(R.id.profile_username_textview);
         _UserFullNameText = view.findViewById(R.id.profile_full_name);
         _UserPtsText = view.findViewById(R.id.profile_pts);
+        _UserProfileImage = view.findViewById(R.id.profile_image);
         user = (User) getArguments().getSerializable("user");
 
         _UserUsernameText.setText(user.getUsername());
         _UserFullNameText.setText(user.getName());
         _UserPtsText.setText(user.getPoints().toString());
         _UpdateProfile.setOnClickListener(this::updateProfileOnClick);
-
+        _LogoutProfile.setOnClickListener(this::logoutProfileOnClick);
+        _UserProfileImage.setOnClickListener(this::changeProfileImageOnClick);
+        Glide.with(requireContext()).load("https://firebasestorage.googleapis.com/v0/b/timespotter-95d44.appspot.com/o/Place%20photos%2F15dcf1a9-d6c6-4475-ad29-156cd8c45f51?alt=media&token=67428a47-f8b2-49d0-9b39-cedafadc4a87")
+                .centerCrop().into(_UserProfileImage);
         return view;
     }
-
     private void updateProfileOnClick(View view) {
         ProfileFragmentDb db = new ProfileFragmentDb();
         String username, email, phone, password;
@@ -87,6 +95,16 @@ public class ProfileFragment extends Fragment {
                 && validatePhoneNumber(newUser, phone)) {
             db.updateUserProfile(user, newUser);
         }
+    }
+    private void logoutProfileOnClick(View view) {
+        Intent intent = new Intent(requireContext(), MainActivity.class);
+        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+    }
+    private void changeProfileImageOnClick(View view) {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, PHOTO_PICKER);
     }
     private boolean validateUsername(User newUser, String username) {
         String noWhiteSpace = "^\\S+$";
@@ -206,5 +224,15 @@ public class ProfileFragment extends Fragment {
     public void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PHOTO_PICKER) {
+            if (resultCode == Activity.RESULT_OK) {
+                Glide.with(requireContext()).load(data.getData()).centerCrop().into(_UserProfileImage);
+            }
+        }
+
     }
 }

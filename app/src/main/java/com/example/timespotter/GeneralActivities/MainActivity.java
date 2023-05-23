@@ -10,8 +10,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.timespotter.DbMediators.MainActivityDb;
-import com.example.timespotter.Events.UserLoginEvent;
 import com.example.timespotter.Events.MainActivityEvent;
+import com.example.timespotter.Events.UserLoginEvent;
 import com.example.timespotter.R;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -21,11 +21,10 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class MainActivity extends AppCompatActivity {
     private final MainActivityDb mainActivityDb = new MainActivityDb();
-    //TODO -> Leaderboards: UI + baza
-    //TODO -> Filter: poboljsati UI dijalog
-    //TODO -> Switch(Mapa, Tabela) ili pak u bottom navigaciji dodati jos jedan fragmenat za priakaz tabele
+    //TODO -> Leaderboards: prolepsati UI
+    //TODO -> Filter: resiti bug gde ne skriva jedan od Markera
+    //TODO -> tabela za bottom nav
     //TODO -> LocationTemplate poboljsati UI
-    //TODO -> MyProfile: UI + baza
     //TODO -> Remember me implementirati
     //TODO -> Progres inidikator na stari koje cekaju na bazu
     private Button _Login, _SignUp, _ForgetPass;

@@ -40,23 +40,18 @@ public class MarkerInfoAdapter implements GoogleMap.InfoWindowAdapter {
 
         Place place = (Place) marker.getTag();
         Picasso.get().load(place.getImageUri()).into(photo);
-        Log.d("Place phone number", place.getPhone());
         phone.setText(place.getPhone());
         name.setText(place.getName());
         website.setText(place.getWebsite());
         startTime.setText(place.getStartTime());
         closeTime.setText(place.getCloseTime());
         username.setText(place.getCreatorKey());
-        Log.d("Place image URL", place.getImageUri());
 
     }
 
     @Nullable
     @Override
     public View getInfoContents(@NonNull Marker marker) {
-        //Log.d("getInfoContents", "inflating!");
-        //renderWindowInfo(marker, _Window);
-        //return _Window;
         return null;
     }
 

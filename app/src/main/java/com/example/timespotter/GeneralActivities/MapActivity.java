@@ -110,7 +110,6 @@ public class MapActivity extends AppCompatActivity {
             addPlace();
         });
 
-
         _Rate = findViewById(R.id.rate);
         _Rate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -228,8 +227,11 @@ public class MapActivity extends AppCompatActivity {
                         && toFilterByType(marker, type, typeFilter)
                         && toFilterByRadius(currLatLng, marker.getPosition(), radiusFilter, radius)
                         && toFilterByDateRange(marker, dateRangeFilter);
+                System.out.println("Prikazujem marker sa imenom: " + ((Place) marker.getTag()).getName());
+                System.out.println("Show marker vraca " + showMarker);
                 marker.setVisible(showMarker);
-
+                System.out.println("Da li se vidim? " + marker.isVisible());
+                System.out.println("Izvrsavam se na threadu: " + Thread.currentThread().getName());
             }
         });
     }
@@ -262,7 +264,6 @@ public class MapActivity extends AppCompatActivity {
 
     private boolean toFilterByRadius(LatLng currLocation, LatLng marker, boolean filter, double radius) {
         boolean showMarker = false;
-        System.out.println("Distanca izmedju markera je " + calculateDistance(currLocation, marker));
         if (filter == FILTER_ON) {
             if (calculateDistance(currLocation, marker) < radius) {
                 showMarker = true;

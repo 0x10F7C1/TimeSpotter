@@ -12,6 +12,11 @@
         android:icon="@drawable/explore"
         android:enabled="true"/>
     <item
+        android:id="@+id/table"
+        android:title="@string/table"
+        android:icon="@drawable/table"
+        android:enabled="true"/>
+    <item
         android:id="@+id/profile"
         android:enabled="true"
         android:title="@string/profile"

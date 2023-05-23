@@ -11,7 +11,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.timespotter.Adapters.LeaderboardAdapter;
 import com.example.timespotter.DataModels.UserLeaderboard;
+import com.example.timespotter.DbMediators.LeaderboardFragmentDb;
+import com.example.timespotter.Events.LeaderboardFragmentEvent;
 import com.example.timespotter.R;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +28,7 @@ public class LeaderboardFragment extends Fragment {
     private RecyclerView recyclerView;
     private LeaderboardAdapter adapter;
     private List<UserLeaderboard> _Users;
+    private LeaderboardFragmentDb leaderboardFragmentDb = new LeaderboardFragmentDb();
 
     public LeaderboardFragment() {
     }
@@ -46,7 +53,9 @@ public class LeaderboardFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(adapter);
 
-        loadDummyUsers();
+        //loadDummyUsers();
+        leaderboardFragmentDb.loadLeaderboard(_Users);
+
         return view;
     }
 
@@ -64,15 +73,20 @@ public class LeaderboardFragment extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLeaderboardLoaded(LeaderboardFragmentEvent.LeaderboardLoaded result) {
+        adapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onStart() {
         super.onStart();
-        //EventBus.getDefault().register(this);
+        EventBus.getDefault().register(this);
     }
 
     @Override
     public void onStop() {
-        //EventBus.getDefault().unregister(this);
+        EventBus.getDefault().unregister(this);
         super.onStop();
     }
 }

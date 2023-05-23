@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.timespotter.DataModels.User;
 import com.example.timespotter.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
 public class HomeScreenActivity extends AppCompatActivity {
@@ -15,7 +17,8 @@ public class HomeScreenActivity extends AppCompatActivity {
     public static User user;
     private final LeaderboardFragment _LeaderboardFragment = new LeaderboardFragment();
     private final ProfileFragment _Profile = new ProfileFragment();
-    private ChipNavigationBar _BottomNav;
+    //private ChipNavigationBar _BottomNav;
+    private BottomNavigationView _BottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,28 +40,32 @@ public class HomeScreenActivity extends AppCompatActivity {
     }
 
     private void registerCallbacks() {
+        //_BottomNav.setOnItemSelectedListener(this::bottomNavOnItemSelected);
         _BottomNav.setOnItemSelectedListener(this::bottomNavOnItemSelected);
     }
 
-    private void bottomNavOnItemSelected(int position) {
-        switch (position) {
+    private boolean bottomNavOnItemSelected(@NonNull android.view.MenuItem item/*int position*/) {
+        switch (item.getItemId()) {
             case R.id.leaderboard:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, _LeaderboardFragment).commit();
-                break;
+                return true;
+                //break;
             case R.id.discover:
                 Intent intent = new Intent(HomeScreenActivity.this, MapActivity.class);
                 intent.putExtra("username", getIntent().getStringExtra("username"));
                 intent.putExtra("user", user);
                 startActivity(intent);
-                break;
+                return true;
+                //break;
             case R.id.profile:
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("user", user);
                 _Profile.setArguments(bundle);
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, _Profile).commit();
-                break;
+                return true;
+                //break;
             default:
-                return;
+                return false;
         }
     }
 

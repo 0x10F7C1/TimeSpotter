@@ -35,7 +35,7 @@ public class LeaderboardViewHolder extends RecyclerView.ViewHolder {
 
     public void bindData(UserLeaderboard user) {
         Glide.with(_Context)
-                .load("https://firebasestorage.googleapis.com/v0/b/timespotter-95d44.appspot.com/o/Place%20photos%2F15dcf1a9-d6c6-4475-ad29-156cd8c45f51?alt=media&token=67428a47-f8b2-49d0-9b39-cedafadc4a87")
+                .load(user.getImageUri())
                 .into(_UserAvatar);
         _UserUsername.setText(user.getUsername());
         _UserName.setText(user.getName());

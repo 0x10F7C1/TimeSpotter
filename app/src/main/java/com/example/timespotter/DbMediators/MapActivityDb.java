@@ -1,4 +1,4 @@
-package com.example.timespotter;
+package com.example.timespotter.DbMediators;
 
 import android.util.Log;
 
@@ -6,8 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.timespotter.DataModels.Place;
-import com.example.timespotter.DataModels.Result;
 import com.example.timespotter.DataModels.User;
+import com.example.timespotter.Events.MapActivityEvent;
 import com.example.timespotter.GeneralActivities.HomeScreenActivity;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +28,7 @@ public class MapActivityDb {
         database = FirebaseDatabase.getInstance().getReference();
 
     }
+
     public void loadMarkers(User user) {
         database
                 .child("Excluded markers")
@@ -42,6 +43,7 @@ public class MapActivityDb {
                     filterMarkers(user, excludedPlacesKeys);
                 });
     }
+
     private void filterMarkers(User user, List<String> excludedPlacesKeys) {
         database
                 .child("Places")
@@ -49,7 +51,7 @@ public class MapActivityDb {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                         Place place = snapshot.getValue(Place.class);
-                        if (!place.getCreator().equals(user.getUsername()) && !excludedPlacesKeys.contains(snapshot.getKey())) {
+                        if (!place.getCreatorKey().equals(user.getKey()) && !excludedPlacesKeys.contains(snapshot.getKey())) {
                             EventBus.getDefault().post(place);
                         }
                     }
@@ -76,6 +78,20 @@ public class MapActivityDb {
                 });
     }
 
+    public void excludeUserMarker(String placeKey) {
+        database
+                .child("Excluded markers")
+                .child(HomeScreenActivity.user.getKey())
+                .child("places")
+                .child(placeKey)
+                .setValue(true)
+                .addOnSuccessListener(unused -> {
+                    EventBus.getDefault().post(new MapActivityEvent.UserMarkerExcluded());
+                })
+                .addOnFailureListener(e -> {
+                    Log.d(TAG, e.getMessage());
+                });
+    }
 
     public void updateUserPoints(long pts) {
         HomeScreenActivity.user.setPoints(HomeScreenActivity.user.getPoints() + pts);
@@ -115,7 +131,7 @@ public class MapActivityDb {
                     updateCreatorPoints(userKey, points);
                 })
                 .addOnFailureListener(error -> {
-                   Log.d(TAG, error.getMessage());
+                    Log.d(TAG, error.getMessage());
                 });
     }
 
@@ -140,7 +156,7 @@ public class MapActivityDb {
                     EventBus.getDefault().post(new MapActivityEvent.CreatorPointsUpdate());
                 })
                 .addOnFailureListener(error -> {
-                   Log.d(TAG, error.getMessage());
+                    Log.d(TAG, error.getMessage());
                 });
     }
 }

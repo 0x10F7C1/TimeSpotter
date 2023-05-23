@@ -1,9 +1,10 @@
-package com.example.timespotter;
+package com.example.timespotter.DbMediators;
 
 import android.util.Log;
 
 import com.example.timespotter.DataModels.User;
 import com.example.timespotter.DataModels.UserLeaderboard;
+import com.example.timespotter.Events.SignupActivityEvent;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 public class SignupActivityDb {
     private static final String TAG = SignupActivityDb.class.getSimpleName();
     private final DatabaseReference database;
+
     public SignupActivityDb() {
         database = FirebaseDatabase.getInstance().getReference();
     }
@@ -23,13 +25,14 @@ public class SignupActivityDb {
         user.setKey(userKey);
         database
                 .child("Users")
-                .child(user.getUsername())
+                //.child(user.getUsername())
+                .child(user.getKey())
                 .setValue(user)
                 .addOnSuccessListener(unused -> {
                     EventBus.getDefault().post(new SignupActivityEvent.RegisterUser());
                 })
                 .addOnFailureListener(error -> {
-                   Log.d(TAG, error.getMessage());
+                    Log.d(TAG, error.getMessage());
                 });
         UserLeaderboard userLeaderboard = new UserLeaderboard(user.getUsername(), user.getName(), "", user.getPoints());
         database

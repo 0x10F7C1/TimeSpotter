@@ -1,15 +1,15 @@
-package com.example.timespotter;
+package com.example.timespotter.Events;
 
 import com.example.timespotter.DataModels.User;
 
 public class UserSignupEvent {
-    private final User user;
-    private final String error;
-    private final int status;
     public static final int OPERATION_SUCCESS = 0;
     public static final int OPERATION_FAILURE = 1;
     public static final String NO_ERROR = "";
     public static final User NO_VALUE = null;
+    private final User user;
+    private final String error;
+    private final int status;
 
     public UserSignupEvent(User user, String error, int status) {
         this.user = user;

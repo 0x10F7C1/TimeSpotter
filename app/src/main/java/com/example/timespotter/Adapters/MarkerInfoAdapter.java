@@ -30,13 +30,13 @@ public class MarkerInfoAdapter implements GoogleMap.InfoWindowAdapter {
         TextView name, website, phone, startTime, closeTime, username;
         ImageView photo;
         Button rate;
-        name = (TextView) view.findViewById(R.id.window_place_name);
-        website = (TextView) view.findViewById(R.id.window_place_website);
-        phone = (TextView) view.findViewById(R.id.window_place_phone);
-        startTime = (TextView) view.findViewById(R.id.window_place_start_time);
-        closeTime = (TextView) view.findViewById(R.id.window_place_close_time);
-        username = (TextView) view.findViewById(R.id.window_place_metadata);
-        photo = (ImageView) view.findViewById(R.id.window_place_image);
+        name = view.findViewById(R.id.window_place_name);
+        website = view.findViewById(R.id.window_place_website);
+        phone = view.findViewById(R.id.window_place_phone);
+        startTime = view.findViewById(R.id.window_place_start_time);
+        closeTime = view.findViewById(R.id.window_place_close_time);
+        username = view.findViewById(R.id.window_place_metadata);
+        photo = view.findViewById(R.id.window_place_image);
 
         Place place = (Place) marker.getTag();
         Picasso.get().load(place.getImageUri()).into(photo);
@@ -46,7 +46,7 @@ public class MarkerInfoAdapter implements GoogleMap.InfoWindowAdapter {
         website.setText(place.getWebsite());
         startTime.setText(place.getStartTime());
         closeTime.setText(place.getCloseTime());
-        username.setText(place.getCreator());
+        username.setText(place.getCreatorKey());
         Log.d("Place image URL", place.getImageUri());
 
     }

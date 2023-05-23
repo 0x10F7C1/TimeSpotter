@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.timespotter.DataModels.User;
 import com.example.timespotter.DataModels.UserLeaderboard;
 import com.example.timespotter.R;
 
@@ -18,10 +17,12 @@ import java.util.List;
 public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardViewHolder> {
     private final List<UserLeaderboard> _Users;
     private final Context _Context;
+
     public LeaderboardAdapter(Context context, List<UserLeaderboard> users) {
         _Context = context;
         _Users = users;
     }
+
     @NonNull
     @Override
     public LeaderboardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

@@ -17,8 +17,11 @@ import java.util.List;
 public class LeaderboardViewHolder extends RecyclerView.ViewHolder {
     private final Context _Context;
     private final List<UserLeaderboard> _Users;
-    private CircleImageView _UserAvatar;
-    private TextView _UserUsername, _UserName, _UserPoints;
+    private final CircleImageView _UserAvatar;
+    private final TextView _UserUsername;
+    private final TextView _UserName;
+    private final TextView _UserPoints;
+
     public LeaderboardViewHolder(@NonNull View itemView, Context context, List<UserLeaderboard> users) {
         super(itemView);
         _Context = context;
@@ -29,6 +32,7 @@ public class LeaderboardViewHolder extends RecyclerView.ViewHolder {
         _UserName = itemView.findViewById(R.id.leaderboard_full_name);
         _UserPoints = itemView.findViewById(R.id.leaderboard_points);
     }
+
     public void bindData(UserLeaderboard user) {
         Glide.with(_Context)
                 .load("https://firebasestorage.googleapis.com/v0/b/timespotter-95d44.appspot.com/o/Place%20photos%2F15dcf1a9-d6c6-4475-ad29-156cd8c45f51?alt=media&token=67428a47-f8b2-49d0-9b39-cedafadc4a87")

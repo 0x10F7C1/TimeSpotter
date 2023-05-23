@@ -10,14 +10,12 @@ import com.example.timespotter.DataModels.User;
 import com.example.timespotter.R;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
-import java.io.Serializable;
-
 public class HomeScreenActivity extends AppCompatActivity {
 
-    private ChipNavigationBar _BottomNav;
-    private LeaderboardFragment _LeaderboardFragment = new LeaderboardFragment();
-    private ProfileFragment _Profile = new ProfileFragment();
     public static User user;
+    private final LeaderboardFragment _LeaderboardFragment = new LeaderboardFragment();
+    private final ProfileFragment _Profile = new ProfileFragment();
+    private ChipNavigationBar _BottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +48,12 @@ public class HomeScreenActivity extends AppCompatActivity {
             case R.id.discover:
                 Intent intent = new Intent(HomeScreenActivity.this, MapActivity.class);
                 intent.putExtra("username", getIntent().getStringExtra("username"));
-                intent.putExtra("user", (Serializable) user);
+                intent.putExtra("user", user);
                 startActivity(intent);
                 break;
             case R.id.profile:
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("user", (Serializable) user);
+                bundle.putSerializable("user", user);
                 _Profile.setArguments(bundle);
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, _Profile).commit();
                 break;

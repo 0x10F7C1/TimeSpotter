@@ -11,26 +11,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.timespotter.Adapters.LeaderboardAdapter;
 import com.example.timespotter.DataModels.UserLeaderboard;
-import com.example.timespotter.LeaderboardFragmentEvent;
 import com.example.timespotter.R;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class LeaderboardFragment extends Fragment {
+    private static final long DUMMY_POINTS_GENERATOR = 100;
     private RecyclerView recyclerView;
     private LeaderboardAdapter adapter;
     private List<UserLeaderboard> _Users;
-    private static long DUMMY_POINTS_GENERATOR = 100;
-    public LeaderboardFragment() {}
+
+    public LeaderboardFragment() {
+    }
 
     public static LeaderboardFragment newInstance() {
         LeaderboardFragment fragment = new LeaderboardFragment();
@@ -45,7 +39,7 @@ public class LeaderboardFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.fragment_leaderboard, container, false);
+        View view = inflater.inflate(R.layout.fragment_leaderboard, container, false);
         recyclerView = view.findViewById(R.id.leaderboard_recycler);
         _Users = new ArrayList<>();
         adapter = new LeaderboardAdapter(requireContext(), _Users);
@@ -64,6 +58,7 @@ public class LeaderboardFragment extends Fragment {
         sortDummyUsers();
         //adapter.notifyDataSetChanged();
     }
+
     private void sortDummyUsers() {
         Collections.sort(_Users, Collections.reverseOrder());
         adapter.notifyDataSetChanged();

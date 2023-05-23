@@ -1,10 +1,5 @@
 package com.example.timespotter.DataModels;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import androidx.annotation.NonNull;
-
 import java.io.Serializable;
 
 public class User implements Serializable {
@@ -29,6 +24,18 @@ public class User implements Serializable {
         this.phone = phone;
         this.points = points;
         this.key = key;
+    }
+
+    public static User copyUser(User oldUser) {
+        User newUser = new User();
+        newUser.setUsername(oldUser.username);
+        newUser.setName(oldUser.getName());
+        newUser.setPassword(oldUser.getPassword());
+        newUser.setEmail(oldUser.getEmail());
+        newUser.setPhone(oldUser.getPhone());
+        newUser.setPoints(oldUser.getPoints());
+        newUser.setKey(oldUser.getKey());
+        return newUser;
     }
 
     public String getName() {
@@ -85,18 +92,6 @@ public class User implements Serializable {
 
     public void setKey(String key) {
         this.key = key;
-    }
-
-    public static User copyUser(User oldUser) {
-        User newUser = new User();
-        newUser.setUsername(oldUser.username);
-        newUser.setName(oldUser.getName());
-        newUser.setPassword(oldUser.getPassword());
-        newUser.setEmail(oldUser.getEmail());
-        newUser.setPhone(oldUser.getPhone());
-        newUser.setPoints(oldUser.getPoints());
-        newUser.setKey(oldUser.getKey());
-        return newUser;
     }
 
     public String toString() {

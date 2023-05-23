@@ -2,22 +2,17 @@ package com.example.timespotter.GeneralActivities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.example.timespotter.DataModels.Result;
 import com.example.timespotter.DataModels.User;
-import com.example.timespotter.MainActivityDb;
+import com.example.timespotter.DbMediators.MainActivityDb;
+import com.example.timespotter.DbMediators.SignupActivityDb;
+import com.example.timespotter.Events.SignupActivityEvent;
 import com.example.timespotter.R;
-import com.example.timespotter.SignupActivityDb;
-import com.example.timespotter.SignupActivityEvent;
-import com.example.timespotter.UserSignupEvent;
-import com.example.timespotter.ViewModels.SignupActivityViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -27,13 +22,13 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private TextInputLayout _FullName, _Username, _Email, _Password, _Phone;
-    private MaterialButton _SignUp;
-    private SignupActivityViewModel viewModel;
     private static final int USER_REGISTER_SUCCESS = 2;
     private static int userRegisterCount = 0;
-    private MainActivityDb mainActivityDb = new MainActivityDb();
-    private SignupActivityDb signupActivityDb = new SignupActivityDb();
+    private final MainActivityDb mainActivityDb = new MainActivityDb();
+    private final SignupActivityDb signupActivityDb = new SignupActivityDb();
+    private TextInputLayout _FullName, _Username, _Email, _Password, _Phone;
+    private MaterialButton _SignUp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +78,7 @@ public class SignupActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
+
     private boolean validateName() {
         String name = _FullName.getEditText().getText().toString();
         if (name.isEmpty()) {
@@ -158,6 +154,7 @@ public class SignupActivity extends AppCompatActivity {
         }
 
     }
+
     private boolean validatePhone() {
         String phone = _Phone.getEditText().getText().toString();
 
@@ -179,6 +176,7 @@ public class SignupActivity extends AppCompatActivity {
         super.onStart();
         EventBus.getDefault().register(this);
     }
+
     protected void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();

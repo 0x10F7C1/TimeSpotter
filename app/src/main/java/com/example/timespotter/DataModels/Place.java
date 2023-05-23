@@ -14,7 +14,8 @@ public class Place {
     private int day;
     private int month;
     private int year;
-    private String creator;
+    private String creatorKey;
+    private String creatorUsername;
 
     public Place() {
     }
@@ -33,7 +34,8 @@ public class Place {
             int day,
             int month,
             int year,
-            String creator) {
+            String creatorKey,
+            String creatorUsername) {
         this.key = key;
         this.name = name;
         this.type = type;
@@ -47,7 +49,8 @@ public class Place {
         this.day = day;
         this.month = month;
         this.year = year;
-        this.creator = creator;
+        this.creatorKey = creatorKey;
+        this.creatorUsername = creatorUsername;
     }
 
     public String getName() {
@@ -146,12 +149,12 @@ public class Place {
         this.year = year;
     }
 
-    public String getCreator() {
-        return creator;
+    public String getCreatorKey() {
+        return creatorKey;
     }
 
-    public void setCreator(String creator) {
-        this.creator = creator;
+    public void setCreatorKey(String creatorKey) {
+        this.creatorKey = creatorKey;
     }
 
     public String getKey() {
@@ -160,5 +163,13 @@ public class Place {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getCreatorUsername() {
+        return creatorUsername;
+    }
+
+    public void setCreatorUsername(String creatorUsername) {
+        this.creatorUsername = creatorUsername;
     }
 }

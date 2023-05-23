@@ -7,31 +7,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
-import com.example.timespotter.DataModels.Result;
 import com.example.timespotter.DataModels.User;
-import com.example.timespotter.MyProfileEvent;
-import com.example.timespotter.ProfileFragmentDb;
+import com.example.timespotter.DbMediators.ProfileFragmentDb;
+import com.example.timespotter.Events.MyProfileEvent;
 import com.example.timespotter.R;
 import com.github.abdularis.civ.CircleImageView;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.HashMap;
 //TODO: RESITI BUG GDE JE SVIM POLJIMA .length() == 0 i onda azurira podatke
 public class ProfileFragment extends Fragment {
     private static final int PHOTO_PICKER = 2;
@@ -42,12 +34,15 @@ public class ProfileFragment extends Fragment {
     private User user;
     private MyProfileEvent.AppendUser appendUserResult;
     private MyProfileEvent.RemoveUser removeUserResult;
+
     public ProfileFragment() {
     }
+
     public static ProfileFragment newInstance(String param1, String param2) {
         ProfileFragment fragment = new ProfileFragment();
         return fragment;
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +74,7 @@ public class ProfileFragment extends Fragment {
                 .centerCrop().into(_UserProfileImage);
         return view;
     }
+
     private void updateProfileOnClick(View view) {
         ProfileFragmentDb db = new ProfileFragmentDb();
         String username, email, phone, password;
@@ -96,16 +92,19 @@ public class ProfileFragment extends Fragment {
             db.updateUserProfile(user, newUser);
         }
     }
+
     private void logoutProfileOnClick(View view) {
         Intent intent = new Intent(requireContext(), MainActivity.class);
         //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }
+
     private void changeProfileImageOnClick(View view) {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         startActivityForResult(intent, PHOTO_PICKER);
     }
+
     private boolean validateUsername(User newUser, String username) {
         String noWhiteSpace = "^\\S+$";
         if (username.length() == 0) {
@@ -113,19 +112,18 @@ public class ProfileFragment extends Fragment {
             _UsernameText.setErrorEnabled(false);
             newUser.setUsername(user.getUsername());
             return true;
-        }
-        else if (!username.matches(noWhiteSpace)) {
+        } else if (!username.matches(noWhiteSpace)) {
             _UsernameText.setError("Whitespaces are not allowed");
             newUser.setUsername(user.getUsername());
             return false;
-        }
-        else {
+        } else {
             _UsernameText.setError(null);
             _UsernameText.setErrorEnabled(false);
             newUser.setUsername(username);
             return true;
         }
     }
+
     private boolean validateEmail(User newUser, String email) {
         String emailPattern = "[a-zA-Z\\d._-]+@[a-z]+\\.+[a-z]+";
 
@@ -146,6 +144,7 @@ public class ProfileFragment extends Fragment {
         }
 
     }
+
     private boolean validatePassword(User newUser, String password) {
         String passwordPattern = "^" +
                 "(?=.*[0-9])" +
@@ -174,6 +173,7 @@ public class ProfileFragment extends Fragment {
         }
 
     }
+
     private boolean validatePhoneNumber(User newUser, String phone) {
         String noWhiteSpace = "^\\S+$";
         if (phone.length() == 0) {
@@ -181,19 +181,18 @@ public class ProfileFragment extends Fragment {
             _PhoneText.setErrorEnabled(false);
             newUser.setPhone(user.getPhone());
             return true;
-        }
-        else if (!phone.matches(noWhiteSpace)) {
+        } else if (!phone.matches(noWhiteSpace)) {
             _PhoneText.setError("Whitespaces are not allowed");
             newUser.setPhone(user.getPhone());
             return false;
-        }
-        else {
+        } else {
             _PhoneText.setError(null);
             _PhoneText.setErrorEnabled(false);
             newUser.setPhone(phone);
             return true;
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUserAppendEvent(MyProfileEvent.AppendUser result) {
         appendUserResult = result;
@@ -204,6 +203,7 @@ public class ProfileFragment extends Fragment {
             startActivity(intent);
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUserRemoveEvent(MyProfileEvent.RemoveUser result) {
         removeUserResult = result;
@@ -214,6 +214,7 @@ public class ProfileFragment extends Fragment {
             startActivity(intent);
         }
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -225,6 +226,7 @@ public class ProfileFragment extends Fragment {
         EventBus.getDefault().unregister(this);
         super.onStop();
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

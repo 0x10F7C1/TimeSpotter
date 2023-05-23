@@ -6,10 +6,6 @@ public class UserLeaderboard implements Comparable<UserLeaderboard> {
     private String imageUri;
     private Long points;
 
-    public void setPoints(Long points) {
-        this.points = points;
-    }
-
     public UserLeaderboard(String username, String name, String imageUri, Long points) {
         this.username = username;
         this.name = name;
@@ -43,6 +39,10 @@ public class UserLeaderboard implements Comparable<UserLeaderboard> {
 
     public Long getPoints() {
         return points;
+    }
+
+    public void setPoints(Long points) {
+        this.points = points;
     }
 
     @Override

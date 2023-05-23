@@ -23,19 +23,15 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.timespotter.Adapters.MarkerInfoAdapter;
-import com.example.timespotter.CustomQueue;
 import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.DataModels.PlaceMarker;
-import com.example.timespotter.DataModels.Result;
 import com.example.timespotter.DataModels.User;
-import com.example.timespotter.LeaderboardFragmentEvent;
-import com.example.timespotter.MapActivityDb;
+import com.example.timespotter.DbMediators.MapActivityDb;
+import com.example.timespotter.Events.LeaderboardFragmentEvent;
+import com.example.timespotter.Events.MapActivityEvent;
 import com.example.timespotter.R;
-import com.example.timespotter.ViewModels.MapActivityViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -54,13 +50,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class MapActivity extends AppCompatActivity {
     private static final String TAG = "MapsActivity";
@@ -72,6 +64,14 @@ public class MapActivity extends AppCompatActivity {
     private static final float DEFAULT_ZOOM = 15f;
     private static final boolean FILTER_ON = true;
     private static final boolean FILTER_OFF = false;
+    private static final int START_DATE_PICKER = 0;
+    private static final int END_DATE_PICKER = 1;
+    private static final int USER_POINTS_UPDATE = 2;
+    private static final int CREATOR_POINTS_UPDATE = 2;
+    private static int DATE_PICKER;
+    private final List<PlaceMarker> _ActiveMarkers = new ArrayList<>();
+    private final Calendar calendar = Calendar.getInstance();
+    private final MapActivityDb mapActivityDb = new MapActivityDb();
     private boolean _LocationEnabled;
     private GoogleMap _GoogleMap;
     private FusedLocationProviderClient _FusedClient;
@@ -81,19 +81,12 @@ public class MapActivity extends AppCompatActivity {
     private AlertDialog _RateDialog;
     private ImageButton _PlaceNameStar, _PlaceTypeStar, _PlaceWebsiteStar, _PlacePhoneStar, _PlaceTimeStar;
     private Button _RateDialogBtn, _CloseDialogBtn;
-    private String _Username;
     private AlertDialog _FilterDialog;
     private ImageView _FilterButton;
-    private final List<PlaceMarker> _ActiveMarkers = new ArrayList<>();
-    private MapActivityViewModel viewModel;
     private MaterialDatePicker<Long> _DatePicker;
-    private Calendar calendar = Calendar.getInstance();
-    private static final int START_DATE_PICKER = 0;
-    private static final int END_DATE_PICKER = 1;
-    private static int DATE_PICKER;
     private int startDay, startMonth, startYear, endDay, endMonth, endYear;
     private User user;
-    private MapActivityDb mapActivityDb = new MapActivityDb();
+    private int userPointUpdate = 0, creatorPointsUpdate = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,78 +95,11 @@ public class MapActivity extends AppCompatActivity {
 
         _DatePicker = MaterialDatePicker.Builder.datePicker().setTitleText("Select date").build();
 
-        user = (User)getIntent().getSerializableExtra("user");
+        user = (User) getIntent().getSerializableExtra("user");
 
-        _Username = getIntent().getStringExtra("username");
         _AddPlace = findViewById(R.id.add_place);
         _FilterButton = findViewById(R.id.filter_button);
-        viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(MapActivityViewModel.class);
-        viewModel.getUserPoints().observe(this, integerResult -> {
-            if (integerResult.getStatus() == Result.OPERATION_SUCCESS) {
-                Toast.makeText(MapActivity.this, "Poeni ubaci u bazi", Toast.LENGTH_SHORT).show();
-            }
-            else {
-                Toast.makeText(MapActivity.this, integerResult.getError().getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
 
-        /*viewModel.getExcludeMarker().observe(this, voidResult -> {
-            if (voidResult.getStatus() == Result.OPERATION_SUCCESS) {
-                //staviti nekakvu poruku za uspeh
-            }
-            else {
-                Toast.makeText(MapActivity.this, voidResult.getError().getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });*/
-        /*viewModel.getPlace().observe(this, placeResult -> {
-            if (placeResult.getStatus() == Result.OPERATION_SUCCESS) {
-                Place place = placeResult.getValue();
-                LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
-                BitmapDescriptor markerIcon = null;
-                if (place.getType().equals("restoran")) {
-                    markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.restaurant48px);
-                }
-                else if (place.getType().equals("biblioteka")) {
-                    markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.library48px);
-                }
-                MarkerOptions markerOptions = new MarkerOptions()
-                        .position(latLng)
-                        .title(place.getName())
-                        .icon(markerIcon);
-
-                Marker marker = _GoogleMap.addMarker(markerOptions);
-                marker.setTag(place);
-                PlaceMarker placeMarker = new PlaceMarker(marker, _ActiveMarkers.size());
-                _Marker = placeMarker;
-                _ActiveMarkers.add(placeMarker);
-            }
-        });*/
-       /* viewModel.getRed().observe(this, customQueueResult -> {
-            if (customQueueResult.getStatus() == Result.OPERATION_SUCCESS) {
-                CustomQueue proba = customQueueResult.getValue();
-                for (int i = 0; i < proba.len; i++) {
-                    Place place = proba.getPlace();
-                    LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
-                    BitmapDescriptor markerIcon = null;
-                    if (place.getType().equals("restoran")) {
-                        markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.restaurant48px);
-                    }
-                    else if (place.getType().equals("biblioteka")) {
-                        markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.library48px);
-                    }
-                    MarkerOptions markerOptions = new MarkerOptions()
-                            .position(latLng)
-                            .title(place.getName())
-                            .icon(markerIcon);
-
-                    Marker marker = _GoogleMap.addMarker(markerOptions);
-                    marker.setTag(place);
-                    PlaceMarker placeMarker = new PlaceMarker(marker, _ActiveMarkers.size());
-                    _Marker = placeMarker;
-                    _ActiveMarkers.add(placeMarker);
-                }
-            }
-        });*/
         initFilterDialog();
 
         _FilterButton.setOnClickListener(view -> {
@@ -199,9 +125,9 @@ public class MapActivity extends AppCompatActivity {
         });
 
         getLocationPermission();
-        //loadMarkers();
         mapActivityDb.loadMarkers(user);
     }
+
     private void initFilterDialog() {
         View customDialog = LayoutInflater.from(this).inflate(R.layout.custom_filter_dialog, null);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
@@ -235,8 +161,7 @@ public class MapActivity extends AppCompatActivity {
                     startMonth = calendar.get(Calendar.MONTH) + 1;
                     startYear = calendar.get(Calendar.YEAR);
                     startDateText.setText(startDay + "/" + startMonth + "/" + startYear);
-                }
-                else {
+                } else {
                     endDay = calendar.get(Calendar.DAY_OF_MONTH);
                     endMonth = calendar.get(Calendar.MONTH) + 1;
                     endYear = calendar.get(Calendar.YEAR);
@@ -290,6 +215,7 @@ public class MapActivity extends AppCompatActivity {
             filter(usernameFilter, typeFilter, radiusFilter, dateRangeFilter, usernameText.getText().toString(), typeText.getText().toString(), radius);
         });
     }
+
     private void filter(boolean usernameFilter, boolean typeFilter, boolean radiusFilter, boolean dateRangeFilter, String username, String type, double radius) {
         _FusedClient.getLastLocation().addOnSuccessListener(location -> {
             Marker marker;
@@ -307,32 +233,33 @@ public class MapActivity extends AppCompatActivity {
             }
         });
     }
+
     private boolean toFilterByUsername(Marker marker, String creatorFilter, boolean filter) {
         boolean showMarker = false;
-        String creator = ((Place)marker.getTag()).getCreator();
+        String creator = ((Place) marker.getTag()).getCreatorUsername();
         if (filter == FILTER_ON) {
             if (creator.equals(creatorFilter)) {
                 showMarker = true;
             }
-        }
-        else {
+        } else {
             showMarker = true;
         }
         return showMarker;
     }
+
     private boolean toFilterByType(Marker marker, String typeFilter, boolean filter) {
         boolean showMarker = false;
-        String type = ((Place)marker.getTag()).getType();
+        String type = ((Place) marker.getTag()).getType();
         if (filter == FILTER_ON) {
             if (type.equals(typeFilter)) {
                 showMarker = true;
             }
-        }
-        else {
+        } else {
             showMarker = true;
         }
         return showMarker;
     }
+
     private boolean toFilterByRadius(LatLng currLocation, LatLng marker, boolean filter, double radius) {
         boolean showMarker = false;
         System.out.println("Distanca izmedju markera je " + calculateDistance(currLocation, marker));
@@ -340,12 +267,12 @@ public class MapActivity extends AppCompatActivity {
             if (calculateDistance(currLocation, marker) < radius) {
                 showMarker = true;
             }
-        }
-        else {
+        } else {
             showMarker = true;
         }
         return showMarker;
     }
+
     private boolean toFilterByDateRange(Marker marker, boolean filter) {
         boolean showMarker = false;
         Place place = (Place) marker.getTag();
@@ -357,22 +284,19 @@ public class MapActivity extends AppCompatActivity {
         if (filter == FILTER_ON) {
             if (placeNumOfMonths > startNumOfMonths && placeNumOfMonths < endNumOfMonths) {
                 showMarker = true;
-            }
-            else if (placeNumOfMonths == startNumOfMonths && placeNumOfMonths == endNumOfMonths && day > startDay && day < endDay) {
+            } else if (placeNumOfMonths == startNumOfMonths && placeNumOfMonths == endNumOfMonths && day > startDay && day < endDay) {
+                showMarker = true;
+            } else if (placeNumOfMonths > startNumOfMonths && placeNumOfMonths == endNumOfMonths && day < endDay) {
+                showMarker = true;
+            } else if (placeNumOfMonths < endNumOfMonths && placeNumOfMonths == startNumOfMonths && day > startDay) {
                 showMarker = true;
             }
-            else if (placeNumOfMonths > startNumOfMonths && placeNumOfMonths == endNumOfMonths && day < endDay) {
-                showMarker = true;
-            }
-            else if (placeNumOfMonths < endNumOfMonths && placeNumOfMonths == startNumOfMonths && day > startDay) {
-                showMarker = true;
-            }
-        }
-        else {
+        } else {
             showMarker = true;
         }
         return showMarker;
     }
+
     private double calculateDistance(LatLng currLocation, LatLng otherLocation) {
         double currLatRad = Math.toRadians(currLocation.latitude);
         double currLonRad = Math.toRadians(currLocation.longitude);
@@ -390,6 +314,7 @@ public class MapActivity extends AppCompatActivity {
 
         return earthRadius * c;
     }
+
     private void initRateDialog() {
         View customDialog = LayoutInflater.from(this).inflate(R.layout.custom_rate_dialog, null);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
@@ -422,6 +347,7 @@ public class MapActivity extends AppCompatActivity {
         _PlacePhoneStar.setOnClickListener(this::dialogStarOnClick);
         _PlaceTimeStar.setOnClickListener(this::dialogStarOnClick);
     }
+
     private void dialogStarOnClick(View view) {
         ImageButton btn = (ImageButton) view;
         if (btn.getTag().equals(EMPTY_STAR)) {
@@ -432,6 +358,7 @@ public class MapActivity extends AppCompatActivity {
             btn.setTag(EMPTY_STAR);
         }
     }
+
     private void rateDialogOnClick(View view) {
         int starCount = 0;
         starCount += (Integer) _PlaceNameStar.getTag();
@@ -444,18 +371,18 @@ public class MapActivity extends AppCompatActivity {
         _Marker.nullifyMarker();
         _Marker = null;
 
-        //viewModel.updateUserPoints(_Username, 2);
-        //viewModel.updateUserPoints(place.getCreator(), starCount);
-        //viewModel.excludeUserMarker(_Username, place.getKey());
-        mapActivityDb.updateUserPoints();
+        mapActivityDb.updateUserPoints(2);
+        mapActivityDb.updatePlaceCreatorPoints(place.getCreatorKey(), starCount);
+        mapActivityDb.excludeUserMarker(place.getKey());
     }
+
     private void addPlace() {
         Task<Location> locationTask = _FusedClient.getLastLocation();
         locationTask.addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Location currentLocation = locationTask.getResult();
                 Intent intent = new Intent(MapActivity.this, LocationTemplateActivity.class);
-                intent.putExtra("user", (Serializable) user);
+                intent.putExtra("user", user);
                 intent.putExtra("longitude", currentLocation.getLongitude());
                 intent.putExtra("latitude", currentLocation.getLatitude());
                 intent.putExtra("username", getIntent().getStringExtra("username"));
@@ -463,9 +390,7 @@ public class MapActivity extends AppCompatActivity {
             }
         });
     }
-    private void loadMarkers() {
-        viewModel.loadMarkers(_Username);
-    }
+
     private void initMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(googleMap -> {
@@ -489,6 +414,7 @@ public class MapActivity extends AppCompatActivity {
             }
         });
     }
+
     private void getDeviceLocation() {
         Log.d(TAG, "Getting devices current location");
         _FusedClient = LocationServices.getFusedLocationProviderClient(this);
@@ -554,8 +480,7 @@ public class MapActivity extends AppCompatActivity {
         BitmapDescriptor markerIcon = null;
         if (place.getType().equals("restoran")) {
             markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.restaurant48px);
-        }
-        else if (place.getType().equals("biblioteka")) {
+        } else if (place.getType().equals("biblioteka")) {
             markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.library48px);
         }
         MarkerOptions markerOptions = new MarkerOptions()
@@ -573,13 +498,39 @@ public class MapActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUserPointsUpdate(LeaderboardFragmentEvent.UserPointsUpdate result) {
-        System.out.println("Poeni dodati");
+        userPointUpdate++;
+        if (userPointUpdate == USER_POINTS_UPDATE) {
+            userPointUpdate = 0;
+            if (creatorPointsUpdate == CREATOR_POINTS_UPDATE) {
+                creatorPointsUpdate = 0;
+                Log.d(TAG, "Points are updated for User and Creator");
+            }
+        }
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCreatorPointsUpdate(LeaderboardFragmentEvent.UserPointsUpdate result) {
+        creatorPointsUpdate++;
+        if (creatorPointsUpdate == CREATOR_POINTS_UPDATE) {
+            creatorPointsUpdate = 0;
+            if (userPointUpdate == USER_POINTS_UPDATE) {
+                userPointUpdate = 0;
+                Log.d(TAG, "Points are updated for User and Creator");
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUserMarkerExcluded(MapActivityEvent.UserMarkerExcluded result) {
+        Log.d(TAG, "Marker excluded for user");
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
     }
+
     @Override
     protected void onStop() {
         EventBus.getDefault().unregister(this);

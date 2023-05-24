@@ -1,207 +1,239 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="5dp"
     tools:context=".Fragments.ProfileFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="2dp">
+
+        <com.github.abdularis.civ.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/profile_dummy_image"
+            app:highlightColor="#80fb1743"
+            app:strokeColor="#6BA333"
+            app:strokeWidth="6dp" />
+
+        <TextView
+            android:id="@+id/profile_full_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="30dp"
+            android:layout_toEndOf="@id/profile_image"
+            android:fontFamily="@font/bungee"
+            android:includeFontPadding="false"
+            android:text="@string/profile_full_name"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/profile_username_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/profile_full_name"
+            android:layout_marginStart="30dp"
+            android:layout_toEndOf="@id/profile_image"
+            android:includeFontPadding="false"
+            android:text="@string/profile_username"
+            android:textSize="24sp" />
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="5dp">
+        android:layout_height="wrap_content"
+        android:padding="0dp">
 
-        <RelativeLayout
-            android:layout_marginTop="10dp"
-            android:padding="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="160dp"
+            android:layout_weight="1">
 
-            <com.github.abdularis.civ.CircleImageView
-                android:id="@+id/profile_image"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:src="@drawable/profile_dummy_image"
-                android:layout_centerVertical="true"
-                app:highlightColor="#80fb1743"
-                app:strokeColor="@color/teal_700"
-                app:strokeWidth="4dp"/>
-
-            <!--<ImageButton
-                android:id="@+id/profile_image"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_centerVertical="true"
-                android:background="@color/white"
-                android:scaleType="centerCrop"
-                android:src="@drawable/profile_dummy_image" />!-->
-
-            <TextView
-                android:id="@+id/profile_full_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="20dp"
-                android:layout_toRightOf="@id/profile_image"
-                android:fontFamily="@font/bungee"
-                android:includeFontPadding="false"
-                android:text="Dummy text"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/profile_username_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/profile_full_name"
-                android:layout_marginStart="20dp"
-                android:layout_toRightOf="@id/profile_image"
-                android:includeFontPadding="false"
-                android:text="Dummy username"
-                android:textSize="24sp" />
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="0dp">
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="0dp"
-                android:layout_height="160dp"
-                android:layout_weight="1">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/profile_rating_picture"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/rating"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/profile_pts"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/bungee"
-                        android:text="123"
-                        android:textSize="20sp"
-                        app:layout_constraintEnd_toEndOf="@+id/profile_rating_picture"
-                        app:layout_constraintStart_toStartOf="@+id/profile_rating_picture"
-                        app:layout_constraintTop_toBottomOf="@+id/profile_rating_picture" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/profile_pts"
-                        android:fontFamily="@font/bungee"
-                        android:text="Points"
-                        android:textSize="20sp"
-                        android:layout_marginBottom="15dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@+id/profile_pts"
-                        app:layout_constraintStart_toStartOf="@+id/profile_pts"
-                        app:layout_constraintTop_toBottomOf="@+id/profile_pts" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:padding="5dp"
-            android:orientation="vertical">
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/profile_username"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:boxBackgroundColor="@android:color/transparent"
-                android:background="@android:color/transparent"
-                android:hint="Username"
-                android:backgroundTint="@color/white">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp">
+
+                <ImageView
+                    android:contentDescription="@string/profile_star_picture"
+                    android:id="@+id/profile_rating_picture"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="40dp"
+                    android:src="@drawable/profile_stars"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/profile_pts"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/user48px"
-                    android:drawablePadding="10dp"
-                    android:lines="1"
-                    />
-            </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/profile_email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:boxBackgroundColor="@android:color/transparent"
-                android:background="@android:color/transparent"
-                android:hint="Email"
-                android:backgroundTint="@color/white">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/email"
-                    android:drawablePadding="10dp"
-                    android:lines="1"
-                    android:inputType="textEmailAddress"
-                    />
-            </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/profile_phone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:boxBackgroundColor="@android:color/transparent"
-                android:background="@android:color/transparent"
-                android:hint="Phone"
-                android:backgroundTint="@color/white">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="phone"
-                    android:drawableStart="@drawable/phone"
-                    android:drawablePadding="10dp"
-                    android:lines="1"
-                    />
-            </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/profile_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:boxBackgroundColor="@android:color/transparent"
-                android:background="@android:color/transparent"
-                android:hint="Password"
-                android:backgroundTint="@color/white">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/password"
-                    android:drawablePadding="10dp"
-                    />
-            </com.google.android.material.textfield.TextInputLayout>
-            <Button
-                android:id="@+id/profile_update"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Update"
-                android:layout_marginTop="20dp"
-                android:fontFamily="@font/bungee"/>
-            <Button
-                android:id="@+id/profile_logout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Logout"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/bungee"/>
-        </LinearLayout>
+                    android:fontFamily="@font/bungee"
+                    android:text="@string/profile_pts"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toEndOf="@+id/profile_rating_picture"
+                    app:layout_constraintStart_toStartOf="@+id/profile_rating_picture"
+                    app:layout_constraintTop_toBottomOf="@+id/profile_rating_picture" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/profile_pts"
+                    android:layout_marginBottom="15dp"
+                    android:fontFamily="@font/bungee"
+                    android:text="@string/profile_pts_count"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/profile_pts"
+                    app:layout_constraintStart_toStartOf="@+id/profile_pts"
+                    app:layout_constraintTop_toBottomOf="@+id/profile_pts" />
 
+                <ImageView
+                    android:contentDescription="@string/profile_add_marker_pictur"
+                    android:id="@+id/profile_submission_picture"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginEnd="40dp"
+                    android:backgroundTint="@color/teal_700"
+                    android:src="@drawable/submissions"
+                    app:layout_constraintBottom_toBottomOf="@+id/profile_rating_picture"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/profile_rating_picture" />
+
+                <TextView
+                    android:id="@+id/profile_submissions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/bungee"
+                    android:text="@string/submissions_count"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toEndOf="@id/profile_submission_picture"
+                    app:layout_constraintStart_toStartOf="@id/profile_submission_picture"
+                    app:layout_constraintTop_toBottomOf="@id/profile_submission_picture" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:fontFamily="@font/bungee"
+                    android:text="@string/submissions_text"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/profile_submissions"
+                    app:layout_constraintStart_toStartOf="@id/profile_submissions"
+                    app:layout_constraintTop_toBottomOf="@id/profile_submissions" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:orientation="vertical"
+        android:padding="5dp">
 
-</FrameLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/profile_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:backgroundTint="@color/white"
+            android:hint="@string/profile_username_hint"
+            app:boxBackgroundColor="@android:color/transparent"
+            app:hintTextColor="#6BA333">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/user"
+                android:drawablePadding="10dp"
+                android:lines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/profile_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:backgroundTint="@color/white"
+            android:hint="@string/profile_email_hint"
+            app:boxBackgroundColor="@android:color/transparent"
+            app:hintTextColor="#6BA333">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/email"
+                android:drawablePadding="10dp"
+                android:inputType="textEmailAddress"
+                android:lines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/profile_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:backgroundTint="@color/white"
+            android:hint="@string/profile_phone_hint"
+            app:boxBackgroundColor="@android:color/transparent"
+            app:hintTextColor="#6BA333">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/phone"
+                android:drawablePadding="10dp"
+                android:inputType="phone"
+                android:lines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/profile_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:backgroundTint="@color/white"
+            android:hint="@string/profile_password_hint"
+            app:boxBackgroundColor="@android:color/transparent"
+            app:hintTextColor="#6BA333">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/password"
+                android:drawablePadding="10dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/profile_update"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="#6BA333"
+            android:fontFamily="@font/bungee"
+            android:text="@string/profile_update_button_text" />
+
+        <Button
+            android:id="@+id/profile_logout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:backgroundTint="#6BA333"
+            android:fontFamily="@font/bungee"
+            android:text="@string/profile_logout_button_text" />
+    </LinearLayout>
+
+
+</LinearLayout>

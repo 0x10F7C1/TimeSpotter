@@ -2,7 +2,6 @@ package com.example.timespotter.Activities;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
@@ -10,19 +9,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.example.timespotter.Adapters.MarkerInfoAdapter;
 import com.example.timespotter.DataModels.Place;
@@ -38,13 +34,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+import com.permissionx.guolindev.PermissionX;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -93,38 +88,38 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        _DatePicker = MaterialDatePicker.Builder.datePicker().setTitleText("Select date").build();
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         user = (User) getIntent().getSerializableExtra("user");
 
-        _AddPlace = findViewById(R.id.add_place);
-        _FilterButton = findViewById(R.id.filter_button);
-
-        initFilterDialog();
-
-        _FilterButton.setOnClickListener(view -> {
-            _FilterDialog.show();
-        });
-
-        _AddPlace.setOnClickListener(view -> {
-            addPlace();
-        });
-
-        _Rate = findViewById(R.id.rate);
-        _Rate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (_Marker != null && _Marker.getMarker().isInfoWindowShown()) {
-                    initRateDialog();
-                    _RateDialog.show();
-                } else {
-                    Toast.makeText(MapActivity.this, "Select a marker", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
+        bindViews();
+        registerCallbackListeners();
         getLocationPermission();
         mapActivityDb.loadMarkers(user);
+    }
+
+    private void bindViews() {
+        _AddPlace = findViewById(R.id.add_place);
+        _FilterButton = findViewById(R.id.filter_button);
+        _Rate = findViewById(R.id.rate);
+    }
+
+    private void registerCallbackListeners() {
+        _AddPlace.setOnClickListener(this::addPlace);
+        _FilterButton.setOnClickListener(view -> {
+            initFilterDialog();
+            _FilterDialog.show();
+        });
+        _Rate.setOnClickListener(this::rateBtnOnClick);
+    }
+
+    private void rateBtnOnClick(View view) {
+        if (_Marker != null && _Marker.getMarker().isInfoWindowShown()) {
+            initRateDialog();
+            _RateDialog.show();
+        } else {
+            Toast.makeText(MapActivity.this, "Select a marker", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void initFilterDialog() {
@@ -148,61 +143,38 @@ public class MapActivity extends AppCompatActivity {
         typeText = customDialog.findViewById(R.id.type_filter_text);
         radiusText = customDialog.findViewById(R.id.radius_filter_text);
         dateCheckBox = customDialog.findViewById(R.id.date_filter_checkbox);
+        _DatePicker = MaterialDatePicker.Builder.datePicker().build();
 
         filterBtn = customDialog.findViewById(R.id.filter_button);
 
-        _DatePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Long>() {
-            @Override
-            public void onPositiveButtonClick(Long selection) {
-                calendar.setTimeInMillis(selection);
-                if (DATE_PICKER == START_DATE_PICKER) {
-                    startDay = calendar.get(Calendar.DAY_OF_MONTH);
-                    startMonth = calendar.get(Calendar.MONTH) + 1;
-                    startYear = calendar.get(Calendar.YEAR);
-                    startDateText.setText(startDay + "/" + startMonth + "/" + startYear);
-                } else {
-                    endDay = calendar.get(Calendar.DAY_OF_MONTH);
-                    endMonth = calendar.get(Calendar.MONTH) + 1;
-                    endYear = calendar.get(Calendar.YEAR);
-                    endDateText.setText(endDay + "/" + endMonth + "/" + endYear);
-                }
-            }
-        });
-        startDateText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DATE_PICKER = START_DATE_PICKER;
-                _DatePicker.show(getSupportFragmentManager(), "DatePicker");
-            }
+        startDateText.setOnClickListener(view -> {
+            DATE_PICKER = START_DATE_PICKER;
+            _DatePicker.show(getSupportFragmentManager(), "DatePicker");
         });
         endDateText.setOnClickListener(view -> {
             DATE_PICKER = END_DATE_PICKER;
             _DatePicker.show(getSupportFragmentManager(), "Different fragment");
         });
-        usernameCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                usernameText.setEnabled(compoundButton.isChecked());
+        _DatePicker.addOnPositiveButtonClickListener(selection -> {
+            calendar.setTimeInMillis(selection);
+            if (DATE_PICKER == START_DATE_PICKER) {
+                startDay = calendar.get(Calendar.DAY_OF_MONTH);
+                startMonth = calendar.get(Calendar.MONTH) + 1;
+                startYear = calendar.get(Calendar.YEAR);
+                startDateText.setText(startDay + "/" + startMonth + "/" + startYear);
+            } else {
+                endDay = calendar.get(Calendar.DAY_OF_MONTH);
+                endMonth = calendar.get(Calendar.MONTH) + 1;
+                endYear = calendar.get(Calendar.YEAR);
+                endDateText.setText(endDay + "/" + endMonth + "/" + endYear);
             }
         });
-        typeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                typeText.setEnabled(compoundButton.isChecked());
-            }
-        });
-        radiusCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                radiusText.setEnabled(compoundButton.isChecked());
-            }
-        });
-        dateCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                startDateText.setEnabled(compoundButton.isChecked());
-                endDateText.setEnabled(compoundButton.isChecked());
-            }
+        usernameCheckBox.setOnCheckedChangeListener((compoundButton, b) -> usernameText.setEnabled(compoundButton.isChecked()));
+        typeCheckBox.setOnCheckedChangeListener((compoundButton, b) -> typeText.setEnabled(compoundButton.isChecked()));
+        radiusCheckBox.setOnCheckedChangeListener((compoundButton, b) -> radiusText.setEnabled(compoundButton.isChecked()));
+        dateCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
+            startDateText.setEnabled(compoundButton.isChecked());
+            endDateText.setEnabled(compoundButton.isChecked());
         });
         filterBtn.setOnClickListener(view -> {
             boolean usernameFilter, typeFilter, radiusFilter, dateRangeFilter;
@@ -377,7 +349,7 @@ public class MapActivity extends AppCompatActivity {
         mapActivityDb.excludeUserMarker(place.getKey());
     }
 
-    private void addPlace() {
+    private void addPlace(View view) {
         Task<Location> locationTask = _FusedClient.getLastLocation();
         locationTask.addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -399,13 +371,10 @@ public class MapActivity extends AppCompatActivity {
             _GoogleMap = googleMap;
             _GoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
             _GoogleMap.setInfoWindowAdapter(new MarkerInfoAdapter(MapActivity.this));
-            _GoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(@NonNull Marker marker) {
-                    marker.showInfoWindow();
-                    _Marker.setMarker(marker);
-                    return true;
-                }
+            _GoogleMap.setOnMarkerClickListener(marker -> {
+                marker.showInfoWindow();
+                _Marker.setMarker(marker);
+                return true;
             });
             Log.d(TAG, "Map object acquired");
 
@@ -445,33 +414,18 @@ public class MapActivity extends AppCompatActivity {
     }
 
     private void getLocationPermission() {
-        String[] permissions = {FINE_LOCATION, COARSE_LOCATION};
-        if (ContextCompat.checkSelfPermission(this, FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this, COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (PermissionX.isGranted(this, FINE_LOCATION) && PermissionX.isGranted(this, COARSE_LOCATION)) {
             _LocationEnabled = true;
             initMap();
         } else {
-            ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        _LocationEnabled = false;
-
-        switch (requestCode) {
-            case LOCATION_PERMISSION_REQUEST_CODE:
-                if (grantResults.length > 0) {
-                    for (int i = 0; i < grantResults.length; i++) {
-                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                            _LocationEnabled = false;
-                            return;
+            PermissionX.init(this)
+                    .permissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    .request((allGranted, grantedList, deniedList) -> {
+                        if (allGranted) {
+                            _LocationEnabled = true;
+                            initMap();
                         }
-                    }
-                    _LocationEnabled = true;
-                    initMap();
-                }
+                    });
         }
     }
 
@@ -480,9 +434,9 @@ public class MapActivity extends AppCompatActivity {
         LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
         BitmapDescriptor markerIcon = null;
         if (place.getType().equals("restoran")) {
-            markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.restaurant48px);
+            //markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.restaurant48px);
         } else if (place.getType().equals("biblioteka")) {
-            markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.library48px);
+            //markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.library48px);
         }
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(latLng)

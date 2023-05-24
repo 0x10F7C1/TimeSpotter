@@ -10,9 +10,9 @@ import androidx.fragment.app.Fragment;
 import com.example.timespotter.R;
 
 public class TableFragment extends Fragment {
-
     public TableFragment() {
     }
+
     public static TableFragment newInstance() {
         TableFragment fragment = new TableFragment();
         return fragment;

@@ -21,6 +21,20 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="table">Table</string>
+    <string name="profile_full_name">Dummy text</string>
+    <string name="profile_username">Dummy username</string>
+    <string name="profile_star_picture">profile_star_picture</string>
+    <string name="profile_pts">123</string>
+    <string name="profile_pts_count">Points</string>
+    <string name="profile_add_marker_pictur">profile_add_marker_pictur</string>
+    <string name="submissions_count">123</string>
+    <string name="submissions_text">Submissions</string>
+    <string name="profile_username_hint">Username</string>
+    <string name="profile_email_hint">Email</string>
+    <string name="profile_phone_hint">Phone</string>
+    <string name="profile_password_hint">Password</string>
+    <string name="profile_update_button_text">Update</string>
+    <string name="profile_logout_button_text">Logout</string>
 
     <string-array name="place_types">
         <item>Restoran</item>

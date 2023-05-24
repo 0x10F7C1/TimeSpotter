@@ -24,8 +24,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-//TODO: RESITI BUG GDE JE SVIM POLJIMA .length() == 0 i onda azurira podatke
 public class ProfileFragment extends Fragment {
     private static final int PHOTO_PICKER = 2;
     private Button _UpdateProfile, _LogoutProfile;
@@ -33,13 +31,11 @@ public class ProfileFragment extends Fragment {
     private TextView _UserUsernameText, _UserFullNameText, _UserPtsText;
     private CircleImageView _UserProfileImage;
     private User user;
-    private MyProfileEvent.AppendUser appendUserResult;
-    private MyProfileEvent.RemoveUser removeUserResult;
 
     public ProfileFragment() {
     }
 
-    public static ProfileFragment newInstance(String param1, String param2) {
+    public static ProfileFragment newInstance() {
         ProfileFragment fragment = new ProfileFragment();
         return fragment;
     }
@@ -193,27 +189,8 @@ public class ProfileFragment extends Fragment {
             return true;
         }
     }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUserAppendEvent(MyProfileEvent.AppendUser result) {
-        appendUserResult = result;
-        if (removeUserResult != null) {
-            appendUserResult = null;
-            removeUserResult = null;
-            Intent intent = new Intent(getContext(), MainActivity.class);
-            startActivity(intent);
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUserRemoveEvent(MyProfileEvent.RemoveUser result) {
-        removeUserResult = result;
-        if (appendUserResult != null) {
-            appendUserResult = null;
-            removeUserResult = null;
-            Intent intent = new Intent(getContext(), MainActivity.class);
-            startActivity(intent);
-        }
+    public void onUserUpdatedEvent(MyProfileEvent.UserUpdate result) {
     }
 
     @Override

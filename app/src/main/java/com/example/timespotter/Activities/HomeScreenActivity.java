@@ -1,5 +1,6 @@
 package com.example.timespotter.Activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.WindowManager;
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.timespotter.DataModels.User;
 import com.example.timespotter.Fragments.LeaderboardFragment;
 import com.example.timespotter.Fragments.ProfileFragment;
+import com.example.timespotter.Fragments.TableFragment;
 import com.example.timespotter.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -18,7 +20,7 @@ public class HomeScreenActivity extends AppCompatActivity {
     public static User user;
     private final LeaderboardFragment _LeaderboardFragment = new LeaderboardFragment();
     private final ProfileFragment _Profile = new ProfileFragment();
-    //private ChipNavigationBar _BottomNav;
+    private final TableFragment _Table = new TableFragment();
     private BottomNavigationView _BottomNav;
 
     @Override
@@ -45,6 +47,7 @@ public class HomeScreenActivity extends AppCompatActivity {
         _BottomNav.setOnItemSelectedListener(this::bottomNavOnItemSelected);
     }
 
+    @SuppressLint("NonConstantResourceId")
     private boolean bottomNavOnItemSelected(@NonNull android.view.MenuItem item/*int position*/) {
         switch (item.getItemId()) {
             case R.id.leaderboard:
@@ -57,7 +60,9 @@ public class HomeScreenActivity extends AppCompatActivity {
                 intent.putExtra("user", user);
                 startActivity(intent);
                 return true;
-            //break;
+            case R.id.table:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, _Table).commit();
+                return true;
             case R.id.profile:
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("user", user);

@@ -22,10 +22,9 @@ public class MainActivity extends AppCompatActivity {
     private final MainActivityDb mainActivityDb = new MainActivityDb();
     //TODO -> Leaderboards: prolepsati UI
     //TODO -> Filter: resiti bug gde ne skriva jedan od Markera
-    //TODO -> tabela za bottom nav
-    //TODO -> LocationTemplate poboljsati UI
+    //TODO -> implementirati tabelu (ili kao recycler view ili kao TableLayout)
     //TODO -> Remember me implementirati
-    //TODO -> Progres inidikator na stari koje cekaju na bazu
+    //TODO -> Progres inidikator na stvari koje cekaju na bazu
     private Button _Login, _SignUp, _ForgetPass;
     private TextInputLayout _Username, _Password;
 

@@ -5,10 +5,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -19,6 +19,8 @@ import com.example.timespotter.DataModels.User;
 import com.example.timespotter.DbContexts.LocationTemplateActivityDb;
 import com.example.timespotter.Events.LocationTemplateActivityEvent;
 import com.example.timespotter.R;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 
@@ -33,15 +35,14 @@ public class LocationTemplateActivity extends AppCompatActivity {
     private static final String TAG = LocationTemplateActivity.class.getSimpleName();
     private final String _ImageId = "";
     private final LocationTemplateActivityDb locationTemplateActivityDb = new LocationTemplateActivityDb();
-    private EditText _PlaceName, _PlaceWebsite, _PlacePhoneNum;
+    //private EditText _PlaceName, _PlaceWebsite, _PlacePhoneNum;
+    private TextInputLayout _PlaceName, _PlaceWebsite, _PlacePhoneNum;
     private ImageButton _StartDateBtn, _CloseDateBtn;
     private TextView _StartDateText, _CloseDateText;
-    private Button _UploadBtn, _CreateBtn, _CancelBtn;
-    private Spinner _PlaceTypeSpinner;
+    private MaterialButton _UploadBtn, _CreateBtn, _CancelBtn;
+    private AutoCompleteTextView _MaterialSpinner;
     private MaterialTimePicker _TimePicker;
     private Uri _PlaceImageUri;
-    private String _Username;
-    private String _PartyId;
     private User user;
 
     @Override
@@ -49,8 +50,9 @@ public class LocationTemplateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_template);
 
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         user = (User) getIntent().getSerializableExtra("user");
-        _Username = getIntent().getStringExtra("username");
 
         bindViews();
         registerCallbackListeners();
@@ -67,7 +69,15 @@ public class LocationTemplateActivity extends AppCompatActivity {
         _CancelBtn = findViewById(R.id.cancel);
         _StartDateText = findViewById(R.id.start_date_text);
         _CloseDateText = findViewById(R.id.close_date_text);
-        _PlaceTypeSpinner = findViewById(R.id.place_type);
+        _MaterialSpinner = findViewById(R.id.material_spinner);
+        String[] res = new String[]{"Restoran"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_dropdown_item_1line,  // Use a built-in layout for the dropdown items
+                res// The array of items to display
+        );
+
+        _MaterialSpinner.setAdapter(adapter);
     }
 
     private void registerCallbackListeners() {
@@ -86,10 +96,10 @@ public class LocationTemplateActivity extends AppCompatActivity {
 
     private void createBtnOnClick(View view) {
         String name, type, website, phone, startTime, closeTime;
-        name = _PlaceName.getText().toString();
-        type = _PlaceTypeSpinner.getSelectedItem().toString().toLowerCase();
-        website = _PlaceWebsite.getText().toString();
-        phone = _PlacePhoneNum.getText().toString();
+        name = _PlaceName.getEditText().getText().toString();
+        //type = _PlaceTypeSpinner.getSelectedItem().toString().toLowerCase();
+        website = _PlaceWebsite.getEditText().getText().toString();
+        phone = _PlacePhoneNum.getEditText().getText().toString();
         startTime = _StartDateText.getText().toString();
         closeTime = _CloseDateText.getText().toString();
 
@@ -98,9 +108,11 @@ public class LocationTemplateActivity extends AppCompatActivity {
         int month = currentDate.getMonthValue();
         int year = currentDate.getYear();
 
+        String tip = "Restoran";
+
         Place place = new Place("",
                 name,
-                type,
+                tip,
                 website,
                 phone,
                 startTime,

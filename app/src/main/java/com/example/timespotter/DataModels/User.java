@@ -1,5 +1,8 @@
 package com.example.timespotter.DataModels;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.io.Serializable;
 
 public class User implements Serializable {
@@ -8,8 +11,6 @@ public class User implements Serializable {
     private String email;
     private String password;
     private String phone;
-
-    //da li moze kao Long ili Integer?
     private Long points;
     private String key;
 
@@ -94,8 +95,20 @@ public class User implements Serializable {
         this.key = key;
     }
 
+    @NonNull
+    @Override
     public String toString() {
         return "Name: " + name + "\n" + "Username: " + username + "\n" + "Email: " + email + "\n"
                 + "Password: " + password + "\n" + "Phone: " + phone + "\n" + "Points: " + points;
+    }
+
+    public static boolean areUsersEqual(User u1, User u2) {
+        return u1.username.equals(u2.username)
+                && u1.email.equals(u2.email)
+                && u1.phone.equals(u2.phone)
+                && u1.password.equals(u2.password)
+                && u1.name.equals(u2.name)
+                && u1.points.equals(u2.points)
+                && u1.key.equals(u2.key);
     }
 }

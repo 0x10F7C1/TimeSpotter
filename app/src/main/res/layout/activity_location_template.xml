@@ -4,115 +4,187 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="10dp"
+    android:layout_margin="5dp"
     tools:context=".Activities.LocationTemplateActivity">
 
-    <EditText
-        android:id="@+id/place_name"
-        android:layout_width="match_parent"
+    <com.google.android.material.textview.MaterialTextView
+        android:drawableEnd="@drawable/add_marker"
+        android:id="@+id/header_text"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:hint="Place name"
-        android:textSize="25sp"
+        android:fontFamily="@font/bungee"
+        android:gravity="center"
+        android:text="Create your marker"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Spinner
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/place_name"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:hintEnabled="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header_text">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:hint="Place name"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/place_type"
-        style="@style/Widget.AppCompat.DropDownItem.Spinner"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:entries="@array/place_types"
-        android:scrollbarSize="10dp"
-        android:spinnerMode="dialog"
-        app:layout_constraintTop_toBottomOf="@id/place_name" />
+        android:layout_marginTop="20dp"
+        app:hintEnabled="false"
+        app:layout_constraintEnd_toEndOf="@+id/place_name"
+        app:layout_constraintStart_toStartOf="@+id/place_name"
+        app:layout_constraintTop_toBottomOf="@id/place_name">
 
-    <EditText
+        <AutoCompleteTextView
+            android:hint="Select a place type"
+            android:id="@+id/material_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="none"
+            android:textSize="17sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/place_website"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:hint="Place website"
-        android:textSize="25sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/place_type" />
+        app:hintEnabled="false"
+        app:layout_constraintEnd_toEndOf="@+id/place_type"
+        app:layout_constraintStart_toStartOf="@+id/place_type"
+        app:layout_constraintTop_toBottomOf="@id/place_type">
 
-    <EditText
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textWebEditText"
+            android:hint="Place website"
+            android:textSize="17sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/place_phone"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:hint="Place phone number"
-        android:inputType="phone"
-        android:textSize="25sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/place_website" />
+        app:hintEnabled="false"
+        app:layout_constraintEnd_toEndOf="@+id/place_website"
+        app:layout_constraintStart_toStartOf="@+id/place_website"
+
+        app:layout_constraintTop_toBottomOf="@id/place_website">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="phone"
+            android:hint="Place phone"
+            android:textSize="17sp" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <ImageButton
         android:id="@+id/start_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/white"
-        android:src="@drawable/time_icon"
-        app:layout_constraintTop_toBottomOf="@id/place_phone" />
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="200dp"
+        android:background="@drawable/start_time_icon"
+        android:backgroundTint="#20C114"
+        android:contentDescription="startTimeIcon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/place_phone" />
 
     <TextView
         android:id="@+id/start_date_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="15dp"
         android:text="Open time"
         android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="@id/start_date"
         app:layout_constraintStart_toEndOf="@id/start_date"
-        app:layout_constraintTop_toBottomOf="@id/place_phone" />
+        app:layout_constraintTop_toTopOf="@+id/start_date" />
 
     <ImageButton
         android:id="@+id/close_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/white"
-        android:src="@drawable/time_icon"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/time_icon"
+        android:backgroundTint="#CA0C12"
+        android:contentDescription="closeTimeIcon"
+        app:layout_constraintStart_toStartOf="@+id/start_date"
         app:layout_constraintTop_toBottomOf="@id/start_date" />
 
     <TextView
         android:id="@+id/close_date_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="15dp"
         android:text="Close time"
         android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="@id/close_date"
         app:layout_constraintStart_toEndOf="@id/close_date"
-        app:layout_constraintTop_toBottomOf="@id/start_date_text" />
+        app:layout_constraintTop_toTopOf="@+id/close_date" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/upload_place"
-        android:layout_width="wrap_content"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:backgroundTint="#6BA333"
+        android:fontFamily="@font/bungee"
         android:text="Upload"
+        android:textColor="#F8F8F8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/close_date_text" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/create"
-        android:layout_width="wrap_content"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:backgroundTint="#6BA333"
+        android:fontFamily="@font/bungee"
         android:text="Create"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textColor="#F8F8F8"
+        app:layout_constraintEnd_toEndOf="@+id/upload_place"
+        app:layout_constraintStart_toStartOf="@+id/upload_place"
+        app:layout_constraintTop_toBottomOf="@+id/upload_place" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/cancel"
-        android:layout_width="wrap_content"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:backgroundTint="#6BA333"
+        android:fontFamily="@font/bungee"
         android:text="Cancel"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:textColor="#F8F8F8"
+        app:layout_constraintEnd_toEndOf="@+id/create"
+        app:layout_constraintStart_toStartOf="@+id/create"
+        app:layout_constraintTop_toBottomOf="@+id/create" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

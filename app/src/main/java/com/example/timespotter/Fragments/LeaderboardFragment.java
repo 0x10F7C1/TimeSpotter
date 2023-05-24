@@ -25,10 +25,10 @@ import java.util.List;
 
 public class LeaderboardFragment extends Fragment {
     private static final long DUMMY_POINTS_GENERATOR = 100;
+    private final LeaderboardFragmentDb leaderboardFragmentDb = new LeaderboardFragmentDb();
     private RecyclerView recyclerView;
     private LeaderboardAdapter adapter;
     private List<UserLeaderboard> _Users;
-    private final LeaderboardFragmentDb leaderboardFragmentDb = new LeaderboardFragmentDb();
 
     public LeaderboardFragment() {
     }

@@ -1,4 +1,4 @@
-package com.example.timespotter.GeneralActivities;
+package com.example.timespotter.Activities;
 
 import android.Manifest;
 import android.content.Intent;
@@ -28,7 +28,7 @@ import com.example.timespotter.Adapters.MarkerInfoAdapter;
 import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.DataModels.PlaceMarker;
 import com.example.timespotter.DataModels.User;
-import com.example.timespotter.DbMediators.MapActivityDb;
+import com.example.timespotter.DbContexts.MapActivityDb;
 import com.example.timespotter.Events.LeaderboardFragmentEvent;
 import com.example.timespotter.Events.MapActivityEvent;
 import com.example.timespotter.R;

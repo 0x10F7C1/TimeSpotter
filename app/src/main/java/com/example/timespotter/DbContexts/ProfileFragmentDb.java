@@ -1,4 +1,4 @@
-package com.example.timespotter.DbMediators;
+package com.example.timespotter.DbContexts;
 
 import com.example.timespotter.DataModels.User;
 import com.example.timespotter.Events.MyProfileEvent;

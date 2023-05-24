@@ -1,4 +1,4 @@
-package com.example.timespotter.GeneralActivities;
+package com.example.timespotter.Fragments;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,8 +13,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.example.timespotter.Activities.MainActivity;
 import com.example.timespotter.DataModels.User;
-import com.example.timespotter.DbMediators.ProfileFragmentDb;
+import com.example.timespotter.DbContexts.ProfileFragmentDb;
 import com.example.timespotter.Events.MyProfileEvent;
 import com.example.timespotter.R;
 import com.github.abdularis.civ.CircleImageView;

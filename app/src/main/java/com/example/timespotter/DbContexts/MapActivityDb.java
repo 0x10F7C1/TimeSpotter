@@ -1,14 +1,14 @@
-package com.example.timespotter.DbMediators;
+package com.example.timespotter.DbContexts;
 
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.timespotter.Activities.HomeScreenActivity;
 import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.DataModels.User;
 import com.example.timespotter.Events.MapActivityEvent;
-import com.example.timespotter.GeneralActivities.HomeScreenActivity;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

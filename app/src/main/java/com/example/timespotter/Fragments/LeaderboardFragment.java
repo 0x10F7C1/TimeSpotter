@@ -1,4 +1,4 @@
-package com.example.timespotter.GeneralActivities;
+package com.example.timespotter.Fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.timespotter.Adapters.LeaderboardAdapter;
 import com.example.timespotter.DataModels.UserLeaderboard;
-import com.example.timespotter.DbMediators.LeaderboardFragmentDb;
+import com.example.timespotter.DbContexts.LeaderboardFragmentDb;
 import com.example.timespotter.Events.LeaderboardFragmentEvent;
 import com.example.timespotter.R;
 
@@ -28,7 +28,7 @@ public class LeaderboardFragment extends Fragment {
     private RecyclerView recyclerView;
     private LeaderboardAdapter adapter;
     private List<UserLeaderboard> _Users;
-    private LeaderboardFragmentDb leaderboardFragmentDb = new LeaderboardFragmentDb();
+    private final LeaderboardFragmentDb leaderboardFragmentDb = new LeaderboardFragmentDb();
 
     public LeaderboardFragment() {
     }

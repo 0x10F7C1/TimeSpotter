@@ -1,4 +1,4 @@
-package com.example.timespotter.GeneralActivities;
+package com.example.timespotter.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,9 +9,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.timespotter.DbMediators.MainActivityDb;
+import com.example.timespotter.DbContexts.MainActivityDb;
 import com.example.timespotter.Events.MainActivityEvent;
-import com.example.timespotter.Events.UserLoginEvent;
 import com.example.timespotter.R;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -75,17 +74,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void makeToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void userLoginEvent(UserLoginEvent result) {
-        if (result.getStatus() == UserLoginEvent.OPERATION_SUCCESS) {
-            Intent intent = new Intent(MainActivity.this, HomeScreenActivity.class);
-            intent.putExtra("user", result.getUser());
-            startActivity(intent);
-        } else {
-            System.out.println(result.getError());
-        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

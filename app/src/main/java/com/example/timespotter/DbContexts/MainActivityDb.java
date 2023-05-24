@@ -1,4 +1,4 @@
-package com.example.timespotter.DbMediators;
+package com.example.timespotter.DbContexts;
 
 import android.util.Log;
 

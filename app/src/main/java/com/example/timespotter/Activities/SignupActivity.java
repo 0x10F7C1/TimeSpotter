@@ -1,4 +1,4 @@
-package com.example.timespotter.GeneralActivities;
+package com.example.timespotter.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,8 +9,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.timespotter.DataModels.User;
-import com.example.timespotter.DbMediators.MainActivityDb;
-import com.example.timespotter.DbMediators.SignupActivityDb;
+import com.example.timespotter.DbContexts.MainActivityDb;
+import com.example.timespotter.DbContexts.SignupActivityDb;
 import com.example.timespotter.Events.SignupActivityEvent;
 import com.example.timespotter.R;
 import com.google.android.material.button.MaterialButton;

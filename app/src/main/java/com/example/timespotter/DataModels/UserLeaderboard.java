@@ -12,7 +12,9 @@ public class UserLeaderboard implements Comparable<UserLeaderboard> {
         this.imageUri = imageUri;
         this.points = points;
     }
-    public UserLeaderboard() {}
+
+    public UserLeaderboard() {
+    }
 
     public String getUsername() {
         return username;

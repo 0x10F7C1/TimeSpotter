@@ -1,4 +1,4 @@
-package com.example.timespotter.GeneralActivities;
+package com.example.timespotter.Activities;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.DataModels.User;
-import com.example.timespotter.DbMediators.LocationTemplateActivityDb;
+import com.example.timespotter.DbContexts.LocationTemplateActivityDb;
 import com.example.timespotter.Events.LocationTemplateActivityEvent;
 import com.example.timespotter.R;
 import com.google.android.material.timepicker.MaterialTimePicker;

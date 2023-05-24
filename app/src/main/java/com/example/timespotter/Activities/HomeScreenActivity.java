@@ -1,4 +1,4 @@
-package com.example.timespotter.GeneralActivities;
+package com.example.timespotter.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,9 +8,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.timespotter.DataModels.User;
+import com.example.timespotter.Fragments.LeaderboardFragment;
+import com.example.timespotter.Fragments.ProfileFragment;
 import com.example.timespotter.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
 public class HomeScreenActivity extends AppCompatActivity {
 
@@ -49,21 +50,21 @@ public class HomeScreenActivity extends AppCompatActivity {
             case R.id.leaderboard:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, _LeaderboardFragment).commit();
                 return true;
-                //break;
+            //break;
             case R.id.discover:
                 Intent intent = new Intent(HomeScreenActivity.this, MapActivity.class);
                 intent.putExtra("username", getIntent().getStringExtra("username"));
                 intent.putExtra("user", user);
                 startActivity(intent);
                 return true;
-                //break;
+            //break;
             case R.id.profile:
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("user", user);
                 _Profile.setArguments(bundle);
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, _Profile).commit();
                 return true;
-                //break;
+            //break;
             default:
                 return false;
         }

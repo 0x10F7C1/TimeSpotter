@@ -7,7 +7,7 @@
     android:background="#fff"
     android:orientation="vertical"
     android:padding="20dp"
-    tools:context=".GeneralActivities.MainActivity">
+    tools:context=".Activities.MainActivity">
 
     <TextView
         android:id="@+id/welcomeText"

@@ -2,82 +2,132 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/purple_200">
+    android:layout_height="wrap_content"
+    android:background="@drawable/marker_window_shape"
+    android:paddingEnd="15dp">
 
     <TextView
-        android:id="@+id/window_place_name"
+        android:id="@+id/marker_creator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
-        android:maxLines="1"
-        android:text="Nesto"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/window_place_image" />
-
-    <TextView
-        android:id="@+id/window_place_website"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
-        android:text="Website: "
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/window_place_name" />
-
-    <TextView
-        android:id="@+id/window_place_phone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
-        android:text="Phone: "
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/window_place_website" />
-
-    <TextView
-        android:id="@+id/window_place_start_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
-        android:text="Opens at: "
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/window_place_phone" />
-
-    <TextView
-        android:id="@+id/window_place_close_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
-        android:text="Closes at: "
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/window_place_start_time" />
-
-    <TextView
-        android:id="@+id/window_place_metadata"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
+        android:fontFamily="@font/bungee"
         android:text="Added by: "
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/window_place_close_time" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/window_place_image"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/marker_place_name_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="5dp"
+        android:src="@drawable/add_marker"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/marker_creator" />
+
+    <TextView
+        android:id="@+id/marker_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:fontFamily="@font/bungee"
+        android:text="Place name"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/marker_place_name_icon"
+        app:layout_constraintStart_toEndOf="@id/marker_place_name_icon"
+        app:layout_constraintTop_toTopOf="@+id/marker_place_name_icon" />
+
+    <ImageView
+        android:id="@+id/marker_place_website_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:src="@drawable/web"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/marker_place_name_icon" />
+
+    <TextView
+        android:id="@+id/marker_website"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:fontFamily="@font/bungee"
+        android:text="Place website"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/marker_place_website_icon"
+        app:layout_constraintStart_toEndOf="@id/marker_place_website_icon"
+        app:layout_constraintTop_toTopOf="@+id/marker_place_website_icon" />
+
+    <ImageView
+        android:id="@+id/marker_place_phone_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:src="@drawable/phone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/marker_place_website_icon" />
+
+    <TextView
+        android:id="@+id/marker_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:fontFamily="@font/bungee"
+        android:text="Place phone"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/marker_place_phone_icon"
+        app:layout_constraintStart_toEndOf="@id/marker_place_phone_icon"
+        app:layout_constraintTop_toTopOf="@+id/marker_place_phone_icon" />
+
+    <ImageView
+        android:id="@+id/marker_place_start_time_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/start_time_icon"
+        android:backgroundTint="#20C114"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/marker_place_phone_icon" />
+
+    <TextView
+        android:id="@+id/marker_start_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:fontFamily="@font/bungee"
+        android:text="Open time"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/marker_place_start_time_icon"
+        app:layout_constraintStart_toEndOf="@id/marker_place_start_time_icon"
+        app:layout_constraintTop_toTopOf="@+id/marker_place_start_time_icon" />
+
+    <ImageView
+        android:id="@+id/marker_place_close_time_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/time_icon"
+        android:backgroundTint="#CA0C12"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/marker_place_start_time_icon" />
+
+    <TextView
+        android:id="@+id/marker_close_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:fontFamily="@font/bungee"
+        android:text="Close time"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/marker_place_close_time_icon"
+        app:layout_constraintStart_toEndOf="@id/marker_place_close_time_icon"
+        app:layout_constraintTop_toTopOf="@+id/marker_place_close_time_icon" />
 </androidx.constraintlayout.widget.ConstraintLayout>

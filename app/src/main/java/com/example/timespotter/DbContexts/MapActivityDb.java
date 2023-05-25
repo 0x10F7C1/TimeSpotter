@@ -5,7 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.timespotter.Activities.HomeScreenActivity;
+import com.example.timespotter.AppData;
 import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.DataModels.User;
 import com.example.timespotter.Events.MapActivityEvent;
@@ -81,7 +81,7 @@ public class MapActivityDb {
     public void excludeUserMarker(String placeKey) {
         database
                 .child("Excluded markers")
-                .child(HomeScreenActivity.user.getKey())
+                .child(AppData.user.getKey())
                 .child("places")
                 .child(placeKey)
                 .setValue(true)
@@ -94,12 +94,12 @@ public class MapActivityDb {
     }
 
     public void updateUserPoints(long pts) {
-        HomeScreenActivity.user.setPoints(HomeScreenActivity.user.getPoints() + pts);
+        AppData.user.setPoints(AppData.user.getPoints() + pts);
         database
                 .child("Leaderboards")
-                .child(HomeScreenActivity.user.getKey())
+                .child(AppData.user.getKey())
                 .child("points")
-                .setValue(HomeScreenActivity.user.getPoints())
+                .setValue(AppData.user.getPoints())
                 .addOnSuccessListener(unused -> {
                     EventBus.getDefault().post(new MapActivityEvent.UserPointsUpdate());
                 })
@@ -108,9 +108,9 @@ public class MapActivityDb {
                 });
         database
                 .child("Users")
-                .child(HomeScreenActivity.user.getKey())
+                .child(AppData.user.getKey())
                 .child("points")
-                .setValue(HomeScreenActivity.user.getPoints())
+                .setValue(AppData.user.getPoints())
                 .addOnSuccessListener(unused -> {
                     EventBus.getDefault().post(new MapActivityEvent.UserPointsUpdate());
                 })

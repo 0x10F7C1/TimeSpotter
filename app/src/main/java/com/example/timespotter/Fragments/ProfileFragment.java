@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.timespotter.Activities.MainActivity;
+import com.example.timespotter.AppData;
 import com.example.timespotter.DataModels.User;
 import com.example.timespotter.DbContexts.ProfileFragmentDb;
 import com.example.timespotter.Events.MyProfileEvent;
@@ -24,13 +25,14 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
 public class ProfileFragment extends Fragment {
     private static final int PHOTO_PICKER = 2;
     private Button _UpdateProfile, _LogoutProfile;
     private TextInputLayout _UsernameText, _EmailText, _PasswordText, _PhoneText;
     private TextView _UserUsernameText, _UserFullNameText, _UserPtsText;
     private CircleImageView _UserProfileImage;
-    private User user;
+    //private User user;
 
     public ProfileFragment() {
     }
@@ -59,11 +61,11 @@ public class ProfileFragment extends Fragment {
         _UserFullNameText = view.findViewById(R.id.profile_full_name);
         _UserPtsText = view.findViewById(R.id.profile_pts);
         _UserProfileImage = view.findViewById(R.id.profile_image);
-        user = (User) getArguments().getSerializable("user");
+        //user = (User) getArguments().getSerializable("user");
 
-        _UserUsernameText.setText(user.getUsername());
-        _UserFullNameText.setText(user.getName());
-        _UserPtsText.setText(user.getPoints().toString());
+        _UserUsernameText.setText(AppData.user.getUsername());
+        _UserFullNameText.setText(AppData.user.getName());
+        _UserPtsText.setText(AppData.user.getPoints().toString());
         _UpdateProfile.setOnClickListener(this::updateProfileOnClick);
         _LogoutProfile.setOnClickListener(this::logoutProfileOnClick);
         _UserProfileImage.setOnClickListener(this::changeProfileImageOnClick);
@@ -80,20 +82,21 @@ public class ProfileFragment extends Fragment {
         phone = _PhoneText.getEditText().getText().toString();
         password = _PasswordText.getEditText().getText().toString();
 
-        User newUser = User.copyUser(user);
+        User newUser = User.copyUser(AppData.user);
 
         if (validateUsername(newUser, username)
                 && validateEmail(newUser, email)
                 && validatePassword(newUser, password)
                 && validatePhoneNumber(newUser, phone)) {
-            db.updateUserProfile(user, newUser);
+            db.updateUserProfile(AppData.user, newUser);
         }
     }
 
     private void logoutProfileOnClick(View view) {
         Intent intent = new Intent(requireContext(), MainActivity.class);
-        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        getActivity().finish();
     }
 
     private void changeProfileImageOnClick(View view) {
@@ -107,11 +110,11 @@ public class ProfileFragment extends Fragment {
         if (username.length() == 0) {
             _UsernameText.setError(null);
             _UsernameText.setErrorEnabled(false);
-            newUser.setUsername(user.getUsername());
+            newUser.setUsername(AppData.user.getUsername());
             return true;
         } else if (!username.matches(noWhiteSpace)) {
             _UsernameText.setError("Whitespaces are not allowed");
-            newUser.setUsername(user.getUsername());
+            newUser.setUsername(AppData.user.getUsername());
             return false;
         } else {
             _UsernameText.setError(null);
@@ -127,11 +130,11 @@ public class ProfileFragment extends Fragment {
         if (email.isEmpty()) {
             _EmailText.setError(null);
             _EmailText.setErrorEnabled(false);
-            newUser.setEmail(user.getEmail());
+            newUser.setEmail(AppData.user.getEmail());
             return true;
         } else if (!email.matches(emailPattern)) {
             _EmailText.setError("Invalid email address");
-            newUser.setEmail(user.getEmail());
+            newUser.setEmail(AppData.user.getEmail());
             return false;
         } else {
             _EmailText.setError(null);
@@ -156,11 +159,11 @@ public class ProfileFragment extends Fragment {
         if (password.isEmpty()) {
             _PasswordText.setError(null);
             _PasswordText.setErrorEnabled(false);
-            newUser.setPassword(user.getPassword());
+            newUser.setPassword(AppData.user.getPassword());
             return true;
         } else if (!password.matches(passwordPattern)) {
             _PasswordText.setError("Weak password!");
-            newUser.setPassword(user.getPassword());
+            newUser.setPassword(AppData.user.getPassword());
             return false;
         } else {
             _PasswordText.setError(null);
@@ -176,11 +179,11 @@ public class ProfileFragment extends Fragment {
         if (phone.length() == 0) {
             _PhoneText.setError(null);
             _PhoneText.setErrorEnabled(false);
-            newUser.setPhone(user.getPhone());
+            newUser.setPhone(AppData.user.getPhone());
             return true;
         } else if (!phone.matches(noWhiteSpace)) {
             _PhoneText.setError("Whitespaces are not allowed");
-            newUser.setPhone(user.getPhone());
+            newUser.setPhone(AppData.user.getPhone());
             return false;
         } else {
             _PhoneText.setError(null);
@@ -189,6 +192,7 @@ public class ProfileFragment extends Fragment {
             return true;
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUserUpdatedEvent(MyProfileEvent.UserUpdate result) {
     }

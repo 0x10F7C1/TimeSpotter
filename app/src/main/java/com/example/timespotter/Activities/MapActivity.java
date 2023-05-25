@@ -21,9 +21,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.timespotter.Adapters.MarkerInfoAdapter;
+import com.example.timespotter.AppData;
 import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.DataModels.PlaceMarker;
-import com.example.timespotter.DataModels.User;
 import com.example.timespotter.DbContexts.MapActivityDb;
 import com.example.timespotter.Events.LeaderboardFragmentEvent;
 import com.example.timespotter.Events.MapActivityEvent;
@@ -33,7 +33,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -55,7 +54,6 @@ public class MapActivity extends AppCompatActivity {
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int EMPTY_STAR = 0;
     private static final int FILLED_STAR = 1;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 2;
     private static final float DEFAULT_ZOOM = 15f;
     private static final boolean FILTER_ON = true;
     private static final boolean FILTER_OFF = false;
@@ -64,14 +62,14 @@ public class MapActivity extends AppCompatActivity {
     private static final int USER_POINTS_UPDATE = 2;
     private static final int CREATOR_POINTS_UPDATE = 2;
     private static int DATE_PICKER;
-    private final List<PlaceMarker> _ActiveMarkers = new ArrayList<>();
+    private final List<Marker> _ActiveMarkers = new ArrayList<>();
     private final Calendar calendar = Calendar.getInstance();
     private final MapActivityDb mapActivityDb = new MapActivityDb();
     private boolean _LocationEnabled;
     private GoogleMap _GoogleMap;
     private FusedLocationProviderClient _FusedClient;
     private ImageView _AddPlace;
-    private PlaceMarker _Marker;
+    private Marker _Marker;
     private ImageView _Rate;
     private AlertDialog _RateDialog;
     private ImageButton _PlaceNameStar, _PlaceTypeStar, _PlaceWebsiteStar, _PlacePhoneStar, _PlaceTimeStar;
@@ -80,9 +78,7 @@ public class MapActivity extends AppCompatActivity {
     private ImageView _FilterButton;
     private MaterialDatePicker<Long> _DatePicker;
     private int startDay, startMonth, startYear, endDay, endMonth, endYear;
-    private User user;
     private int userPointUpdate = 0, creatorPointsUpdate = 0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,12 +86,10 @@ public class MapActivity extends AppCompatActivity {
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        user = (User) getIntent().getSerializableExtra("user");
-
         bindViews();
         registerCallbackListeners();
         getLocationPermission();
-        mapActivityDb.loadMarkers(user);
+        mapActivityDb.loadMarkers(AppData.user);
     }
 
     private void bindViews() {
@@ -114,7 +108,7 @@ public class MapActivity extends AppCompatActivity {
     }
 
     private void rateBtnOnClick(View view) {
-        if (_Marker != null && _Marker.getMarker().isInfoWindowShown()) {
+        if (_Marker != null && _Marker.isInfoWindowShown()) {
             initRateDialog();
             _RateDialog.show();
         } else {
@@ -193,17 +187,14 @@ public class MapActivity extends AppCompatActivity {
             LatLng currLatLng = new LatLng(location.getLatitude(), location.getLongitude());
             Log.d("Trenutan broj markera na mapi je: ", String.valueOf(_ActiveMarkers.size()));
             for (int i = 0; i < _ActiveMarkers.size(); i++) {
-                marker = _ActiveMarkers.get(i).getMarker();
+                marker = _ActiveMarkers.get(i);
                 System.out.println("Broj markera je " + _ActiveMarkers.size());
                 boolean showMarker = toFilterByUsername(marker, username, usernameFilter)
                         && toFilterByType(marker, type, typeFilter)
                         && toFilterByRadius(currLatLng, marker.getPosition(), radiusFilter, radius)
                         && toFilterByDateRange(marker, dateRangeFilter);
-                System.out.println("Prikazujem marker sa imenom: " + ((Place) marker.getTag()).getName());
-                System.out.println("Show marker vraca " + showMarker);
+                System.out.println("Show marker vraca: " + showMarker);
                 marker.setVisible(showMarker);
-                System.out.println("Da li se vidim? " + marker.isVisible());
-                System.out.println("Izvrsavam se na threadu: " + Thread.currentThread().getName());
             }
         });
     }
@@ -340,8 +331,8 @@ public class MapActivity extends AppCompatActivity {
         starCount += (Integer) _PlacePhoneStar.getTag();
         starCount += (Integer) _PlaceTimeStar.getTag();
 
-        Place place = (Place) _Marker.getMarker().getTag();
-        _Marker.nullifyMarker();
+        Place place = (Place) _Marker.getTag();
+        //_Marker.nullifyMarker();
         _Marker = null;
 
         mapActivityDb.updateUserPoints(2);
@@ -355,10 +346,10 @@ public class MapActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 Location currentLocation = locationTask.getResult();
                 Intent intent = new Intent(MapActivity.this, LocationTemplateActivity.class);
-                intent.putExtra("user", user);
+                //intent.putExtra("user", user);
                 intent.putExtra("longitude", currentLocation.getLongitude());
                 intent.putExtra("latitude", currentLocation.getLatitude());
-                intent.putExtra("username", getIntent().getStringExtra("username"));
+                //intent.putExtra("username", getIntent().getStringExtra("username"));
                 startActivity(intent);
             }
         });
@@ -373,7 +364,7 @@ public class MapActivity extends AppCompatActivity {
             _GoogleMap.setInfoWindowAdapter(new MarkerInfoAdapter(MapActivity.this));
             _GoogleMap.setOnMarkerClickListener(marker -> {
                 marker.showInfoWindow();
-                _Marker.setMarker(marker);
+                _Marker = marker;
                 return true;
             });
             Log.d(TAG, "Map object acquired");
@@ -432,22 +423,26 @@ public class MapActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMarkerAddEvent(Place place) {
         LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
-        BitmapDescriptor markerIcon = null;
-        if (place.getType().equals("restoran")) {
-            //markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.restaurant48px);
-        } else if (place.getType().equals("biblioteka")) {
-            //markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.library48px);
-        }
+        /*BitmapDescriptor markerIcon = null;
+        if (place.getType().equals("Library")) {
+            markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.library_marker);
+        } else if (place.getType().equals("Caffe")) {
+            markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.cafe_marker);
+        } else if (place.getType().equals("Hospital")) {
+            System.out.println("ovo je ok");
+            markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.hospital_marker);
+        } else if (place.getType().equals("Pizzeria")) {
+            markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.pizzeria_marker);
+        }*/
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(latLng)
                 .title(place.getName())
-                .icon(markerIcon);
+                .icon(null);
 
         Marker marker = _GoogleMap.addMarker(markerOptions);
         marker.setTag(place);
-        PlaceMarker placeMarker = new PlaceMarker(marker, _ActiveMarkers.size());
-        _Marker = placeMarker;
-        _ActiveMarkers.add(placeMarker);
+        _Marker = marker;
+        _ActiveMarkers.add(marker);
         Log.d("Marker dodat", "Marker id " + place.getKey());
     }
 
@@ -474,7 +469,6 @@ public class MapActivity extends AppCompatActivity {
             }
         }
     }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUserMarkerExcluded(MapActivityEvent.UserMarkerExcluded result) {
         Log.d(TAG, "Marker excluded for user");
@@ -490,5 +484,11 @@ public class MapActivity extends AppCompatActivity {
     protected void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        System.out.println(TAG + " " + "Brisem se!");
+        super.onDestroy();
     }
 }

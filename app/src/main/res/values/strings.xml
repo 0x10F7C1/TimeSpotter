@@ -37,8 +37,18 @@
     <string name="profile_logout_button_text">Logout</string>
 
     <string-array name="place_types">
-        <item>Restoran</item>
-        <item>Biblioteka</item>
-        <item>Kafic</item>
+        <item>Library</item>
+        <item>Caffe</item>
+        <item>Florist</item>
+        <item>Hospital</item>
+        <item>Pizzeria</item>
     </string-array>
+
+    <array name="place_marker_icons">
+        <item>@drawable/library_marker</item>
+        <item>@drawable/cafe_marker</item>
+        <item>@drawable/florist_marker</item>
+        <item>@drawable/hospital_marker</item>
+        <item>@drawable/pizzeria_marker</item>
+    </array>
 </resources>

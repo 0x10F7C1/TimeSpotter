@@ -20,11 +20,10 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+//1. mesto -> yellow border, 2. mesto -> blue border, 3. mesto -> brown border
 public class LeaderboardFragment extends Fragment {
-    private static final long DUMMY_POINTS_GENERATOR = 100;
     private final LeaderboardFragmentDb leaderboardFragmentDb = new LeaderboardFragmentDb();
     private RecyclerView recyclerView;
     private LeaderboardAdapter adapter;
@@ -52,25 +51,9 @@ public class LeaderboardFragment extends Fragment {
         adapter = new LeaderboardAdapter(requireContext(), _Users);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(adapter);
-
-        //loadDummyUsers();
         leaderboardFragmentDb.loadLeaderboard(_Users);
 
         return view;
-    }
-
-    private void loadDummyUsers() {
-        _Users.add(new UserLeaderboard("Nesto", "Okeej", "", 100l));
-        _Users.add(new UserLeaderboard("Nesto", "Okeej", "", 200l));
-        _Users.add(new UserLeaderboard("Nesto", "Okeej", "", 90l));
-        _Users.add(new UserLeaderboard("Nesto", "Okeej", "", 30l));
-        sortDummyUsers();
-        //adapter.notifyDataSetChanged();
-    }
-
-    private void sortDummyUsers() {
-        Collections.sort(_Users, Collections.reverseOrder());
-        adapter.notifyDataSetChanged();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

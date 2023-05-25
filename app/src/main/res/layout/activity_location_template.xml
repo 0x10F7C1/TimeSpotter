@@ -4,16 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
     android:layout_margin="5dp"
+    android:padding="10dp"
     tools:context=".Activities.LocationTemplateActivity">
 
     <com.google.android.material.textview.MaterialTextView
-        android:drawableEnd="@drawable/add_marker"
         android:id="@+id/header_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:drawableEnd="@drawable/add_marker"
         android:fontFamily="@font/bungee"
         android:gravity="center"
         android:text="Create your marker"
@@ -28,6 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        app:boxStrokeColor="#20C114"
         app:hintEnabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,8 +37,8 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="17sp"
-            android:hint="Place name"/>
+            android:hint="Place name"
+            android:textSize="17sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -46,17 +47,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        app:boxStrokeColor="#20C114"
         app:hintEnabled="false"
         app:layout_constraintEnd_toEndOf="@+id/place_name"
         app:layout_constraintStart_toStartOf="@+id/place_name"
         app:layout_constraintTop_toBottomOf="@id/place_name">
 
         <AutoCompleteTextView
-            android:hint="Select a place type"
             android:id="@+id/material_spinner"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:hint="Select a place type"
             android:inputType="none"
             android:textSize="17sp" />
 
@@ -68,6 +70,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        app:boxStrokeColor="#20C114"
         app:hintEnabled="false"
         app:layout_constraintEnd_toEndOf="@+id/place_type"
         app:layout_constraintStart_toStartOf="@+id/place_type"
@@ -76,8 +79,8 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textWebEditText"
             android:hint="Place website"
+            android:inputType="textWebEditText"
             android:textSize="17sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -87,17 +90,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        app:boxStrokeColor="#20C114"
         app:hintEnabled="false"
         app:layout_constraintEnd_toEndOf="@+id/place_website"
         app:layout_constraintStart_toStartOf="@+id/place_website"
-
         app:layout_constraintTop_toBottomOf="@id/place_website">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="phone"
             android:hint="Place phone"
+            android:inputType="phone"
             android:textSize="17sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -148,31 +151,18 @@
         app:layout_constraintTop_toTopOf="@+id/close_date" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/upload_place"
+        android:id="@+id/create"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:backgroundTint="#6BA333"
         android:fontFamily="@font/bungee"
-        android:text="Upload"
+        android:text="Create"
         android:textColor="#F8F8F8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/close_date_text" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/create"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="#6BA333"
-        android:fontFamily="@font/bungee"
-        android:text="Create"
-        android:textColor="#F8F8F8"
-        app:layout_constraintEnd_toEndOf="@+id/upload_place"
-        app:layout_constraintStart_toStartOf="@+id/upload_place"
-        app:layout_constraintTop_toBottomOf="@+id/upload_place" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/cancel"
@@ -186,5 +176,18 @@
         app:layout_constraintEnd_toEndOf="@+id/create"
         app:layout_constraintStart_toStartOf="@+id/create"
         app:layout_constraintTop_toBottomOf="@+id/create" />
+
+    <ProgressBar
+        style="@style/Widget.MaterialComponents.CircularProgressIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:trackColor="@color/app_green"
+        android:id="@+id/progress_bar_template"
+        android:progress="0"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

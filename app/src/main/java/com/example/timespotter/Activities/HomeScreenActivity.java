@@ -8,7 +8,6 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.timespotter.DataModels.User;
 import com.example.timespotter.Fragments.LeaderboardFragment;
 import com.example.timespotter.Fragments.ProfileFragment;
 import com.example.timespotter.Fragments.TableFragment;
@@ -16,8 +15,7 @@ import com.example.timespotter.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HomeScreenActivity extends AppCompatActivity {
-
-    public static User user;
+    private static final String TAG = HomeScreenActivity.class.getSimpleName();
     private final LeaderboardFragment _LeaderboardFragment = new LeaderboardFragment();
     private final ProfileFragment _Profile = new ProfileFragment();
     private final TableFragment _Table = new TableFragment();
@@ -27,9 +25,9 @@ public class HomeScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
-        user = (User) getIntent().getSerializableExtra("user");
+        //user = (User) getIntent().getSerializableExtra("user");
         Bundle bundle = new Bundle();
-        bundle.putString("username", getIntent().getStringExtra("username"));
+        //bundle.putString("username", getIntent().getStringExtra("username"));
         _Profile.setArguments(bundle);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -43,12 +41,11 @@ public class HomeScreenActivity extends AppCompatActivity {
     }
 
     private void registerCallbacks() {
-        //_BottomNav.setOnItemSelectedListener(this::bottomNavOnItemSelected);
         _BottomNav.setOnItemSelectedListener(this::bottomNavOnItemSelected);
     }
 
     @SuppressLint("NonConstantResourceId")
-    private boolean bottomNavOnItemSelected(@NonNull android.view.MenuItem item/*int position*/) {
+    private boolean bottomNavOnItemSelected(@NonNull android.view.MenuItem item) {
         switch (item.getItemId()) {
             case R.id.leaderboard:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, _LeaderboardFragment).commit();
@@ -56,8 +53,8 @@ public class HomeScreenActivity extends AppCompatActivity {
             //break;
             case R.id.discover:
                 Intent intent = new Intent(HomeScreenActivity.this, MapActivity.class);
-                intent.putExtra("username", getIntent().getStringExtra("username"));
-                intent.putExtra("user", user);
+                //intent.putExtra("username", getIntent().getStringExtra("username"));
+                //intent.putExtra("user", user);
                 startActivity(intent);
                 return true;
             case R.id.table:
@@ -65,7 +62,7 @@ public class HomeScreenActivity extends AppCompatActivity {
                 return true;
             case R.id.profile:
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("user", user);
+                //bundle.putSerializable("user", user);
                 _Profile.setArguments(bundle);
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, _Profile).commit();
                 return true;
@@ -73,6 +70,12 @@ public class HomeScreenActivity extends AppCompatActivity {
             default:
                 return false;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        System.out.println(TAG + " " + "Brisem se!");
+        super.onDestroy();
     }
 
 }

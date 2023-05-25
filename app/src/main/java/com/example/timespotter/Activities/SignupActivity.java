@@ -22,6 +22,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class SignupActivity extends AppCompatActivity {
 
+    private static final String TAG = SignupActivity.class.getSimpleName();
     private static final int USER_REGISTER_SUCCESS = 2;
     private static int userRegisterCount = 0;
     private final MainActivityDb mainActivityDb = new MainActivityDb();
@@ -180,5 +181,11 @@ public class SignupActivity extends AppCompatActivity {
     protected void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        System.out.println(TAG + " " + "Brisem se!");
+        super.onDestroy();
     }
 }

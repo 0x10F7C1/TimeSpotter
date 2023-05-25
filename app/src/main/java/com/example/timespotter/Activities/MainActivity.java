@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.timespotter.AppData;
 import com.example.timespotter.DbContexts.MainActivityDb;
 import com.example.timespotter.Events.MainActivityEvent;
 import com.example.timespotter.R;
@@ -19,12 +20,15 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = MainActivity.class.getSimpleName();
     private final MainActivityDb mainActivityDb = new MainActivityDb();
-    //TODO -> Leaderboards: prolepsati UI
+    //TODO -> Dodati submissions na User model
     //TODO -> Filter: resiti bug gde ne skriva jedan od Markera
     //TODO -> implementirati tabelu (ili kao recycler view ili kao TableLayout)
     //TODO -> Remember me implementirati
-    //TODO -> Progres inidikator na stvari koje cekaju na bazu
+    //TODO -> dodati validaciju za password, i proveru da li email/username vec postoji u bazi ili ne
+    //TODO -> kada user doda marker, da on ide u excluded markers?
+    //TODO -> ikonice na markere resiti
     private Button _Login, _SignUp, _ForgetPass;
     private TextInputLayout _Username, _Password;
 
@@ -60,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
         if (username.isEmpty() || password.isEmpty()) {
             makeToast("Empty fields");
         } else {
-            //viewModel.userLogin(username, password);
             mainActivityDb.userLogin(username, password);
 
         }
@@ -78,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUserLoggedInEvent(MainActivityEvent.UserLoginSuccess result) {
         Intent intent = new Intent(MainActivity.this, HomeScreenActivity.class);
-        intent.putExtra("user", result.result);
+        AppData.user = result.result;
         startActivity(intent);
     }
 
@@ -90,5 +93,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
+    }
+    @Override
+    protected void onDestroy() {
+        System.out.println(TAG + " " + "Brisem se!");
+        super.onDestroy();
     }
 }

@@ -19,13 +19,11 @@ public class SignupActivityDb {
     public SignupActivityDb() {
         database = FirebaseDatabase.getInstance().getReference();
     }
-
     public void userSignup(User user) {
         String userKey = UUID.randomUUID().toString();
         user.setKey(userKey);
         database
                 .child("Users")
-                //.child(user.getUsername())
                 .child(user.getKey())
                 .setValue(user)
                 .addOnSuccessListener(unused -> {

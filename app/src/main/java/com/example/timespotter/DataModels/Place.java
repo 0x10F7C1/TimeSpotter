@@ -8,7 +8,6 @@ public class Place {
     private String phone;
     private String startTime;
     private String closeTime;
-    private String imageUri;
     private double latitude;
     private double longitude;
     private int day;
@@ -28,7 +27,6 @@ public class Place {
             String phone,
             String startTime,
             String closeTime,
-            String imageUri,
             double latitude,
             double longitude,
             int day,
@@ -43,7 +41,6 @@ public class Place {
         this.phone = phone;
         this.startTime = startTime;
         this.closeTime = closeTime;
-        this.imageUri = imageUri;
         this.latitude = latitude;
         this.longitude = longitude;
         this.day = day;
@@ -99,14 +96,6 @@ public class Place {
 
     public void setCloseTime(String closeTime) {
         this.closeTime = closeTime;
-    }
-
-    public String getImageUri() {
-        return imageUri;
-    }
-
-    public void setImageUri(String imageUri) {
-        this.imageUri = imageUri;
     }
 
     public double getLatitude() {

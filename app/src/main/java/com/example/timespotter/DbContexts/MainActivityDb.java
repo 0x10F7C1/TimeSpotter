@@ -25,13 +25,6 @@ public class MainActivityDb {
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     User user = null;
-                    /*User user = snapshot.getValue(User.class);
-                    if (user != null && user.getPassword().equals(password)) {
-                        EventBus.getDefault().post(new UserLoginEvent(user, UserLoginEvent.NO_ERROR, UserLoginEvent.OPERATION_SUCCESS));
-                    }
-                    else {
-                        EventBus.getDefault().post(new UserLoginEvent(UserLoginEvent.NO_VALUE, "Username/Password is invalid", UserLoginEvent.OPERATION_FAILURE));
-                    }*/
                     System.out.println(snapshot);
                     for (DataSnapshot data : snapshot.getChildren()) {
                         user = data.getValue(User.class);

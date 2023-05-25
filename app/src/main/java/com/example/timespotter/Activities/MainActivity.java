@@ -22,13 +22,10 @@ import org.greenrobot.eventbus.ThreadMode;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private final MainActivityDb mainActivityDb = new MainActivityDb();
-    //TODO -> Dodati submissions na User model
-    //TODO -> Filter: resiti bug gde ne skriva jedan od Markera
+    //TODO -> Avatar + submissions
     //TODO -> implementirati tabelu (ili kao recycler view ili kao TableLayout)
     //TODO -> Remember me implementirati
-    //TODO -> dodati validaciju za password, i proveru da li email/username vec postoji u bazi ili ne
     //TODO -> kada user doda marker, da on ide u excluded markers?
-    //TODO -> ikonice na markere resiti
     private Button _Login, _SignUp, _ForgetPass;
     private TextInputLayout _Username, _Password;
 

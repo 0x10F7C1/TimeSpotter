@@ -24,6 +24,18 @@ public class SignupActivityDb {
         user.setKey(userKey);
         database
                 .child("Users")
+                .orderByChild("username")
+                .equalTo(user.getUsername())
+                .get()
+                .addOnSuccessListener(dataSnapshot -> {
+                    if (dataSnapshot.exists()) System.out.println("Can't register, username already exists");
+                    else registerUser(user);
+                }).addOnFailureListener(error -> Log.d(TAG, error.getMessage()));
+    }
+
+    private void registerUser(User user) {
+        database
+                .child("Users")
                 .child(user.getKey())
                 .setValue(user)
                 .addOnSuccessListener(unused -> {

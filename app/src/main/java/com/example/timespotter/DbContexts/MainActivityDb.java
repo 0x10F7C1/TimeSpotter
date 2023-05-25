@@ -13,23 +13,18 @@ import org.greenrobot.eventbus.EventBus;
 public class MainActivityDb {
     private static final String TAG = MainActivityDb.class.getSimpleName();
     private final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-
     public void userLogin(String username, String password) {
-        System.out.println("Metoda se pozvala");
-        Log.d(TAG, "Poziva se za " + username);
         database
                 .child("Users")
-                //.child(username)
                 .orderByChild("username")
                 .equalTo(username)
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     User user = null;
-                    System.out.println(snapshot);
                     for (DataSnapshot data : snapshot.getChildren()) {
                         user = data.getValue(User.class);
                     }
-                    if (user != null) {
+                    if (user != null && user.getPassword().equals(password)) {
                         EventBus.getDefault().post(new MainActivityEvent.UserLoginSuccess(user));
                     } else {
                         Log.d(TAG, "Username/Password is invalid!");
@@ -38,8 +33,5 @@ public class MainActivityDb {
                 .addOnFailureListener(error -> {
                     Log.d(TAG, error.getMessage());
                 });
-        //..greske obraditi kasnije
     }
-
-
 }

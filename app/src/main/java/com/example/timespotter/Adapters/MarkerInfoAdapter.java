@@ -32,6 +32,7 @@ public class MarkerInfoAdapter implements GoogleMap.InfoWindowAdapter {
         closeTime = view.findViewById(R.id.marker_close_time);
         username = view.findViewById(R.id.marker_creator);
 
+
         Place place = (Place) marker.getTag();
         phone.setText(place.getPhone());
         name.setText(place.getName());
@@ -45,7 +46,9 @@ public class MarkerInfoAdapter implements GoogleMap.InfoWindowAdapter {
     @Nullable
     @Override
     public View getInfoContents(@NonNull Marker marker) {
-        return null;
+        //return null;
+        renderWindowInfo(marker, _Window);
+        return _Window;
     }
 
     @Nullable

@@ -1,9 +1,13 @@
 package com.example.timespotter.Activities;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,11 +23,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.timespotter.Adapters.MarkerInfoAdapter;
 import com.example.timespotter.AppData;
 import com.example.timespotter.DataModels.Place;
-import com.example.timespotter.DataModels.PlaceMarker;
 import com.example.timespotter.DbContexts.MapActivityDb;
 import com.example.timespotter.Events.LeaderboardFragmentEvent;
 import com.example.timespotter.Events.MapActivityEvent;
@@ -33,6 +37,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -278,7 +284,6 @@ public class MapActivity extends AppCompatActivity {
 
         return earthRadius * c;
     }
-
     private void initRateDialog() {
         View customDialog = LayoutInflater.from(this).inflate(R.layout.custom_rate_dialog, null);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
@@ -396,14 +401,6 @@ public class MapActivity extends AppCompatActivity {
         }
 
     }
-
-    private void moveCamera(LatLng latLng, float zoom, String title) {
-        _GoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-        MarkerOptions marker = new MarkerOptions().position(latLng)
-                .title(title);
-        _GoogleMap.addMarker(marker);
-    }
-
     private void getLocationPermission() {
         if (PermissionX.isGranted(this, FINE_LOCATION) && PermissionX.isGranted(this, COARSE_LOCATION)) {
             _LocationEnabled = true;
@@ -423,27 +420,26 @@ public class MapActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMarkerAddEvent(Place place) {
         LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
-        /*BitmapDescriptor markerIcon = null;
+        BitmapDescriptor markerIcon = null;
         if (place.getType().equals("Library")) {
-            markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.library_marker);
+            markerIcon = bitmapDescriptorFromVector(this, R.drawable.ic_library);
         } else if (place.getType().equals("Caffe")) {
-            markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.cafe_marker);
+            markerIcon = bitmapDescriptorFromVector(this, R.drawable.ic_cafe);
         } else if (place.getType().equals("Hospital")) {
-            System.out.println("ovo je ok");
-            markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.hospital_marker);
+            markerIcon = bitmapDescriptorFromVector(this, R.drawable.ic_hospital);
         } else if (place.getType().equals("Pizzeria")) {
-            markerIcon = BitmapDescriptorFactory.fromResource(R.drawable.pizzeria_marker);
-        }*/
+            markerIcon = bitmapDescriptorFromVector(this, R.drawable.ic_pizzeria);
+        }
+
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(latLng)
-                .title(place.getName())
-                .icon(null);
+                .icon(markerIcon);
 
         Marker marker = _GoogleMap.addMarker(markerOptions);
         marker.setTag(place);
         _Marker = marker;
         _ActiveMarkers.add(marker);
-        Log.d("Marker dodat", "Marker id " + place.getKey());
+        System.out.println("Marker phone no: " + place.getPhone());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -490,5 +486,14 @@ public class MapActivity extends AppCompatActivity {
     protected void onDestroy() {
         System.out.println(TAG + " " + "Brisem se!");
         super.onDestroy();
+    }
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 }

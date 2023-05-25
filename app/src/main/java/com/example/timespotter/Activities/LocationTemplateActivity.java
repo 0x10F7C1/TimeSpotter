@@ -1,5 +1,9 @@
 package com.example.timespotter.Activities;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -10,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.timespotter.AppData;
 import com.example.timespotter.DataModels.Place;
@@ -17,6 +22,8 @@ import com.example.timespotter.DbContexts.LocationTemplateActivityDb;
 import com.example.timespotter.Events.LocationTemplateActivityEvent.PlaceAdded;
 import com.example.timespotter.Events.LocationTemplateActivityEvent.PlaceAddedPointsUpdated;
 import com.example.timespotter.R;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.timepicker.MaterialTimePicker;

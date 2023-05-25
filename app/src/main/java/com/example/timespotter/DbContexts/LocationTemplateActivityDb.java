@@ -32,12 +32,12 @@ public class LocationTemplateActivityDb {
                 .child(place.getKey())
                 .setValue(place)
                 .addOnSuccessListener(unused -> {
-                    updatePointsOnPlaceAdded();
                     EventBus.getDefault().post(new LocationTemplateActivityEvent.PlaceAdded());
                 })
                 .addOnFailureListener(error -> {
                     Log.d(TAG, error.getMessage());
                 });
+        updatePointsOnPlaceAdded();
     }
 
     private void updatePointsOnPlaceAdded() {

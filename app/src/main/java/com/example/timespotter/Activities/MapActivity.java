@@ -10,13 +10,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ import androidx.core.content.ContextCompat;
 import com.example.timespotter.Adapters.MarkerInfoAdapter;
 import com.example.timespotter.AppData;
 import com.example.timespotter.DataModels.Place;
+import com.example.timespotter.DataModels.RateStar;
 import com.example.timespotter.DbContexts.MapActivityDb;
 import com.example.timespotter.Events.LeaderboardFragmentEvent;
 import com.example.timespotter.Events.MapActivityEvent;
@@ -43,7 +45,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.textfield.TextInputLayout;
 import com.permissionx.guolindev.PermissionX;
 
 import org.greenrobot.eventbus.EventBus;
@@ -58,8 +62,6 @@ public class MapActivity extends AppCompatActivity {
     private static final String TAG = "MapsActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
-    private static final int EMPTY_STAR = 0;
-    private static final int FILLED_STAR = 1;
     private static final float DEFAULT_ZOOM = 15f;
     private static final boolean FILTER_ON = true;
     private static final boolean FILTER_OFF = false;
@@ -78,13 +80,14 @@ public class MapActivity extends AppCompatActivity {
     private Marker _Marker;
     private ImageView _Rate;
     private AlertDialog _RateDialog;
-    private ImageButton _PlaceNameStar, _PlaceTypeStar, _PlaceWebsiteStar, _PlacePhoneStar, _PlaceTimeStar;
     private Button _RateDialogBtn, _CloseDialogBtn;
     private AlertDialog _FilterDialog;
     private ImageView _FilterButton;
     private MaterialDatePicker<Long> _DatePicker;
+    private AutoCompleteTextView materialSpinner;
     private int startDay, startMonth, startYear, endDay, endMonth, endYear;
     private int userPointUpdate = 0, creatorPointsUpdate = 0;
+    private RateStar nameStar, typeStar, websiteStar, phoneStar, timeStar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,62 +131,73 @@ public class MapActivity extends AppCompatActivity {
         dialogBuilder.setView(customDialog);
 
         _FilterDialog = dialogBuilder.create();
+        _FilterDialog.setCancelable(false);
         _FilterDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        CheckBox usernameCheckBox, typeCheckBox, radiusCheckBox, dateCheckBox;
-        EditText usernameText, typeText, radiusText, startDateText, endDateText;
-        Button filterBtn;
+        TextInputLayout usernameText, typeText, radiusText, startTimeText, closeTimeText;
+        MaterialButton filterBtn, cancelBtn;
+        materialSpinner = customDialog.findViewById(R.id.filter_material_spinner);
+        String[] spinnerItems = getResources().getStringArray(R.array.filter_place_types);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line,
+                spinnerItems
+        );
 
-        startDateText = customDialog.findViewById(R.id.start_date_filter_text);
-        endDateText = customDialog.findViewById(R.id.end_date_filter_text);
-        usernameCheckBox = customDialog.findViewById(R.id.username_filter_checkbox);
-        typeCheckBox = customDialog.findViewById(R.id.type_filter_checkbox);
-        radiusCheckBox = customDialog.findViewById(R.id.radius_filter_checkbox);
-        usernameText = customDialog.findViewById(R.id.username_filter_text);
-        typeText = customDialog.findViewById(R.id.type_filter_text);
-        radiusText = customDialog.findViewById(R.id.radius_filter_text);
-        dateCheckBox = customDialog.findViewById(R.id.date_filter_checkbox);
+        materialSpinner.setAdapter(adapter);
+        usernameText = customDialog.findViewById(R.id.filter_username_layout);
+        radiusText = customDialog.findViewById(R.id.filter_radius_layout);
+        startTimeText = customDialog.findViewById(R.id.filter_start_time_layout);
+        closeTimeText = customDialog.findViewById(R.id.filter_close_time_layout);
+
         _DatePicker = MaterialDatePicker.Builder.datePicker().build();
 
         filterBtn = customDialog.findViewById(R.id.filter_button);
+        cancelBtn = customDialog.findViewById(R.id.cancel_button);
 
-        startDateText.setOnClickListener(view -> {
+        startTimeText.setOnClickListener(view -> {
             DATE_PICKER = START_DATE_PICKER;
             _DatePicker.show(getSupportFragmentManager(), "DatePicker");
         });
-        endDateText.setOnClickListener(view -> {
+        closeTimeText.setOnClickListener(view -> {
             DATE_PICKER = END_DATE_PICKER;
             _DatePicker.show(getSupportFragmentManager(), "Different fragment");
         });
+
         _DatePicker.addOnPositiveButtonClickListener(selection -> {
             calendar.setTimeInMillis(selection);
             if (DATE_PICKER == START_DATE_PICKER) {
                 startDay = calendar.get(Calendar.DAY_OF_MONTH);
                 startMonth = calendar.get(Calendar.MONTH) + 1;
                 startYear = calendar.get(Calendar.YEAR);
-                startDateText.setText(startDay + "/" + startMonth + "/" + startYear);
+                startTimeText.getEditText().setText(startDay + "/" + startMonth + "/" + startYear);
             } else {
                 endDay = calendar.get(Calendar.DAY_OF_MONTH);
                 endMonth = calendar.get(Calendar.MONTH) + 1;
                 endYear = calendar.get(Calendar.YEAR);
-                endDateText.setText(endDay + "/" + endMonth + "/" + endYear);
+                closeTimeText.getEditText().setText(endDay + "/" + endMonth + "/" + endYear);
             }
         });
-        usernameCheckBox.setOnCheckedChangeListener((compoundButton, b) -> usernameText.setEnabled(compoundButton.isChecked()));
-        typeCheckBox.setOnCheckedChangeListener((compoundButton, b) -> typeText.setEnabled(compoundButton.isChecked()));
-        radiusCheckBox.setOnCheckedChangeListener((compoundButton, b) -> radiusText.setEnabled(compoundButton.isChecked()));
-        dateCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
-            startDateText.setEnabled(compoundButton.isChecked());
-            endDateText.setEnabled(compoundButton.isChecked());
-        });
+
         filterBtn.setOnClickListener(view -> {
             boolean usernameFilter, typeFilter, radiusFilter, dateRangeFilter;
-            usernameFilter = usernameCheckBox.isChecked();
-            typeFilter = typeCheckBox.isChecked();
-            radiusFilter = radiusCheckBox.isChecked();
-            dateRangeFilter = dateCheckBox.isChecked();
-            double radius = radiusFilter ? Double.parseDouble(radiusText.getText().toString()) : 0;
-            filter(usernameFilter, typeFilter, radiusFilter, dateRangeFilter, usernameText.getText().toString(), typeText.getText().toString(), radius);
+            usernameFilter = !(TextUtils.isEmpty(usernameText.getEditText().getText()));
+            typeFilter = !(materialSpinner.getText().toString().equals("None") ||
+                    TextUtils.isEmpty(materialSpinner.getText()));
+            radiusFilter = !(TextUtils.isEmpty(radiusText.getEditText().getText()));
+            dateRangeFilter = !(TextUtils.isEmpty(startTimeText.getEditText().getText()))
+                    && !(TextUtils.isEmpty(closeTimeText.getEditText().getText()));
+
+            String username = usernameText.getEditText().getText().toString();
+            String type = materialSpinner.getText().toString();
+            double radius = radiusText.getEditText().getText().toString().isEmpty() ? 0 : Double.parseDouble(radiusText
+                    .getEditText().getText().toString());
+
+            filter(usernameFilter, typeFilter, radiusFilter, dateRangeFilter, username, type, radius);
+            _FilterDialog.dismiss();
+        });
+
+        cancelBtn.setOnClickListener(view -> {
+            _FilterDialog.dismiss();
         });
     }
 
@@ -292,16 +306,50 @@ public class MapActivity extends AppCompatActivity {
         _RateDialog = dialogBuilder.create();
         _RateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        _PlaceNameStar = customDialog.findViewById(R.id.place_name_dialog_star);
-        _PlaceNameStar.setTag(EMPTY_STAR);
-        _PlaceTypeStar = customDialog.findViewById(R.id.place_type_dialog_star);
-        _PlaceTypeStar.setTag(EMPTY_STAR);
-        _PlaceWebsiteStar = customDialog.findViewById(R.id.place_website_dialog_star);
-        _PlaceWebsiteStar.setTag(EMPTY_STAR);
-        _PlacePhoneStar = customDialog.findViewById(R.id.place_phone_dialog_star);
-        _PlacePhoneStar.setTag(EMPTY_STAR);
-        _PlaceTimeStar = customDialog.findViewById(R.id.place_time_dialog_star);
-        _PlaceTimeStar.setTag(EMPTY_STAR);
+        nameStar = new RateStar();
+        typeStar = new RateStar();
+        websiteStar = new RateStar();
+        phoneStar = new RateStar();
+        timeStar = new RateStar();
+
+        ImageButton greenName, redName, greenType, redType, greenWebsite, redWebsite, greenPhone, redPhone, greenTime, redTime;
+
+        greenName = customDialog.findViewById(R.id.name_thumbs_up);
+        greenName.setBackgroundTintList(getResources().getColorStateList(R.color.button_green_tint));
+        redName = customDialog.findViewById(R.id.name_thumbs_down);
+
+        greenType = customDialog.findViewById(R.id.type_thumbs_up);
+        greenType.setBackgroundTintList(getResources().getColorStateList(R.color.button_green_tint));
+        redType = customDialog.findViewById(R.id.type_thumbs_down);
+
+        greenWebsite = customDialog.findViewById(R.id.website_thumbs_up);
+        greenWebsite.setBackgroundTintList(getResources().getColorStateList(R.color.button_green_tint));
+        redWebsite = customDialog.findViewById(R.id.website_thumbs_down);
+
+        greenPhone = customDialog.findViewById(R.id.phone_thumbs_up);
+        greenPhone.setBackgroundTintList(getResources().getColorStateList(R.color.button_green_tint));
+        redPhone = customDialog.findViewById(R.id.phone_thumbs_down);
+
+        greenTime = customDialog.findViewById(R.id.time_thumbs_up);
+        greenTime.setBackgroundTintList(getResources().getColorStateList(R.color.button_green_tint));
+        redTime = customDialog.findViewById(R.id.time_thumbs_down);
+
+        //on clicks
+        greenName.setOnClickListener(view -> setGreenButton(greenName, redName, nameStar));
+        redName.setOnClickListener(view -> setRedButton(greenName, redName, nameStar));
+
+        greenType.setOnClickListener(view -> setGreenButton(greenType, redType, typeStar));
+        redType.setOnClickListener(view -> setRedButton(greenType, redType, typeStar));
+
+        greenWebsite.setOnClickListener(view -> setGreenButton(greenWebsite, redWebsite, websiteStar));
+        redWebsite.setOnClickListener(view -> setRedButton(greenWebsite, redWebsite, websiteStar));
+
+        greenPhone.setOnClickListener(view -> setGreenButton(greenPhone, redPhone, phoneStar));
+        redPhone.setOnClickListener(view -> setRedButton(greenPhone, redPhone, phoneStar));
+
+        greenTime.setOnClickListener(view -> setGreenButton(greenTime, redTime, timeStar));
+        redTime.setOnClickListener(view -> setRedButton(greenTime, redTime, timeStar));
+
         _RateDialogBtn = customDialog.findViewById(R.id.rate_dialog_btn);
         _CloseDialogBtn = customDialog.findViewById(R.id.close_dialog_btn);
 
@@ -309,39 +357,16 @@ public class MapActivity extends AppCompatActivity {
         _CloseDialogBtn.setOnClickListener(view -> {
             _RateDialog.cancel();
         });
-
-        _PlaceNameStar.setOnClickListener(this::dialogStarOnClick);
-        _PlaceTypeStar.setOnClickListener(this::dialogStarOnClick);
-        _PlaceWebsiteStar.setOnClickListener(this::dialogStarOnClick);
-        _PlacePhoneStar.setOnClickListener(this::dialogStarOnClick);
-        _PlaceTimeStar.setOnClickListener(this::dialogStarOnClick);
     }
-
-    private void dialogStarOnClick(View view) {
-        ImageButton btn = (ImageButton) view;
-        if (btn.getTag().equals(EMPTY_STAR)) {
-            btn.setImageResource(R.drawable.ic_filled_star);
-            btn.setTag(FILLED_STAR);
-        } else {
-            btn.setImageResource(R.drawable.empty_star);
-            btn.setTag(EMPTY_STAR);
-        }
-    }
-
     private void rateDialogOnClick(View view) {
-        int starCount = 0;
-        starCount += (Integer) _PlaceNameStar.getTag();
-        starCount += (Integer) _PlaceTypeStar.getTag();
-        starCount += (Integer) _PlaceWebsiteStar.getTag();
-        starCount += (Integer) _PlacePhoneStar.getTag();
-        starCount += (Integer) _PlaceTimeStar.getTag();
-
         Place place = (Place) _Marker.getTag();
-        //_Marker.nullifyMarker();
+        _Marker.hideInfoWindow();
         _Marker = null;
+        int starsCount = nameStar.value + typeStar.value + websiteStar.value + phoneStar.value + timeStar.value;
+        Toast.makeText(this, String.valueOf(starsCount), Toast.LENGTH_SHORT).show();
 
         mapActivityDb.updateUserPoints(2);
-        mapActivityDb.updatePlaceCreatorPoints(place.getCreatorKey(), starCount);
+        mapActivityDb.updatePlaceCreatorPoints(place.getCreatorKey(), starsCount);
         mapActivityDb.excludeUserMarker(place.getKey());
     }
 
@@ -495,5 +520,17 @@ public class MapActivity extends AppCompatActivity {
         Canvas canvas = new Canvas(bitmap);
         vectorDrawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    private void setGreenButton(ImageButton greenButton, ImageButton redButton, RateStar star) {
+        if (star.value == 0) star.value++;
+        greenButton.setBackgroundTintList(getResources().getColorStateList(R.color.button_green_tint));
+        redButton.setBackgroundTintList(getResources().getColorStateList(R.color.button_black_tint));
+    }
+
+    private void setRedButton(ImageButton greenButton, ImageButton redButton, RateStar star) {
+        if (star.value == 1) star.value--;
+        greenButton.setBackgroundTintList(getResources().getColorStateList(R.color.button_black_tint));
+        redButton.setBackgroundTintList(getResources().getColorStateList(R.color.holo_dark_red));
     }
 }

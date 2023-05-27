@@ -22,7 +22,7 @@
             android:src="@drawable/profile_dummy_image"
             app:highlightColor="#80fb1743"
             app:strokeColor="#6BA333"
-            app:strokeWidth="6dp" />
+            app:strokeWidth="4dp" />
 
         <TextView
             android:id="@+id/profile_full_name"

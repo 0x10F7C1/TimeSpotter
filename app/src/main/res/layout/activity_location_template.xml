@@ -178,16 +178,16 @@
         app:layout_constraintTop_toBottomOf="@+id/create" />
 
     <ProgressBar
+        android:id="@+id/progress_bar_template"
         style="@style/Widget.MaterialComponents.CircularProgressIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:trackColor="@color/app_green"
-        android:id="@+id/progress_bar_template"
         android:progress="0"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:trackColor="@color/app_green" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

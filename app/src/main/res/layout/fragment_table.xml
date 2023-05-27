@@ -1,16 +1,25 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragments.TableFragment"
-    android:layout_marginTop="20dp">
+    tools:context=".Fragments.TableFragment">
+
+    <TextView
+        android:id="@+id/table_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:fontFamily="@font/bungee"
+        android:letterSpacing="0.1"
+        android:text="Table"
+        android:textSize="30sp" />
 
     <LinearLayout
         android:id="@+id/table_ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/table_title"
         android:orientation="horizontal">
 
         <!-- icon for user name column heading -->
@@ -21,8 +30,8 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
-            android:src="@drawable/user"
-            android:padding="5dp"/>
+            android:padding="5dp"
+            android:src="@drawable/user" />
 
         <ImageView
             android:id="@+id/table_place_name_icon"
@@ -31,8 +40,8 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
-            android:src="@drawable/place_marker"
-            android:padding="5dp"/>
+            android:padding="5dp"
+            android:src="@drawable/place_marker" />
 
         <!-- icon for number of correct column heading -->
         <ImageView
@@ -42,8 +51,8 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
-            android:src="@drawable/phone"
-            android:padding="5dp"/>
+            android:padding="5dp"
+            android:src="@drawable/phone" />
 
         <!-- icon for time taken column heading -->
         <ImageView
@@ -53,18 +62,20 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
-            android:src="@drawable/web"
-            android:padding="5dp"/>
+            android:padding="5dp"
+            android:src="@drawable/web" />
+
         <ImageView
             android:id="@+id/table_place_start_time_icon"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:gravity="center"
-            android:src="@drawable/table_start_time_icon"
             android:backgroundTint="#CA0C12"
-            android:padding="5dp"/>
+            android:gravity="center"
+            android:padding="5dp"
+            android:src="@drawable/table_start_time_icon" />
+
         <ImageView
             android:id="@+id/table_place_close_time_icon"
             android:layout_width="match_parent"
@@ -72,8 +83,8 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
-            android:src="@drawable/table_close_time_icon"
-            android:padding="5dp"/>
+            android:padding="5dp"
+            android:src="@drawable/table_close_time_icon" />
 
     </LinearLayout>
 
@@ -82,7 +93,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/table_ll"
-        android:layout_marginTop="10dp"
-        />
+        android:layout_marginTop="10dp" />
 
 </RelativeLayout>

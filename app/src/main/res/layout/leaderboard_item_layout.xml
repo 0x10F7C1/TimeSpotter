@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/leaderboard_card_view"
     android:layout_width="match_parent"
-    android:layout_height="130dp"
-    android:paddingEnd="5dp">
+    android:layout_height="130dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -16,11 +15,11 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginStart="8dp"
+            android:clickable="false"
             android:src="@drawable/profile_dummy_image"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:clickable="false"
             app:strokeColor="#777478"
             app:strokeWidth="3dp" />
 

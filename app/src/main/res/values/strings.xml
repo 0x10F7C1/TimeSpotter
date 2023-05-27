@@ -44,6 +44,15 @@
         <item>Pizzeria</item>
     </string-array>
 
+    <string-array name="filter_place_types">
+        <item>None</item>
+        <item>Library</item>
+        <item>Caffe</item>
+        <item>Florist</item>
+        <item>Hospital</item>
+        <item>Pizzeria</item>
+    </string-array>
+
     <array name="place_marker_icons">
         <item>@drawable/library_marker</item>
         <item>@drawable/cafe_marker</item>

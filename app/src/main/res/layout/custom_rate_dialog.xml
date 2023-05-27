@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/dialog_shape"
-    android:padding="15dp">
+    android:layout_height="wrap_content"
+    android:background="@drawable/rate_dialog_shape"
+    android:padding="7dp">
 
     <TextView
         android:id="@+id/place_name_dialog"
@@ -12,9 +13,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
-        android:text="Place name"
+        android:text="Name"
         android:textSize="28sp"
         android:textStyle="bold"
+        android:fontFamily="@font/bungee"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,8 +26,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
-        android:text="Place type"
+        android:text="Type"
         android:textSize="28sp"
+        android:fontFamily="@font/bungee"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/place_name_dialog" />
@@ -36,9 +39,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
-        android:text="Place website"
+        android:text="Website"
         android:textSize="28sp"
         android:textStyle="bold"
+        android:fontFamily="@font/bungee"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/place_type_dialog" />
 
@@ -48,89 +52,149 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
-        android:text="Place phone"
+        android:text="Phone"
+        android:fontFamily="@font/bungee"
         android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/place_website_dialog" />
 
     <TextView
+        android:fontFamily="@font/bungee"
         android:id="@+id/place_time_dialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
-        android:text="Place work time"
+        android:text="Work time"
         android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/place_phone_dialog" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="15dp"
-        android:orientation="vertical"
+    <ImageButton android:id="@+id/name_thumbs_up"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="25dp"
+        android:background="@drawable/ic_thumbs_up"
+        app:layout_constraintBottom_toBottomOf="@+id/place_name_dialog"
         app:layout_constraintStart_toEndOf="@+id/place_time_dialog"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="@+id/place_name_dialog" />
 
-        <ImageButton
-            android:id="@+id/place_name_dialog_star"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@drawable/empty_star"
-            android:contentDescription="Name" />
+    <ImageButton
+        android:id="@+id/type_thumbs_up"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="25dp"
+        android:background="@drawable/ic_thumbs_up"
+        app:layout_constraintBottom_toBottomOf="@+id/place_type_dialog"
+        app:layout_constraintStart_toEndOf="@+id/place_time_dialog"
+        app:layout_constraintTop_toTopOf="@+id/place_type_dialog" />
 
-        <ImageButton
-            android:id="@+id/place_type_dialog_star"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="15dp"
-            android:background="@drawable/empty_star"
-            android:contentDescription="Type" />
+    <ImageButton
+        android:id="@+id/website_thumbs_up"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="25dp"
+        android:background="@drawable/ic_thumbs_up"
+        app:layout_constraintBottom_toBottomOf="@+id/place_website_dialog"
+        app:layout_constraintStart_toEndOf="@+id/place_time_dialog"
+        app:layout_constraintTop_toTopOf="@+id/place_website_dialog"/>
 
-        <ImageButton
-            android:id="@+id/place_website_dialog_star"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="15dp"
-            android:background="@drawable/empty_star"
-            android:contentDescription="Website" />
+    <ImageButton
+        android:id="@+id/phone_thumbs_up"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="25dp"
+        android:background="@drawable/ic_thumbs_up"
+        app:layout_constraintBottom_toBottomOf="@+id/place_phone_dialog"
+        app:layout_constraintStart_toEndOf="@+id/place_time_dialog"
+        app:layout_constraintTop_toTopOf="@+id/place_phone_dialog" />
 
-        <ImageButton
-            android:id="@+id/place_phone_dialog_star"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="15dp"
-            android:background="@drawable/empty_star"
-            android:contentDescription="Phone" />
+    <ImageButton
+        android:id="@+id/time_thumbs_up"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="25dp"
+        android:background="@drawable/ic_thumbs_up"
+        app:layout_constraintBottom_toBottomOf="@+id/place_time_dialog"
+        app:layout_constraintStart_toEndOf="@+id/place_time_dialog"
+        app:layout_constraintTop_toTopOf="@+id/place_time_dialog" />
 
-        <ImageButton
-            android:id="@+id/place_time_dialog_star"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="15dp"
-            android:background="@drawable/empty_star"
-            android:contentDescription="Time" />
-    </LinearLayout>
+    <ImageButton
+        android:id="@+id/name_thumbs_down"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="@drawable/ic_thumbs_down"
+        app:layout_constraintStart_toEndOf="@id/name_thumbs_up"
+        app:layout_constraintTop_toTopOf="@id/name_thumbs_up"
+        android:layout_marginStart="35dp"/>
 
-    <Button
+    <ImageButton
+        android:id="@+id/website_thumbs_down"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="@drawable/ic_thumbs_down"
+        app:layout_constraintStart_toEndOf="@id/website_thumbs_up"
+        app:layout_constraintTop_toTopOf="@id/website_thumbs_up"
+        android:layout_marginStart="35dp"/>
+
+    <ImageButton
+        android:id="@+id/phone_thumbs_down"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="@drawable/ic_thumbs_down"
+        app:layout_constraintStart_toEndOf="@id/phone_thumbs_up"
+        app:layout_constraintTop_toTopOf="@id/phone_thumbs_up"
+        android:layout_marginStart="35dp"/>
+
+    <ImageButton
+        android:id="@+id/time_thumbs_down"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="35dp"
+        android:background="@drawable/ic_thumbs_down"
+        app:layout_constraintStart_toEndOf="@id/time_thumbs_up"
+        app:layout_constraintTop_toTopOf="@id/time_thumbs_up" />
+
+    <ImageButton
+        android:id="@+id/type_thumbs_down"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="@drawable/ic_thumbs_down"
+        app:layout_constraintStart_toEndOf="@id/type_thumbs_up"
+        app:layout_constraintTop_toTopOf="@id/type_thumbs_up"
+        android:layout_marginStart="35dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:id="@+id/rate_dialog_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:text="Rate"
-        android:textSize="20sp"
+        android:textSize="17sp"
+        android:fontFamily="@font/bungee"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginBottom="15dp"
+        android:backgroundTint="@color/app_green"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="#F8F8F8"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/place_time_dialog" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:id="@+id/close_dialog_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:text="Close"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rate_dialog_btn" />
+        android:textSize="17sp"
+        android:fontFamily="@font/bungee"
+        android:backgroundTint="@color/app_green"
+        android:textColor="#F8F8F8"
+        app:layout_constraintBottom_toBottomOf="@+id/rate_dialog_btn"
+        app:layout_constraintEnd_toEndOf="@+id/time_thumbs_down"
+        app:layout_constraintTop_toTopOf="@+id/rate_dialog_btn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private final MainActivityDb mainActivityDb = new MainActivityDb();
     //TODO -> Avatar + submissions
-    //TODO -> implementirati tabelu (ili kao recycler view ili kao TableLayout)
     //TODO -> Remember me implementirati
     //TODO -> kada user doda marker, da on ide u excluded markers?
     private Button _Login, _SignUp, _ForgetPass;

@@ -67,7 +67,7 @@
                     android:id="@+id/profile_rating_picture"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:layout_marginStart="40dp"
+                    android:layout_marginStart="50dp"
                     android:contentDescription="@string/profile_star_picture"
                     android:src="@drawable/profile_stars"
                     app:layout_constraintStart_toStartOf="parent"
@@ -101,7 +101,7 @@
                     android:id="@+id/profile_submission_picture"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:layout_marginEnd="40dp"
+                    android:layout_marginEnd="50dp"
                     android:backgroundTint="@color/teal_700"
                     android:contentDescription="@string/profile_add_marker_pictur"
                     android:src="@drawable/submissions"
@@ -220,23 +220,34 @@
                 android:drawablePadding="10dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/profile_update"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:backgroundTint="#6BA333"
-            android:fontFamily="@font/bungee"
-            android:text="@string/profile_update_button_text" />
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/profile_logout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:backgroundTint="#6BA333"
-            android:fontFamily="@font/bungee"
-            android:text="@string/profile_logout_button_text" />
+            <Button
+                android:id="@+id/profile_update"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#6BA333"
+                android:fontFamily="@font/bungee"
+                android:text="@string/profile_update_button_text"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/profile_logout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#6BA333"
+                android:fontFamily="@font/bungee"
+                android:layout_marginTop="15dp"
+                android:text="@string/profile_logout_button_text"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
     </LinearLayout>
 
 

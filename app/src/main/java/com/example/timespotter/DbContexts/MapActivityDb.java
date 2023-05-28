@@ -51,7 +51,7 @@ public class MapActivityDb {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                         Place place = snapshot.getValue(Place.class);
-                        if (!place.getCreatorKey().equals(user.getKey()) && !excludedPlacesKeys.contains(snapshot.getKey())) {
+                        if (/*!place.getCreatorKey().equals(user.getKey()) && */!excludedPlacesKeys.contains(snapshot.getKey())) {
                             EventBus.getDefault().post(place);
                         }
                     }

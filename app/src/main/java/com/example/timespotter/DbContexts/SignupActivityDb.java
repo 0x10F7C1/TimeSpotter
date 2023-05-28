@@ -19,6 +19,7 @@ public class SignupActivityDb {
     public SignupActivityDb() {
         database = FirebaseDatabase.getInstance().getReference();
     }
+
     public void userSignup(User user) {
         String userKey = UUID.randomUUID().toString();
         user.setKey(userKey);
@@ -28,7 +29,8 @@ public class SignupActivityDb {
                 .equalTo(user.getUsername())
                 .get()
                 .addOnSuccessListener(dataSnapshot -> {
-                    if (dataSnapshot.exists()) System.out.println("Can't register, username already exists");
+                    if (dataSnapshot.exists())
+                        System.out.println("Can't register, username already exists");
                     else registerUser(user);
                 }).addOnFailureListener(error -> Log.d(TAG, error.getMessage()));
     }

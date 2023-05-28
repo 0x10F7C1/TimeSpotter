@@ -88,6 +88,7 @@ public class MapActivity extends AppCompatActivity {
     private int startDay, startMonth, startYear, endDay, endMonth, endYear;
     private int userPointUpdate = 0, creatorPointsUpdate = 0;
     private RateStar nameStar, typeStar, websiteStar, phoneStar, timeStar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -298,6 +299,7 @@ public class MapActivity extends AppCompatActivity {
 
         return earthRadius * c;
     }
+
     private void initRateDialog() {
         View customDialog = LayoutInflater.from(this).inflate(R.layout.custom_rate_dialog, null);
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
@@ -358,6 +360,7 @@ public class MapActivity extends AppCompatActivity {
             _RateDialog.cancel();
         });
     }
+
     private void rateDialogOnClick(View view) {
         Place place = (Place) _Marker.getTag();
         _Marker.hideInfoWindow();
@@ -376,11 +379,10 @@ public class MapActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 Location currentLocation = locationTask.getResult();
                 Intent intent = new Intent(MapActivity.this, LocationTemplateActivity.class);
-                //intent.putExtra("user", user);
                 intent.putExtra("longitude", currentLocation.getLongitude());
                 intent.putExtra("latitude", currentLocation.getLatitude());
-                //intent.putExtra("username", getIntent().getStringExtra("username"));
                 startActivity(intent);
+                finish();
             }
         });
     }
@@ -415,7 +417,6 @@ public class MapActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     Log.d(TAG, "Current location found");
                     Location currentLocation = task.getResult();
-
                     LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
                     _GoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
                     //moveCamera(latLng, DEFAULT_ZOOM, "My location");
@@ -424,8 +425,8 @@ public class MapActivity extends AppCompatActivity {
                 }
             });
         }
-
     }
+
     private void getLocationPermission() {
         if (PermissionX.isGranted(this, FINE_LOCATION) && PermissionX.isGranted(this, COARSE_LOCATION)) {
             _LocationEnabled = true;
@@ -461,6 +462,7 @@ public class MapActivity extends AppCompatActivity {
                 .icon(markerIcon);
 
         Marker marker = _GoogleMap.addMarker(markerOptions);
+        System.out.println("Marker koji se dodaje ima ime " + place.getName());
         marker.setTag(place);
         _Marker = marker;
         _ActiveMarkers.add(marker);
@@ -490,6 +492,7 @@ public class MapActivity extends AppCompatActivity {
             }
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUserMarkerExcluded(MapActivityEvent.UserMarkerExcluded result) {
         Log.d(TAG, "Marker excluded for user");

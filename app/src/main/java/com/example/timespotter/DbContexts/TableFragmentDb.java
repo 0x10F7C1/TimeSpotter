@@ -6,7 +6,6 @@ import androidx.annotation.Nullable;
 import com.example.timespotter.AppData;
 import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.DataModels.TableItem;
-import com.example.timespotter.DataModels.User;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,9 +19,11 @@ import java.util.List;
 
 public class TableFragmentDb {
     private final DatabaseReference database;
+
     public TableFragmentDb() {
         database = FirebaseDatabase.getInstance().getReference();
     }
+
     public void loadTableEntries() {
         database
                 .child("Excluded markers")
@@ -37,6 +38,7 @@ public class TableFragmentDb {
                     filterTableEntries(excludedPlacesKeys);
                 });
     }
+
     private void filterTableEntries(List<String> excludedPlacesKeys) {
         database
                 .child("Places")

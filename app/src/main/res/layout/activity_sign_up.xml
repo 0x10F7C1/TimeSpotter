@@ -120,4 +120,11 @@
         android:text="@string/sign_up_btn_msg"
         android:textColor="@color/white" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="15dp"
+        android:id="@+id/avatar_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:scrollbars="horizontal"/>
+
 </LinearLayout>

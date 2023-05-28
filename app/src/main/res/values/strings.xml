@@ -60,4 +60,19 @@
         <item>@drawable/hospital_marker</item>
         <item>@drawable/pizzeria_marker</item>
     </array>
+
+    <array name="avatar_images">
+        <item>@drawable/profile_dummy_image</item>
+        <item>@drawable/profile_dummy_image</item>
+        <item>@drawable/profile_dummy_image</item>
+        <item>@drawable/profile_dummy_image</item>
+        <item>@drawable/profile_dummy_image</item>
+        <item>@drawable/profile_dummy_image</item>
+        <item>@drawable/profile_dummy_image</item>
+        <item>@drawable/profile_dummy_image</item>
+        <item>@drawable/profile_dummy_image</item>
+        <item>@drawable/profile_dummy_image</item>
+        <item>@drawable/profile_dummy_image</item>
+        <item>@drawable/profile_dummy_image</item>
+    </array>
 </resources>

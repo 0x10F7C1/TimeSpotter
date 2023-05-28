@@ -5,17 +5,18 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.timespotter.DataModels.TableItem;
 import com.example.timespotter.R;
 
 public class TableViewHolder extends RecyclerView.ViewHolder {
-    private TextView
-            _TableUsername,
-            _TablePlaceName,
-            _TablePlacePhone,
-            _TablePlaceWebsite,
-            _TablePlaceStartTime,
-            _TablePlaceCloseTime;
+    private final TextView
+            _TableUsername;
+    private final TextView _TablePlaceName;
+    private final TextView _TablePlacePhone;
+    private final TextView _TablePlaceWebsite;
+    private final TextView _TablePlaceStartTime;
+    private final TextView _TablePlaceCloseTime;
 
     public TableViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -26,6 +27,7 @@ public class TableViewHolder extends RecyclerView.ViewHolder {
         _TablePlaceStartTime = itemView.findViewById(R.id.table_place_start_time);
         _TablePlaceCloseTime = itemView.findViewById(R.id.table_place_close_time);
     }
+
     public void bindData(TableItem entry) {
         _TableUsername.setText(entry.getUsername());
         _TablePlaceName.setText(entry.getPlaceName());

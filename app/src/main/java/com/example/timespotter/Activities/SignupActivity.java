@@ -1,13 +1,18 @@
 package com.example.timespotter.Activities;
 
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.timespotter.Adapters.AvatarAdapter;
+import com.example.timespotter.DataModels.Avatar;
 import com.example.timespotter.DataModels.User;
 import com.example.timespotter.DbContexts.MainActivityDb;
 import com.example.timespotter.DbContexts.SignupActivityDb;
@@ -20,6 +25,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SignupActivity extends AppCompatActivity {
 
     private static final String TAG = SignupActivity.class.getSimpleName();
@@ -29,12 +37,29 @@ public class SignupActivity extends AppCompatActivity {
     private final SignupActivityDb signupActivityDb = new SignupActivityDb();
     private TextInputLayout _FullName, _Username, _Email, _Password, _Phone;
     private MaterialButton _SignUp;
+    private RecyclerView recyclerView;
+    private AvatarAdapter adapter;
+    private List<Avatar> avatars;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        avatars = new ArrayList<>();
+        recyclerView = findViewById(R.id.avatar_recycler);
+        adapter = new AvatarAdapter(this, avatars);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+        TypedArray avatarImages = getResources().obtainTypedArray(R.array.avatar_images);
+        for (int i = 0; i < avatarImages.length(); i++) {
+            avatars.add(new Avatar(avatarImages.getResourceId(i, 0)));
+        }
+
+        adapter.notifyDataSetChanged();
+        avatarImages.recycle();
 
         bindViews();
         registerCallbackListeners();

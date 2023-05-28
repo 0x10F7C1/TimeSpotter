@@ -13,6 +13,7 @@ import org.greenrobot.eventbus.EventBus;
 public class MainActivityDb {
     private static final String TAG = MainActivityDb.class.getSimpleName();
     private final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
     public void userLogin(String username, String password) {
         database
                 .child("Users")

@@ -7,7 +7,8 @@ public class TableItem {
     private String website;
     private String startTime, closeTime;
 
-    public TableItem() {}
+    public TableItem() {
+    }
 
     public TableItem(String username, String placeName, String phone, String website, String startTime, String closeTime) {
         this.username = username;

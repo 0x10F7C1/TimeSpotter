@@ -10,14 +10,16 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.Collections;
 import java.util.List;
+
 public class LeaderboardFragmentDb {
     private static final String TAG = LeaderboardFragmentDb.class.getSimpleName();
     private final DatabaseReference database;
+
     public LeaderboardFragmentDb() {
         database = FirebaseDatabase.getInstance().getReference();
     }
+
     public void loadLeaderboard(List<UserLeaderboard> users) {
         database
                 .child("Leaderboards")
@@ -27,7 +29,6 @@ public class LeaderboardFragmentDb {
                         for (DataSnapshot data : dataSnapshot.getChildren()) {
                             users.add(data.getValue(UserLeaderboard.class));
                         }
-                        users.sort(Collections.reverseOrder());
                         EventBus.getDefault().post(new LeaderboardFragmentEvent.LeaderboardLoaded());
                     } else {
                         Log.d(TAG, "Leaderboard is empty");

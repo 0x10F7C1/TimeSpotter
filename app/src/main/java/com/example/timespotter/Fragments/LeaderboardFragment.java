@@ -20,9 +20,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-//1. mesto -> yellow border, 2. mesto -> blue border, 3. mesto -> brown border
 public class LeaderboardFragment extends Fragment {
     private final LeaderboardFragmentDb leaderboardFragmentDb = new LeaderboardFragmentDb();
     private RecyclerView recyclerView;
@@ -58,6 +58,7 @@ public class LeaderboardFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLeaderboardLoaded(LeaderboardFragmentEvent.LeaderboardLoaded result) {
+        _Users.sort(Collections.reverseOrder());
         adapter.notifyDataSetChanged();
     }
 

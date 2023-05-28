@@ -35,10 +35,14 @@ public class LeaderboardViewHolder extends RecyclerView.ViewHolder {
         _UserPoints = itemView.findViewById(R.id.leaderboard_points);
         _ImageStar = itemView.findViewById(R.id.leaderboard_star_icon);
     }
+
     public void bindData(UserLeaderboard user) {
-        if (getAdapterPosition() == 0) _ImageStar.setImageResource(R.drawable.first_place_leaderboard_star);
-        else if (getAdapterPosition() == 1) _ImageStar.setImageResource(R.drawable.second_place_leaderboard_star);
-        else if (getAdapterPosition() == 2) _ImageStar.setImageResource(R.drawable.third_place_leaderboard_star);
+        if (getAdapterPosition() == 0)
+            _ImageStar.setImageResource(R.drawable.first_place_leaderboard_star);
+        else if (getAdapterPosition() == 1)
+            _ImageStar.setImageResource(R.drawable.second_place_leaderboard_star);
+        else if (getAdapterPosition() == 2)
+            _ImageStar.setImageResource(R.drawable.third_place_leaderboard_star);
         Glide.with(_Context)
                 .load(user.getImageUri())
                 .into(_UserAvatar);

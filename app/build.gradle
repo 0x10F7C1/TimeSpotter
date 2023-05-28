@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.timespotter"
-        minSdk 24
+        minSdk 26 //bio je 24
         targetSdk 33
         versionCode 1
         versionName "1.0"

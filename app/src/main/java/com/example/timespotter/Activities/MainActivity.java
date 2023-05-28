@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
         super.onStop();
     }
+
     @Override
     protected void onDestroy() {
         System.out.println(TAG + " " + "Brisem se!");

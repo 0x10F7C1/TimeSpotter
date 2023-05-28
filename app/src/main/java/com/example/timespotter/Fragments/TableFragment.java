@@ -1,6 +1,5 @@
 package com.example.timespotter.Fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.timespotter.Adapters.TableAdapter;
-import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.DataModels.TableItem;
 import com.example.timespotter.DbContexts.TableFragmentDb;
 import com.example.timespotter.R;
@@ -27,16 +25,20 @@ public class TableFragment extends Fragment {
     private RecyclerView recyclerView;
     private List<TableItem> tableItems;
     private TableAdapter adapter;
+
     public TableFragment() {
     }
+
     public static TableFragment newInstance() {
         TableFragment fragment = new TableFragment();
         return fragment;
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -51,6 +53,7 @@ public class TableFragment extends Fragment {
 
         return view;
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTableEntryAdded(TableItem entry) {
         int position = tableItems.size();

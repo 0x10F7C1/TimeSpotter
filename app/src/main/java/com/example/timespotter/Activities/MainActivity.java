@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
     private final MainActivityDb mainActivityDb = new MainActivityDb();
     //TODO -> Avatar + submissions
     //TODO -> Remember me implementirati
-    //TODO -> kada user doda marker, da on ide u excluded markers?
     private Button _Login, _SignUp, _ForgetPass;
     private TextInputLayout _Username, _Password;
 
@@ -89,11 +88,5 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        System.out.println(TAG + " " + "Brisem se!");
-        super.onDestroy();
     }
 }

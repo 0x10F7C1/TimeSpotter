@@ -2,12 +2,14 @@ package com.example.timespotter.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -83,6 +85,10 @@ public class LocationTemplateActivity extends AppCompatActivity {
     }
 
     private void createBtnOnClick(View view) {
+        if (areFieldsEmpty()) {
+            Toast.makeText(this, "Please fill in all the fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(getLayoutInflater().inflate(R.layout.progress_bar_dialog, null));
         builder.setCancelable(false);
@@ -120,6 +126,17 @@ public class LocationTemplateActivity extends AppCompatActivity {
         locationTemplateActivityDb.addPlace(place);
     }
 
+    private boolean areFieldsEmpty() {
+        if (selectedSpinnerItem == -1
+        || TextUtils.isEmpty(_PlaceName.getEditText().getText())
+        || TextUtils.isEmpty(_PlaceWebsite.getEditText().getText())
+        || TextUtils.isEmpty(_PlacePhoneNum.getEditText().getText())
+        || _StartDateText.getText().toString().equals("Open time")
+        || _CloseDateText.getText().toString().equals("Close time")) {
+            return true;
+        }
+        return false;
+    }
     private void cancelBtnOnClick(View view) {
         finish();
     }
@@ -197,8 +214,5 @@ public class LocationTemplateActivity extends AppCompatActivity {
         super.onStop();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
+
 }

@@ -119,8 +119,13 @@ public class MapActivity extends AppCompatActivity {
 
     private void rateBtnOnClick(View view) {
         if (_Marker != null && _Marker.isInfoWindowShown()) {
-            initRateDialog();
-            _RateDialog.show();
+            if (((Place)_Marker.getTag()).getCreatorUsername().equals(AppData.user.getUsername())) {
+                Toast.makeText(MapActivity.this, "You cannot rate your markers", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                initRateDialog();
+                _RateDialog.show();
+            }
         } else {
             Toast.makeText(MapActivity.this, "Select a marker", Toast.LENGTH_SHORT).show();
         }
@@ -306,6 +311,7 @@ public class MapActivity extends AppCompatActivity {
         dialogBuilder.setView(customDialog);
 
         _RateDialog = dialogBuilder.create();
+        _RateDialog.setCancelable(false);
         _RateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         nameStar = new RateStar();
@@ -419,7 +425,6 @@ public class MapActivity extends AppCompatActivity {
                     Location currentLocation = task.getResult();
                     LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
                     _GoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
-                    //moveCamera(latLng, DEFAULT_ZOOM, "My location");
                 } else {
                     Log.d(TAG, "Current location is null");
                 }

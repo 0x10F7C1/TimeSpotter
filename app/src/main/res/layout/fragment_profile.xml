@@ -229,23 +229,23 @@
                 android:id="@+id/profile_update"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
                 android:backgroundTint="#6BA333"
                 android:fontFamily="@font/bungee"
-                android:text="@string/profile_update_button_text"
-                android:layout_marginEnd="10dp"
-                android:layout_marginTop="15dp"
-                android:layout_weight="1"/>
+                android:text="@string/profile_update_button_text" />
 
             <Button
                 android:id="@+id/profile_logout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_weight="1"
                 android:backgroundTint="#6BA333"
                 android:fontFamily="@font/bungee"
-                android:layout_marginTop="15dp"
-                android:text="@string/profile_logout_button_text"
-                android:layout_marginStart="10dp"
-                android:layout_weight="1"/>
+                android:text="@string/profile_logout_button_text" />
 
         </LinearLayout>
     </LinearLayout>

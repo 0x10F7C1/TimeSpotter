@@ -24,7 +24,6 @@
 
         <!-- icon for user name column heading -->
         <ImageView
-            android:id="@+id/table_user_name_icon"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_gravity="center"
@@ -34,7 +33,6 @@
             android:src="@drawable/user" />
 
         <ImageView
-            android:id="@+id/table_place_name_icon"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_gravity="center"
@@ -45,7 +43,6 @@
 
         <!-- icon for number of correct column heading -->
         <ImageView
-            android:id="@+id/table_place_phone_icon"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_gravity="center"
@@ -56,7 +53,6 @@
 
         <!-- icon for time taken column heading -->
         <ImageView
-            android:id="@+id/table_place_website_icon"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_gravity="center"
@@ -66,7 +62,6 @@
             android:src="@drawable/web" />
 
         <ImageView
-            android:id="@+id/table_place_start_time_icon"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_gravity="center"
@@ -77,7 +72,6 @@
             android:src="@drawable/table_start_time_icon" />
 
         <ImageView
-            android:id="@+id/table_place_close_time_icon"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_gravity="center"

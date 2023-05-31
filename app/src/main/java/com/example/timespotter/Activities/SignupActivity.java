@@ -1,20 +1,18 @@
 package com.example.timespotter.Activities;
 
 import android.content.Intent;
-import android.content.res.TypedArray;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.timespotter.Adapters.AvatarAdapter;
-import com.example.timespotter.DataModels.Avatar;
 import com.example.timespotter.DataModels.User;
-import com.example.timespotter.DbContexts.MainActivityDb;
 import com.example.timespotter.DbContexts.SignupActivityDb;
 import com.example.timespotter.Events.SignupActivityEvent;
 import com.example.timespotter.R;
@@ -25,21 +23,18 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SignupActivity extends AppCompatActivity {
 
     private static final String TAG = SignupActivity.class.getSimpleName();
+    private static final int PHOTO_PICKER = 2;
     private static final int USER_REGISTER_SUCCESS = 2;
     private static int userRegisterCount = 0;
-    private final MainActivityDb mainActivityDb = new MainActivityDb();
     private final SignupActivityDb signupActivityDb = new SignupActivityDb();
-    private TextInputLayout _FullName, _Username, _Email, _Password, _Phone;
-    private MaterialButton _SignUp;
-    private RecyclerView recyclerView;
-    private AvatarAdapter adapter;
-    private List<Avatar> avatars;
+    private TextInputLayout fullName, username, email, password, phone;
+    private TextView avatarText;
+    private MaterialButton signup;
+    private ImageButton avatar;
+    private Uri avatarUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,50 +42,44 @@ public class SignupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        avatars = new ArrayList<>();
-        recyclerView = findViewById(R.id.avatar_recycler);
-        adapter = new AvatarAdapter(this, avatars);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-
-        TypedArray avatarImages = getResources().obtainTypedArray(R.array.avatar_images);
-        for (int i = 0; i < avatarImages.length(); i++) {
-            avatars.add(new Avatar(avatarImages.getResourceId(i, 0)));
-        }
-
-        adapter.notifyDataSetChanged();
-        avatarImages.recycle();
-
         bindViews();
         registerCallbackListeners();
     }
 
     private void bindViews() {
-        _FullName = findViewById(R.id.name);
-        _Username = findViewById(R.id.username);
-        _Email = findViewById(R.id.email);
-        _Password = findViewById(R.id.password);
-        _Phone = findViewById(R.id.phoneNum);
-        _SignUp = findViewById(R.id.signup);
+        fullName = findViewById(R.id.name);
+        username = findViewById(R.id.username);
+        email = findViewById(R.id.email);
+        password = findViewById(R.id.password);
+        phone = findViewById(R.id.phoneNum);
+        signup = findViewById(R.id.signup);
+        avatar = findViewById(R.id.profile_avatar);
+        avatarText = findViewById(R.id.avatar_text);
     }
 
     private void registerCallbackListeners() {
-        _SignUp.setOnClickListener(this::signUpOnClick);
+        signup.setOnClickListener(this::signUpOnClick);
+        avatar.setOnClickListener(this::avatarOnClick);
     }
 
     private void signUpOnClick(View view) {
-        if (!validateName() | !validateUsername() | !validateEmail() | !validatePassword() | !validatePhone()) {
+        if (!validateName()
+                | !validateUsername()
+                | !validateEmail()
+                | !validatePassword()
+                | !validatePhone()
+                | !validateAvatar()) {
             return;
         } else {
             String name, username, email, password, phone;
-            name = _FullName.getEditText().getText().toString();
-            username = _Username.getEditText().getText().toString();
-            email = _Email.getEditText().getText().toString();
-            password = _Password.getEditText().getText().toString();
-            phone = _Phone.getEditText().getText().toString();
+            name = fullName.getEditText().getText().toString();
+            username = this.username.getEditText().getText().toString();
+            email = this.email.getEditText().getText().toString();
+            password = this.password.getEditText().getText().toString();
+            phone = this.phone.getEditText().getText().toString();
 
-            User user = new User(name, username, email, password, phone, 0l, "");
-            signupActivityDb.userSignup(user);
+            User user = new User(name, username, email, password, phone, 0l, 0l, "", "");
+            signupActivityDb.userSignup(user, avatarUri);
 
         }
     }
@@ -106,57 +95,57 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private boolean validateName() {
-        String name = _FullName.getEditText().getText().toString();
+        String name = fullName.getEditText().getText().toString();
         if (name.isEmpty()) {
-            _FullName.setError("Field cannot be empty");
+            fullName.setError("Field cannot be empty");
             return false;
         } else {
-            _FullName.setError(null);
-            _FullName.setErrorEnabled(false);
+            fullName.setError(null);
+            fullName.setErrorEnabled(false);
             return true;
         }
     }
 
     private boolean validateUsername() {
-        String username = _Username.getEditText().getText().toString();
+        String username = this.username.getEditText().getText().toString();
         String noWhiteSpace = "^[^\\s]+$";
 
         if (username.isEmpty()) {
-            _Username.setError("Field cannot be empty");
+            this.username.setError("Field cannot be empty");
             return false;
         } else if (username.length() >= 15) {
-            _Username.setError("Username too long");
+            this.username.setError("Username too long");
             return false;
         } else if (!username.matches(noWhiteSpace)) {
-            _Username.setError("Whitespaces are not allowed");
+            this.username.setError("Whitespaces are not allowed");
             return false;
         } else {
-            _Username.setError(null);
-            _Username.setErrorEnabled(false);
+            this.username.setError(null);
+            this.username.setErrorEnabled(false);
             return true;
         }
     }
 
     private boolean validateEmail() {
-        String email = _Email.getEditText().getText().toString();
+        String email = this.email.getEditText().getText().toString();
         String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
         if (email.isEmpty()) {
-            _Email.setError("Field cannot be empty");
+            this.email.setError("Field cannot be empty");
             return false;
         } else if (!email.matches(emailPattern)) {
-            _Email.setError("Invalid email address");
+            this.email.setError("Invalid email address");
             return false;
         } else {
-            _Email.setError(null);
-            _Email.setErrorEnabled(false);
+            this.email.setError(null);
+            this.email.setErrorEnabled(false);
             return true;
         }
 
     }
 
     private boolean validatePassword() {
-        String password = _Password.getEditText().getText().toString();
+        String password = this.password.getEditText().getText().toString();
         String passwordPattern = "^" +
                 "(?=.*[0-9])" +
                 "(?=.*[a-z])" +
@@ -168,34 +157,58 @@ public class SignupActivity extends AppCompatActivity {
                 "$";
 
         if (password.isEmpty()) {
-            _Password.setError("Field cannot be empty");
+            this.password.setError("Field cannot be empty");
             return false;
         } else if (!password.matches(passwordPattern)) {
-            _Password.setError("Password is too weak");
+            this.password.setError("Password is too weak");
             return false;
         } else {
-            _Password.setError(null);
-            _Password.setErrorEnabled(false);
+            this.password.setError(null);
+            this.password.setErrorEnabled(false);
             return true;
         }
 
     }
 
     private boolean validatePhone() {
-        String phone = _Phone.getEditText().getText().toString();
+        String phone = this.phone.getEditText().getText().toString();
 
         if (phone.isEmpty()) {
-            _Phone.setError("Field cannot be empty");
+            this.phone.setError("Field cannot be empty");
             return false;
         } else {
-            _Phone.setError(null);
-            _Phone.setErrorEnabled(false);
+            this.phone.setError(null);
+            this.phone.setErrorEnabled(false);
             return true;
         }
     }
 
+    private boolean validateAvatar() {
+        if (avatarUri == null) {
+            avatarText.setText("Please select an avatar");
+            avatarText.setTextColor(getResources().getColor(R.color.holo_dark_red));
+            return false;
+        }
+        return true;
+    }
+
+    private void avatarOnClick(View view) {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, PHOTO_PICKER);
+    }
+
     private void makeToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PHOTO_PICKER) {
+            if (resultCode == RESULT_OK) {
+                avatarUri = data.getData();
+            }
+        }
     }
 
     protected void onStart() {
@@ -206,11 +219,5 @@ public class SignupActivity extends AppCompatActivity {
     protected void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        System.out.println(TAG + " " + "Brisem se!");
-        super.onDestroy();
     }
 }

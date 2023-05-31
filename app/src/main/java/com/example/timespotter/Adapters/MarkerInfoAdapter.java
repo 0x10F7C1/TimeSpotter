@@ -15,12 +15,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 
 public class MarkerInfoAdapter implements GoogleMap.InfoWindowAdapter {
-    private final View _Window;
-    private final Context _Context;
+    private final View window;
+    private final Context context;
 
     public MarkerInfoAdapter(Context context) {
-        _Context = context;
-        _Window = LayoutInflater.from(_Context).inflate(R.layout.marker_info_window, null);
+        this.context = context;
+        window = LayoutInflater.from(this.context).inflate(R.layout.marker_info_window, null);
     }
 
     private void renderWindowInfo(Marker marker, View view) {
@@ -46,16 +46,14 @@ public class MarkerInfoAdapter implements GoogleMap.InfoWindowAdapter {
     @Nullable
     @Override
     public View getInfoContents(@NonNull Marker marker) {
-        //return null;
-        renderWindowInfo(marker, _Window);
-        return _Window;
+        renderWindowInfo(marker, window);
+        return window;
     }
 
     @Nullable
     @Override
     public View getInfoWindow(@NonNull Marker marker) {
-        Log.d("getInfoWindow", "inflating!");
-        renderWindowInfo(marker, _Window);
-        return _Window;
+        renderWindowInfo(marker, window);
+        return window;
     }
 }

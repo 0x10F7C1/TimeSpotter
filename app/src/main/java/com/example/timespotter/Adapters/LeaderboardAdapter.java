@@ -12,32 +12,30 @@ import com.example.timespotter.DataModels.UserLeaderboard;
 import com.example.timespotter.R;
 
 import java.util.List;
-
-//nek se u Leaderboard cvoru cuva (username, pts, link ka slici, ime)
 public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardViewHolder> {
-    private final List<UserLeaderboard> _Users;
-    private final Context _Context;
+    private final List<UserLeaderboard> users;
+    private final Context context;
 
     public LeaderboardAdapter(Context context, List<UserLeaderboard> users) {
-        _Context = context;
-        _Users = users;
+        this.context = context;
+        this.users = users;
     }
 
     @NonNull
     @Override
     public LeaderboardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(_Context).inflate(R.layout.leaderboard_item_layout, parent, false);
-        return new LeaderboardViewHolder(itemView, _Context, _Users);
+        View itemView = LayoutInflater.from(context).inflate(R.layout.leaderboard_item_layout, parent, false);
+        return new LeaderboardViewHolder(itemView, context, users);
     }
 
     @Override
     public void onBindViewHolder(@NonNull LeaderboardViewHolder holder, int position) {
-        UserLeaderboard user = _Users.get(position);
+        UserLeaderboard user = users.get(position);
         holder.bindData(user);
     }
 
     @Override
     public int getItemCount() {
-        return _Users.size();
+        return users.size();
     }
 }

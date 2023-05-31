@@ -12,11 +12,13 @@ public class User implements Serializable {
     private String phone;
     private Long points;
     private String key;
+    private Long submissions;
+    private String imageUri;
 
     public User() {
     }
 
-    public User(String name, String username, String email, String password, String phone, Long points, String key) {
+    public User(String name, String username, String email, String password, String phone, Long points, Long submissions, String imageUri, String key) {
         this.name = name;
         this.username = username;
         this.email = email;
@@ -24,6 +26,8 @@ public class User implements Serializable {
         this.phone = phone;
         this.points = points;
         this.key = key;
+        this.submissions = submissions;
+        this.imageUri = imageUri;
     }
 
     public static User copyUser(User oldUser) {
@@ -35,6 +39,8 @@ public class User implements Serializable {
         newUser.setPhone(oldUser.getPhone());
         newUser.setPoints(oldUser.getPoints());
         newUser.setKey(oldUser.getKey());
+        newUser.setSubmissions(oldUser.getSubmissions());
+        newUser.setImageUri(oldUser.getImageUri());
         return newUser;
     }
 
@@ -45,7 +51,9 @@ public class User implements Serializable {
                 && u1.password.equals(u2.password)
                 && u1.name.equals(u2.name)
                 && u1.points.equals(u2.points)
-                && u1.key.equals(u2.key);
+                && u1.key.equals(u2.key)
+                && u1.submissions.equals(u2.submissions)
+                && u1.imageUri.equals(u2.imageUri);
     }
 
     public String getName() {
@@ -102,6 +110,22 @@ public class User implements Serializable {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public Long getSubmissions() {
+        return submissions;
+    }
+
+    public void setSubmissions(Long submissions) {
+        this.submissions = submissions;
+    }
+
+    public String getImageUri() {
+        return imageUri;
+    }
+
+    public void setImageUri(String imageUri) {
+        this.imageUri = imageUri;
     }
 
     @NonNull

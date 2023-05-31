@@ -2,6 +2,7 @@ package com.example.timespotter.Fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,16 +31,11 @@ public class ProfileFragment extends Fragment {
     private static final int PHOTO_PICKER = 2;
     private Button _UpdateProfile, _LogoutProfile;
     private TextInputLayout _UsernameText, _EmailText, _PasswordText, _PhoneText;
-    private TextView _UserUsernameText, _UserFullNameText, _UserPtsText;
+    private TextView _UserUsernameText, _UserFullNameText, _UserPtsText, userSubmissionsText;
     private CircleImageView _UserProfileImage;
-    //private User user;
+    private Uri avatarUri;
 
     public ProfileFragment() {
-    }
-
-    public static ProfileFragment newInstance() {
-        ProfileFragment fragment = new ProfileFragment();
-        return fragment;
     }
 
     @Override
@@ -61,15 +57,17 @@ public class ProfileFragment extends Fragment {
         _UserFullNameText = view.findViewById(R.id.profile_full_name);
         _UserPtsText = view.findViewById(R.id.profile_pts);
         _UserProfileImage = view.findViewById(R.id.profile_image);
+        userSubmissionsText = view.findViewById(R.id.profile_submissions);
         //user = (User) getArguments().getSerializable("user");
 
         _UserUsernameText.setText(AppData.user.getUsername());
         _UserFullNameText.setText(AppData.user.getName());
         _UserPtsText.setText(AppData.user.getPoints().toString());
+        userSubmissionsText.setText(AppData.user.getSubmissions().toString());
         _UpdateProfile.setOnClickListener(this::updateProfileOnClick);
         _LogoutProfile.setOnClickListener(this::logoutProfileOnClick);
         _UserProfileImage.setOnClickListener(this::changeProfileImageOnClick);
-        Glide.with(requireContext()).load("https://firebasestorage.googleapis.com/v0/b/timespotter-95d44.appspot.com/o/Place%20photos%2F15dcf1a9-d6c6-4475-ad29-156cd8c45f51?alt=media&token=67428a47-f8b2-49d0-9b39-cedafadc4a87")
+        Glide.with(requireContext()).load(AppData.user.getImageUri())
                 .centerCrop().into(_UserProfileImage);
         return view;
     }
@@ -88,7 +86,8 @@ public class ProfileFragment extends Fragment {
                 && validateEmail(newUser, email)
                 && validatePassword(newUser, password)
                 && validatePhoneNumber(newUser, phone)) {
-            db.updateUserProfile(AppData.user, newUser);
+            boolean isAvatarChanged = avatarUri != null;
+            db.updateUserProfile(AppData.user, newUser, avatarUri, isAvatarChanged);
         }
     }
 
@@ -215,6 +214,7 @@ public class ProfileFragment extends Fragment {
         if (requestCode == PHOTO_PICKER) {
             if (resultCode == Activity.RESULT_OK) {
                 Glide.with(requireContext()).load(data.getData()).centerCrop().into(_UserProfileImage);
+                avatarUri = data.getData();
             }
         }
 

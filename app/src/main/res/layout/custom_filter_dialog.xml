@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="7dp"
-    android:background="@drawable/filter_dialog_shape">
+    android:background="@drawable/filter_dialog_shape"
+    android:padding="7dp">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/filter_username_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="15dp"
-        android:layout_marginStart="15dp"
         app:boxStrokeColor="#20C114"
         app:hintEnabled="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="Enter username"/>
+            android:hint="Enter username" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -30,14 +30,15 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:hint="Enter a type"
         app:boxStrokeColor="#20C114"
         app:hintEnabled="false"
-        android:layout_marginEnd="15dp"
-        android:layout_marginStart="15dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/filter_username_layout"
-        android:hint="Enter a type">
+        app:layout_constraintTop_toBottomOf="@id/filter_username_layout">
+
         <AutoCompleteTextView
             android:id="@+id/filter_material_spinner"
             android:layout_width="match_parent"
@@ -45,7 +46,7 @@
             android:layout_weight="1"
             android:hint="Select a place type"
             android:inputType="none"
-            android:textSize="17sp"/>
+            android:textSize="17sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -53,17 +54,18 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="15dp"
-        android:layout_marginStart="15dp"
         app:boxStrokeColor="#20C114"
         app:hintEnabled="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/filter_type_layout">
+
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="Enter a radius"/>
+            android:hint="Enter a radius" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -71,19 +73,19 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:boxStrokeColor="#20C114"
-        app:hintEnabled="false"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="15dp"
-        android:layout_marginStart="15dp"
+        app:boxStrokeColor="#20C114"
+        app:hintEnabled="false"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/filter_radius_layout"
-        >
+        app:layout_constraintTop_toBottomOf="@id/filter_radius_layout">
+
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
-            android:drawableEnd="@drawable/filter_start_time_icon"
             android:layout_height="match_parent"
-            android:hint="Select a start time"/>
+            android:drawableEnd="@drawable/filter_start_time_icon"
+            android:hint="Select a start time" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -91,31 +93,32 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="15dp"
         app:boxStrokeColor="#20C114"
         app:hintEnabled="false"
-        android:layout_marginStart="15dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/filter_start_time_layout">
+
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
-            android:drawableEnd="@drawable/filter_close_time_icon"
             android:layout_height="match_parent"
-            android:hint="Select a close time"/>
+            android:drawableEnd="@drawable/filter_close_time_icon"
+            android:hint="Select a close time" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="15dp"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/filter_close_time_layout">
 
         <com.google.android.material.button.MaterialButton
@@ -123,25 +126,25 @@
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:text="Filter"
-            android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:gravity="center"
+            android:layout_weight="1"
             android:backgroundTint="@color/app_green"
-            android:textColor="#F8F8F8"
-            android:fontFamily="@font/bungee"/>
+            android:fontFamily="@font/bungee"
+            android:gravity="center"
+            android:text="Filter"
+            android:textColor="#F8F8F8" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/cancel_button"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:text="Close"
-            android:gravity="center"
             android:layout_weight="1"
             android:backgroundTint="@color/app_green"
-            android:textColor="#F8F8F8"
-            android:fontFamily="@font/bungee"/>
+            android:fontFamily="@font/bungee"
+            android:gravity="center"
+            android:text="Close"
+            android:textColor="#F8F8F8" />
 
     </LinearLayout>
 

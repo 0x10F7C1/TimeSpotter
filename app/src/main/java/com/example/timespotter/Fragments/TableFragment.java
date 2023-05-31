@@ -29,11 +29,6 @@ public class TableFragment extends Fragment {
     public TableFragment() {
     }
 
-    public static TableFragment newInstance() {
-        TableFragment fragment = new TableFragment();
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

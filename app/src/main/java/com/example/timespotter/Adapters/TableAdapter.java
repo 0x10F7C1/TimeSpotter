@@ -15,17 +15,17 @@ import java.util.List;
 
 public class TableAdapter extends RecyclerView.Adapter<TableViewHolder> {
     private final List<TableItem> tableItems;
-    private final Context _Context;
+    private final Context context;
 
     public TableAdapter(Context context, List<TableItem> tableItems) {
-        _Context = context;
+        this.context = context;
         this.tableItems = tableItems;
     }
 
     @NonNull
     @Override
     public TableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(_Context).inflate(R.layout.table_layout_item, parent, false);
+        View itemView = LayoutInflater.from(context).inflate(R.layout.table_layout_item, parent, false);
         return new TableViewHolder(itemView);
     }
 

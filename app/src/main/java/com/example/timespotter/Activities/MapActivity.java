@@ -69,21 +69,17 @@ public class MapActivity extends AppCompatActivity {
     private static final int END_DATE_PICKER = 1;
     private static final int USER_POINTS_UPDATE = 2;
     private static final int CREATOR_POINTS_UPDATE = 2;
-    private static int DATE_PICKER;
-    private final List<Marker> _ActiveMarkers = new ArrayList<>();
+    private int DATE_PICKER;
     private final Calendar calendar = Calendar.getInstance();
     private final MapActivityDb mapActivityDb = new MapActivityDb();
-    private boolean _LocationEnabled;
-    private GoogleMap _GoogleMap;
-    private FusedLocationProviderClient _FusedClient;
-    private ImageView _AddPlace;
-    private Marker _Marker;
-    private ImageView _Rate;
-    private AlertDialog _RateDialog;
-    private Button _RateDialogBtn, _CloseDialogBtn;
-    private AlertDialog _FilterDialog;
-    private ImageView _FilterButton;
-    private MaterialDatePicker<Long> _DatePicker;
+    private List<Marker> activeMarkers;
+    private boolean locationEnabled;
+    private GoogleMap googleMap;
+    private FusedLocationProviderClient fusedClient;
+    private ImageView addPlace, rate, filterButton;
+    private Marker globalMarker;
+    private AlertDialog rateDialog, filterDialog;
+    private MaterialDatePicker<Long> datePicker;
     private AutoCompleteTextView materialSpinner;
     private int startDay, startMonth, startYear, endDay, endMonth, endYear;
     private int userPointUpdate = 0, creatorPointsUpdate = 0;
@@ -95,7 +91,7 @@ public class MapActivity extends AppCompatActivity {
         setContentView(R.layout.activity_map);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+        activeMarkers = new ArrayList<>();
         bindViews();
         registerCallbackListeners();
         getLocationPermission();
@@ -103,28 +99,27 @@ public class MapActivity extends AppCompatActivity {
     }
 
     private void bindViews() {
-        _AddPlace = findViewById(R.id.add_place);
-        _FilterButton = findViewById(R.id.filter_button);
-        _Rate = findViewById(R.id.rate);
+        addPlace = findViewById(R.id.add_place);
+        filterButton = findViewById(R.id.filter_button);
+        rate = findViewById(R.id.rate);
     }
 
     private void registerCallbackListeners() {
-        _AddPlace.setOnClickListener(this::addPlace);
-        _FilterButton.setOnClickListener(view -> {
+        addPlace.setOnClickListener(this::addPlace);
+        filterButton.setOnClickListener(view -> {
             initFilterDialog();
-            _FilterDialog.show();
+            filterDialog.show();
         });
-        _Rate.setOnClickListener(this::rateBtnOnClick);
+        rate.setOnClickListener(this::rateBtnOnClick);
     }
 
     private void rateBtnOnClick(View view) {
-        if (_Marker != null && _Marker.isInfoWindowShown()) {
-            if (((Place)_Marker.getTag()).getCreatorUsername().equals(AppData.user.getUsername())) {
+        if (globalMarker != null && globalMarker.isInfoWindowShown()) {
+            if (((Place) globalMarker.getTag()).getCreatorUsername().equals(AppData.user.getUsername())) {
                 Toast.makeText(MapActivity.this, "You cannot rate your markers", Toast.LENGTH_SHORT).show();
-            }
-            else {
+            } else {
                 initRateDialog();
-                _RateDialog.show();
+                rateDialog.show();
             }
         } else {
             Toast.makeText(MapActivity.this, "Select a marker", Toast.LENGTH_SHORT).show();
@@ -136,9 +131,9 @@ public class MapActivity extends AppCompatActivity {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         dialogBuilder.setView(customDialog);
 
-        _FilterDialog = dialogBuilder.create();
-        _FilterDialog.setCancelable(false);
-        _FilterDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        filterDialog = dialogBuilder.create();
+        filterDialog.setCancelable(false);
+        filterDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         TextInputLayout usernameText, typeText, radiusText, startTimeText, closeTimeText;
         MaterialButton filterBtn, cancelBtn;
@@ -155,21 +150,21 @@ public class MapActivity extends AppCompatActivity {
         startTimeText = customDialog.findViewById(R.id.filter_start_time_layout);
         closeTimeText = customDialog.findViewById(R.id.filter_close_time_layout);
 
-        _DatePicker = MaterialDatePicker.Builder.datePicker().build();
+        datePicker = MaterialDatePicker.Builder.datePicker().build();
 
         filterBtn = customDialog.findViewById(R.id.filter_button);
         cancelBtn = customDialog.findViewById(R.id.cancel_button);
 
         startTimeText.setOnClickListener(view -> {
             DATE_PICKER = START_DATE_PICKER;
-            _DatePicker.show(getSupportFragmentManager(), "DatePicker");
+            datePicker.show(getSupportFragmentManager(), "DatePicker");
         });
         closeTimeText.setOnClickListener(view -> {
             DATE_PICKER = END_DATE_PICKER;
-            _DatePicker.show(getSupportFragmentManager(), "Different fragment");
+            datePicker.show(getSupportFragmentManager(), "Different fragment");
         });
 
-        _DatePicker.addOnPositiveButtonClickListener(selection -> {
+        datePicker.addOnPositiveButtonClickListener(selection -> {
             calendar.setTimeInMillis(selection);
             if (DATE_PICKER == START_DATE_PICKER) {
                 startDay = calendar.get(Calendar.DAY_OF_MONTH);
@@ -199,22 +194,22 @@ public class MapActivity extends AppCompatActivity {
                     .getEditText().getText().toString());
 
             filter(usernameFilter, typeFilter, radiusFilter, dateRangeFilter, username, type, radius);
-            _FilterDialog.dismiss();
+            filterDialog.dismiss();
         });
 
         cancelBtn.setOnClickListener(view -> {
-            _FilterDialog.dismiss();
+            filterDialog.dismiss();
         });
     }
 
     private void filter(boolean usernameFilter, boolean typeFilter, boolean radiusFilter, boolean dateRangeFilter, String username, String type, double radius) {
-        _FusedClient.getLastLocation().addOnSuccessListener(location -> {
+        fusedClient.getLastLocation().addOnSuccessListener(location -> {
             Marker marker;
             LatLng currLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-            Log.d("Trenutan broj markera na mapi je: ", String.valueOf(_ActiveMarkers.size()));
-            for (int i = 0; i < _ActiveMarkers.size(); i++) {
-                marker = _ActiveMarkers.get(i);
-                System.out.println("Broj markera je " + _ActiveMarkers.size());
+            Log.d("Trenutan broj markera na mapi je: ", String.valueOf(activeMarkers.size()));
+            for (int i = 0; i < activeMarkers.size(); i++) {
+                marker = activeMarkers.get(i);
+                System.out.println("Broj markera je " + activeMarkers.size());
                 boolean showMarker = toFilterByUsername(marker, username, usernameFilter)
                         && toFilterByType(marker, type, typeFilter)
                         && toFilterByRadius(currLatLng, marker.getPosition(), radiusFilter, radius)
@@ -310,9 +305,9 @@ public class MapActivity extends AppCompatActivity {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         dialogBuilder.setView(customDialog);
 
-        _RateDialog = dialogBuilder.create();
-        _RateDialog.setCancelable(false);
-        _RateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        rateDialog = dialogBuilder.create();
+        rateDialog.setCancelable(false);
+        rateDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         nameStar = new RateStar();
         typeStar = new RateStar();
@@ -358,19 +353,25 @@ public class MapActivity extends AppCompatActivity {
         greenTime.setOnClickListener(view -> setGreenButton(greenTime, redTime, timeStar));
         redTime.setOnClickListener(view -> setRedButton(greenTime, redTime, timeStar));
 
-        _RateDialogBtn = customDialog.findViewById(R.id.rate_dialog_btn);
-        _CloseDialogBtn = customDialog.findViewById(R.id.close_dialog_btn);
+        Button rateDialogBtn = customDialog.findViewById(R.id.rate_dialog_btn);
+        Button closeDialogBtn = customDialog.findViewById(R.id.close_dialog_btn);
 
-        _RateDialogBtn.setOnClickListener(this::rateDialogOnClick);
-        _CloseDialogBtn.setOnClickListener(view -> {
-            _RateDialog.cancel();
+        rateDialogBtn.setOnClickListener(this::rateDialogOnClick);
+        closeDialogBtn.setOnClickListener(view -> {
+            rateDialog.cancel();
         });
     }
 
     private void rateDialogOnClick(View view) {
-        Place place = (Place) _Marker.getTag();
-        _Marker.hideInfoWindow();
-        _Marker = null;
+        Place place = (Place) globalMarker.getTag();
+        for (int i = 0; i < activeMarkers.size(); i++) {
+            if (activeMarkers.get(i).getTag() == globalMarker.getTag()) {
+                activeMarkers.remove(i);
+                break;
+            }
+        }
+        globalMarker.remove();
+        globalMarker = null;
         int starsCount = nameStar.value + typeStar.value + websiteStar.value + phoneStar.value + timeStar.value;
         Toast.makeText(this, String.valueOf(starsCount), Toast.LENGTH_SHORT).show();
 
@@ -380,7 +381,7 @@ public class MapActivity extends AppCompatActivity {
     }
 
     private void addPlace(View view) {
-        Task<Location> locationTask = _FusedClient.getLastLocation();
+        Task<Location> locationTask = fusedClient.getLastLocation();
         locationTask.addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Location currentLocation = locationTask.getResult();
@@ -397,34 +398,34 @@ public class MapActivity extends AppCompatActivity {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(googleMap -> {
             Log.d(TAG, "Getting map object");
-            _GoogleMap = googleMap;
-            _GoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
-            _GoogleMap.setInfoWindowAdapter(new MarkerInfoAdapter(MapActivity.this));
-            _GoogleMap.setOnMarkerClickListener(marker -> {
+            this.googleMap = googleMap;
+            this.googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+            this.googleMap.setInfoWindowAdapter(new MarkerInfoAdapter(MapActivity.this));
+            this.googleMap.setOnMarkerClickListener(marker -> {
                 marker.showInfoWindow();
-                _Marker = marker;
+                globalMarker = marker;
                 return true;
             });
             Log.d(TAG, "Map object acquired");
 
-            if (_LocationEnabled) {
+            if (locationEnabled) {
                 getDeviceLocation();
-                _GoogleMap.setMyLocationEnabled(true);
+                this.googleMap.setMyLocationEnabled(true);
             }
         });
     }
 
     private void getDeviceLocation() {
         Log.d(TAG, "Getting devices current location");
-        _FusedClient = LocationServices.getFusedLocationProviderClient(this);
-        if (_LocationEnabled) {
-            Task<Location> location = _FusedClient.getLastLocation();
+        fusedClient = LocationServices.getFusedLocationProviderClient(this);
+        if (locationEnabled) {
+            Task<Location> location = fusedClient.getLastLocation();
             location.addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Log.d(TAG, "Current location found");
                     Location currentLocation = task.getResult();
                     LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-                    _GoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
                 } else {
                     Log.d(TAG, "Current location is null");
                 }
@@ -434,20 +435,33 @@ public class MapActivity extends AppCompatActivity {
 
     private void getLocationPermission() {
         if (PermissionX.isGranted(this, FINE_LOCATION) && PermissionX.isGranted(this, COARSE_LOCATION)) {
-            _LocationEnabled = true;
+            locationEnabled = true;
             initMap();
         } else {
             PermissionX.init(this)
                     .permissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
                     .request((allGranted, grantedList, deniedList) -> {
                         if (allGranted) {
-                            _LocationEnabled = true;
+                            locationEnabled = true;
                             initMap();
                         }
                     });
         }
     }
 
+    private void setGreenButton(ImageButton greenButton, ImageButton redButton, RateStar star) {
+        if (star.value == 0) star.value++;
+        greenButton.setBackgroundTintList(getResources().getColorStateList(R.color.button_green_tint));
+        redButton.setBackgroundTintList(getResources().getColorStateList(R.color.button_black_tint));
+    }
+
+    private void setRedButton(ImageButton greenButton, ImageButton redButton, RateStar star) {
+        if (star.value == 1) star.value--;
+        greenButton.setBackgroundTintList(getResources().getColorStateList(R.color.button_black_tint));
+        redButton.setBackgroundTintList(getResources().getColorStateList(R.color.holo_dark_red));
+    }
+
+    //METHODS FOR EVENT BUS
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMarkerAddEvent(Place place) {
         LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
@@ -460,20 +474,21 @@ public class MapActivity extends AppCompatActivity {
             markerIcon = bitmapDescriptorFromVector(this, R.drawable.ic_hospital);
         } else if (place.getType().equals("Pizzeria")) {
             markerIcon = bitmapDescriptorFromVector(this, R.drawable.ic_pizzeria);
+        } else if (place.getType().equals("Florist")) {
+            markerIcon = bitmapDescriptorFromVector(this, R.drawable.flower);
         }
 
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(latLng)
                 .icon(markerIcon);
 
-        Marker marker = _GoogleMap.addMarker(markerOptions);
+        Marker marker = googleMap.addMarker(markerOptions);
         System.out.println("Marker koji se dodaje ima ime " + place.getName());
         marker.setTag(place);
-        _Marker = marker;
-        _ActiveMarkers.add(marker);
+        globalMarker = marker;
+        activeMarkers.add(marker);
         System.out.println("Marker phone no: " + place.getPhone());
     }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUserPointsUpdate(LeaderboardFragmentEvent.UserPointsUpdate result) {
         userPointUpdate++;
@@ -503,6 +518,17 @@ public class MapActivity extends AppCompatActivity {
         Log.d(TAG, "Marker excluded for user");
     }
 
+    //UTIL METHOD
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    //METHODS CALLED BY ANDROID OS
     @Override
     protected void onStart() {
         super.onStart();
@@ -513,32 +539,5 @@ public class MapActivity extends AppCompatActivity {
     protected void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        System.out.println(TAG + " " + "Brisem se!");
-        super.onDestroy();
-    }
-
-    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
-        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
-        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        vectorDrawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
-    }
-
-    private void setGreenButton(ImageButton greenButton, ImageButton redButton, RateStar star) {
-        if (star.value == 0) star.value++;
-        greenButton.setBackgroundTintList(getResources().getColorStateList(R.color.button_green_tint));
-        redButton.setBackgroundTintList(getResources().getColorStateList(R.color.button_black_tint));
-    }
-
-    private void setRedButton(ImageButton greenButton, ImageButton redButton, RateStar star) {
-        if (star.value == 1) star.value--;
-        greenButton.setBackgroundTintList(getResources().getColorStateList(R.color.button_black_tint));
-        redButton.setBackgroundTintList(getResources().getColorStateList(R.color.holo_dark_red));
     }
 }

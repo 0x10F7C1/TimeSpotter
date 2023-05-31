@@ -11,6 +11,5 @@
     <color name="leaderboard_first_place">#FFE500</color>
     <color name="leaderboard_second_place">#00AEFF</color>
     <color name="leaderboard_third_place">#73240A</color>
-    <color name="leaderboard_any_place">#B18CC5</color>
     <color name="holo_dark_red">#CC0000</color>
 </resources>

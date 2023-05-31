@@ -22,10 +22,10 @@ import org.greenrobot.eventbus.ThreadMode;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private final MainActivityDb mainActivityDb = new MainActivityDb();
-    //TODO -> Avatar + submissions
-    //TODO -> Remember me implementirati
-    private Button _Login, _SignUp, _ForgetPass;
-    private TextInputLayout _Username, _Password;
+    //TODO -> Ubaciti promenu avatara
+    //TODO -> ubaciti jos ikonice za markere
+    private Button login, signup, forgetPass;
+    private TextInputLayout username, password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,22 +39,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void bindViews() {
-        _Login = findViewById(R.id.login);
-        _SignUp = findViewById(R.id.signup);
-        _ForgetPass = findViewById(R.id.forgetPass);
-        _Username = findViewById(R.id.username);
-        _Password = findViewById(R.id.password);
+        login = findViewById(R.id.login);
+        signup = findViewById(R.id.signup);
+        forgetPass = findViewById(R.id.forgetPass);
+        username = findViewById(R.id.username);
+        password = findViewById(R.id.password);
     }
 
     private void registerCallbackListeners() {
-        _Login.setOnClickListener(this::loginOnClick);
-        _SignUp.setOnClickListener(this::signUpOnClick);
-        _ForgetPass.setOnClickListener(this::loginOnClick);
+        login.setOnClickListener(this::loginOnClick);
+        signup.setOnClickListener(this::signUpOnClick);
+        forgetPass.setOnClickListener(this::loginOnClick);
     }
 
     private void loginOnClick(View view) {
-        String username = _Username.getEditText().getText().toString();
-        String password = _Password.getEditText().getText().toString();
+        String username = this.username.getEditText().getText().toString();
+        String password = this.password.getEditText().getText().toString();
 
         if (username.isEmpty() || password.isEmpty()) {
             makeToast("Empty fields");
@@ -80,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
+    //Methods called by Android OS
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);

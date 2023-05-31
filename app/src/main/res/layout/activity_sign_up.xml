@@ -33,7 +33,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/name"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/full_name"
@@ -111,20 +111,34 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/avatar_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:fontFamily="@font/bungee"
+        android:text="Avatar"
+        android:textSize="15sp" />
+
+    <ImageButton
+        android:id="@+id/profile_avatar"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:backgroundTint="@color/white"
+        android:scaleType="centerCrop"
+        android:src="@drawable/avatar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/galleryAvatar" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/signup"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:backgroundTint="@color/black"
         android:text="@string/sign_up_btn_msg"
         android:textColor="@color/white" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_marginTop="15dp"
-        android:id="@+id/avatar_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:scrollbars="horizontal"/>
 
 </LinearLayout>

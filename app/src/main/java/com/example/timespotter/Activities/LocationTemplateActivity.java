@@ -20,6 +20,7 @@ import com.example.timespotter.DbContexts.LocationTemplateActivityDb;
 import com.example.timespotter.Events.LocationTemplateActivityEvent.PlaceAdded;
 import com.example.timespotter.Events.LocationTemplateActivityEvent.PlaceAddedPointsUpdated;
 import com.example.timespotter.R;
+import com.example.timespotter.UserDb;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.timepicker.MaterialTimePicker;
@@ -34,13 +35,13 @@ import java.time.LocalDate;
 public class LocationTemplateActivity extends AppCompatActivity {
     private static final String TAG = LocationTemplateActivity.class.getSimpleName();
     private final LocationTemplateActivityDb locationTemplateActivityDb = new LocationTemplateActivityDb();
-    private TextInputLayout _PlaceName, _PlaceWebsite, _PlacePhoneNum;
-    private ImageButton _StartDateBtn, _CloseDateBtn;
-    private TextView _StartDateText, _CloseDateText;
-    private MaterialButton _CreateBtn, _CancelBtn;
-    private AutoCompleteTextView _MaterialSpinner;
+    private TextInputLayout placeName, placeWebsite, placePhoneNum;
+    private ImageButton startDateBtn, closeDateBtn;
+    private TextView startDateText, closeDateText;
+    private MaterialButton createBtn, cancelBtn;
+    private AutoCompleteTextView materialSpinner;
     private int selectedSpinnerItem = -1;
-    private MaterialTimePicker _TimePicker;
+    private MaterialTimePicker timePicker;
     private PlaceAddedPointsUpdated pointsUpdated;
     private PlaceAdded placeAdded;
     private AlertDialog progressDialog;
@@ -57,31 +58,31 @@ public class LocationTemplateActivity extends AppCompatActivity {
     }
 
     private void bindViews() {
-        _PlaceName = findViewById(R.id.place_name);
-        _PlaceWebsite = findViewById(R.id.place_website);
-        _PlacePhoneNum = findViewById(R.id.place_phone);
-        _StartDateBtn = findViewById(R.id.start_date);
-        _CloseDateBtn = findViewById(R.id.close_date);
-        _CreateBtn = findViewById(R.id.create);
-        _CancelBtn = findViewById(R.id.cancel);
-        _StartDateText = findViewById(R.id.start_date_text);
-        _CloseDateText = findViewById(R.id.close_date_text);
-        _MaterialSpinner = findViewById(R.id.material_spinner);
+        placeName = findViewById(R.id.place_name);
+        placeWebsite = findViewById(R.id.place_website);
+        placePhoneNum = findViewById(R.id.place_phone);
+        startDateBtn = findViewById(R.id.start_date);
+        closeDateBtn = findViewById(R.id.close_date);
+        createBtn = findViewById(R.id.create);
+        cancelBtn = findViewById(R.id.cancel);
+        startDateText = findViewById(R.id.start_date_text);
+        closeDateText = findViewById(R.id.close_date_text);
+        materialSpinner = findViewById(R.id.material_spinner);
         String[] spinnerItems = getResources().getStringArray(R.array.place_types);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line,
                 spinnerItems
         );
 
-        _MaterialSpinner.setAdapter(adapter);
+        materialSpinner.setAdapter(adapter);
     }
 
     private void registerCallbackListeners() {
-        _CreateBtn.setOnClickListener(this::createBtnOnClick);
-        _CancelBtn.setOnClickListener(this::cancelBtnOnClick);
-        _StartDateBtn.setOnClickListener(this::selectTimeOnClick);
-        _CloseDateBtn.setOnClickListener(this::selectTimeOnClick);
-        _MaterialSpinner.setOnItemClickListener((adapterView, view, i, l) -> selectedSpinnerItem = i);
+        createBtn.setOnClickListener(this::createBtnOnClick);
+        cancelBtn.setOnClickListener(this::cancelBtnOnClick);
+        startDateBtn.setOnClickListener(this::selectTimeOnClick);
+        closeDateBtn.setOnClickListener(this::selectTimeOnClick);
+        materialSpinner.setOnItemClickListener((adapterView, view, i, l) -> selectedSpinnerItem = i);
     }
 
     private void createBtnOnClick(View view) {
@@ -97,12 +98,12 @@ public class LocationTemplateActivity extends AppCompatActivity {
         progressDialog.show();
 
         String name, type, website, phone, startTime, closeTime;
-        name = _PlaceName.getEditText().getText().toString();
+        name = placeName.getEditText().getText().toString();
         type = getResources().getStringArray(R.array.place_types)[selectedSpinnerItem];
-        website = _PlaceWebsite.getEditText().getText().toString();
-        phone = _PlacePhoneNum.getEditText().getText().toString();
-        startTime = _StartDateText.getText().toString();
-        closeTime = _CloseDateText.getText().toString();
+        website = placeWebsite.getEditText().getText().toString();
+        phone = placePhoneNum.getEditText().getText().toString();
+        startTime = startDateText.getText().toString();
+        closeTime = closeDateText.getText().toString();
 
         LocalDate currentDate = LocalDate.now();
         int day = currentDate.getDayOfMonth();
@@ -124,19 +125,18 @@ public class LocationTemplateActivity extends AppCompatActivity {
                 AppData.user.getKey(),
                 AppData.user.getUsername());
         locationTemplateActivityDb.addPlace(place);
+        new UserDb().updatePlaceCreatorSubmissions();
     }
 
     private boolean areFieldsEmpty() {
-        if (selectedSpinnerItem == -1
-        || TextUtils.isEmpty(_PlaceName.getEditText().getText())
-        || TextUtils.isEmpty(_PlaceWebsite.getEditText().getText())
-        || TextUtils.isEmpty(_PlacePhoneNum.getEditText().getText())
-        || _StartDateText.getText().toString().equals("Open time")
-        || _CloseDateText.getText().toString().equals("Close time")) {
-            return true;
-        }
-        return false;
+        return selectedSpinnerItem == -1
+                || TextUtils.isEmpty(placeName.getEditText().getText())
+                || TextUtils.isEmpty(placeWebsite.getEditText().getText())
+                || TextUtils.isEmpty(placePhoneNum.getEditText().getText())
+                || startDateText.getText().toString().equals("Open time")
+                || closeDateText.getText().toString().equals("Close time");
     }
+
     private void cancelBtnOnClick(View view) {
         finish();
     }
@@ -148,34 +148,34 @@ public class LocationTemplateActivity extends AppCompatActivity {
         if (view.getId() == R.id.start_date) {
             titleText = "Select opening time";
             hour = 8;
-            timeText = _StartDateText;
+            timeText = startDateText;
         } else {
             titleText = "Select closing time";
             hour = 20;
-            timeText = _CloseDateText;
+            timeText = closeDateText;
         }
-        _TimePicker = new MaterialTimePicker.Builder()
+        timePicker = new MaterialTimePicker.Builder()
                 .setTimeFormat(TimeFormat.CLOCK_24H)
                 .setHour(hour)
                 .setMinute(0)
                 .setTitleText(titleText)
                 .setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
                 .build();
-        _TimePicker.addOnPositiveButtonClickListener(view2 -> {
+        timePicker.addOnPositiveButtonClickListener(view2 -> {
             String hourText, minuteText;
-            if (_TimePicker.getHour() < 10) {
-                hourText = "0" + _TimePicker.getHour();
+            if (timePicker.getHour() < 10) {
+                hourText = "0" + timePicker.getHour();
             } else {
-                hourText = "" + _TimePicker.getHour();
+                hourText = "" + timePicker.getHour();
             }
-            if (_TimePicker.getMinute() < 10) {
-                minuteText = "0" + _TimePicker.getMinute();
+            if (timePicker.getMinute() < 10) {
+                minuteText = "0" + timePicker.getMinute();
             } else {
-                minuteText = "" + _TimePicker.getMinute();
+                minuteText = "" + timePicker.getMinute();
             }
             timeText.setText(hourText + ":" + minuteText);
         });
-        _TimePicker.show(getSupportFragmentManager(), "TAG");
+        timePicker.show(getSupportFragmentManager(), "TAG");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

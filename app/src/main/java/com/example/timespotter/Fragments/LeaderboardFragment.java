@@ -32,11 +32,6 @@ public class LeaderboardFragment extends Fragment {
     public LeaderboardFragment() {
     }
 
-    public static LeaderboardFragment newInstance() {
-        LeaderboardFragment fragment = new LeaderboardFragment();
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

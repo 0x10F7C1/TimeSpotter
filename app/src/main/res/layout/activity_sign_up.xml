@@ -15,7 +15,7 @@
         android:layout_marginTop="-20dp"
         android:fontFamily="@font/bungee"
         android:text="@string/welcome"
-        android:textColor="@color/black"
+        android:textColor="@color/app_green"
         android:textSize="40sp" />
 
     <TextView
@@ -136,7 +136,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:backgroundTint="@color/black"
+        android:fontFamily="@font/bungee"
+        android:backgroundTint="@color/app_green"
         android:text="@string/sign_up_btn_msg"
         android:textColor="@color/white" />
 

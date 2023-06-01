@@ -28,7 +28,6 @@ public class LeaderboardFragment extends Fragment {
     private RecyclerView recyclerView;
     private LeaderboardAdapter adapter;
     private List<UserLeaderboard> _Users;
-
     public LeaderboardFragment() {
     }
 

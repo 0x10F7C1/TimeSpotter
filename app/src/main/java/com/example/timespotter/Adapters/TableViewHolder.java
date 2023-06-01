@@ -6,6 +6,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.timespotter.AppData;
 import com.example.timespotter.DataModels.TableItem;
 import com.example.timespotter.R;
 
@@ -28,7 +29,12 @@ public class TableViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindData(TableItem entry) {
-        tableUsername.setText(entry.getUsername());
+        if (entry.getUsername().equals(AppData.user.getUsername())) {
+            tableUsername.setText("Me");
+        }
+        else {
+            tableUsername.setText(entry.getUsername());
+        }
         tablePlaceName.setText(entry.getPlaceName());
         tablePlacePhone.setText(entry.getPhone());
         tablePlaceWebsite.setText(entry.getWebsite());

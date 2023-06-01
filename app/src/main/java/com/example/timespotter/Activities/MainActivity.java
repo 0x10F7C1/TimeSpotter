@@ -10,9 +10,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.timespotter.AppData;
-import com.example.timespotter.DbContexts.MainActivityDb;
-import com.example.timespotter.Events.MainActivityEvent;
+import com.example.timespotter.DataModels.User;
+import com.example.timespotter.EventType;
 import com.example.timespotter.R;
+import com.example.timespotter.Result;
+import com.example.timespotter.UserDb;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.greenrobot.eventbus.EventBus;
@@ -21,7 +23,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private final MainActivityDb mainActivityDb = new MainActivityDb();
     //TODO -> Ubaciti promenu avatara
     //TODO -> ubaciti jos ikonice za markere
     private Button login, signup, forgetPass;
@@ -59,8 +60,7 @@ public class MainActivity extends AppCompatActivity {
         if (username.isEmpty() || password.isEmpty()) {
             makeToast("Empty fields");
         } else {
-            mainActivityDb.userLogin(username, password);
-
+            new UserDb().userLogin(username, password);
         }
     }
 
@@ -72,12 +72,22 @@ public class MainActivity extends AppCompatActivity {
     private void makeToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUserLoggedInEvent(MainActivityEvent.UserLoginSuccess result) {
-        Intent intent = new Intent(MainActivity.this, HomeScreenActivity.class);
-        AppData.user = result.result;
-        startActivity(intent);
+    public void eventHandling(Result result) {
+        if (result.event == EventType.USER_LOGIN) {
+            handleUserLogin(result);
+        }
+    }
+    private void handleUserLogin(Result result) {
+        if (result.operationStatus == Result.SUCCESS) {
+            Intent intent = new Intent(MainActivity.this, HomeScreenActivity.class);
+            AppData.user = (User)result.result;
+            startActivity(intent);
+            finish();
+        }
+        else {
+            makeToast(result.errMsg);
+        }
     }
 
 

@@ -69,7 +69,6 @@ public class SignupActivity extends AppCompatActivity {
                 | !validatePassword()
                 | !validatePhone()
                 | !validateAvatar()) {
-            return;
         } else {
             String name, username, email, password, phone;
             name = fullName.getEditText().getText().toString();
@@ -202,6 +201,7 @@ public class SignupActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
+    //Methods called by Android OS
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PHOTO_PICKER) {

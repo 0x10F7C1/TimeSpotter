@@ -47,7 +47,7 @@ public class TableFragmentDb {
                     public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                         Place place = snapshot.getValue(Place.class);
                         TableItem entry;
-                        if (!place.getCreatorKey().equals(AppData.user.getKey()) && !excludedPlacesKeys.contains(snapshot.getKey())) {
+                        if (!excludedPlacesKeys.contains(snapshot.getKey())) {
                             entry = new TableItem(place.getCreatorUsername(),
                                     place.getName(),
                                     place.getPhone(),

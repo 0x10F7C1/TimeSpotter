@@ -20,8 +20,8 @@
             android:layout_height="150dp"
             android:layout_centerVertical="true"
             android:src="@drawable/profile_dummy_image"
-            app:highlightColor="#80fb1743"
-            app:strokeColor="#6BA333"
+            app:highlightColor="@color/app_green"
+            app:strokeColor="@color/app_green"
             app:strokeWidth="4dp" />
 
         <TextView

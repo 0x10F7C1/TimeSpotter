@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.timespotter.AppData;
 import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.R;
 import com.google.android.gms.maps.GoogleMap;
@@ -39,7 +40,12 @@ public class MarkerInfoAdapter implements GoogleMap.InfoWindowAdapter {
         website.setText(place.getWebsite());
         startTime.setText(place.getStartTime());
         closeTime.setText(place.getCloseTime());
-        username.setText("Added by:  " + place.getCreatorUsername());
+        if (place.getCreatorUsername().equals(AppData.user.getUsername())) {
+            username.setText("Added by: Me");
+        }
+        else {
+            username.setText("Added by:  " + place.getCreatorUsername());
+        }
 
     }
 

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -18,8 +20,10 @@ import com.example.timespotter.Activities.MainActivity;
 import com.example.timespotter.AppData;
 import com.example.timespotter.DataModels.User;
 import com.example.timespotter.DbContexts.ProfileFragmentDb;
+import com.example.timespotter.EventType;
 import com.example.timespotter.Events.MyProfileEvent;
 import com.example.timespotter.R;
+import com.example.timespotter.Result;
 import com.github.abdularis.civ.CircleImageView;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -28,12 +32,14 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 public class ProfileFragment extends Fragment {
+    private static final String TAG = ProfileFragment.class.getSimpleName();
     private static final int PHOTO_PICKER = 2;
     private Button _UpdateProfile, _LogoutProfile;
     private TextInputLayout _UsernameText, _EmailText, _PasswordText, _PhoneText;
     private TextView _UserUsernameText, _UserFullNameText, _UserPtsText, userSubmissionsText;
     private CircleImageView _UserProfileImage;
     private Uri avatarUri;
+    private AlertDialog progressDialog;
 
     public ProfileFragment() {
     }
@@ -87,8 +93,23 @@ public class ProfileFragment extends Fragment {
                 && validatePassword(newUser, password)
                 && validatePhoneNumber(newUser, phone)) {
             boolean isAvatarChanged = avatarUri != null;
-            db.updateUserProfile(AppData.user, newUser, avatarUri, isAvatarChanged);
+            boolean isProfileUpdated = false;
+            if (!User.areUsersEqual(AppData.user, newUser)) {
+                isProfileUpdated = true;
+            }
+            if (isProfileUpdated || isAvatarChanged) {
+                initProgressDialog();
+                db.updateUserProfile(newUser, avatarUri, isAvatarChanged, isProfileUpdated);
+            }
         }
+    }
+    private void initProgressDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setView(getLayoutInflater().inflate(R.layout.user_update_progress_bar_dialog, null));
+        builder.setCancelable(false);
+
+        progressDialog = builder.create();
+        progressDialog.show();
     }
 
     private void logoutProfileOnClick(View view) {
@@ -192,8 +213,26 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    /*@Subscribe(threadMode = ThreadMode.MAIN)
     public void onUserUpdatedEvent(MyProfileEvent.UserUpdate result) {
+    }*/
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void eventHandling(Result result) {
+        if (result.event == EventType.USER_UPDATED) {
+            handleUseUpdate(result);
+        }
+    }
+    private void handleUseUpdate(Result result) {
+        if (result.operationStatus == Result.SUCCESS) {
+            Intent intent = new Intent(requireContext(), MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            getActivity().finish();
+        }
+        else {
+            Log.d(TAG, result.errMsg);
+        }
+        progressDialog.dismiss();
     }
 
     @Override

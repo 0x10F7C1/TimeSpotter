@@ -2,6 +2,7 @@ package com.example.timespotter.DbContexts;
 
 import android.util.Log;
 
+import com.example.timespotter.AppData;
 import com.example.timespotter.DataModels.UserLeaderboard;
 import com.example.timespotter.Events.LeaderboardFragmentEvent;
 import com.google.firebase.database.DataSnapshot;
@@ -37,5 +38,19 @@ public class LeaderboardFragmentDb {
                 .addOnFailureListener(error -> {
                     Log.d(TAG, error.getMessage());
                 });
+    }
+    public void updateUserImageLeaderboard(String imageUrl) {
+        database
+                .child("Leaderboards")
+                .child(AppData.user.getKey())
+                .child("imageUri")
+                .setValue(imageUrl);
+    }
+    public void updateUserUsernameLeaderboard(String username) {
+        database
+                .child("Leaderboards")
+                .child(AppData.user.getKey())
+                .child("username")
+                .setValue(username);
     }
 }

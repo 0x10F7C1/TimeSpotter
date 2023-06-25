@@ -1,16 +1,12 @@
 package com.example.timespotter.DbContexts;
 
-import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.timespotter.AppData;
+import com.example.timespotter.Utils.AppData;
 import com.example.timespotter.DataModels.User;
-import com.example.timespotter.EventType;
-import com.example.timespotter.Events.MyProfileEvent;
-import com.example.timespotter.PlacesDb;
-import com.example.timespotter.Result;
+import com.example.timespotter.Enums.EventType;
+import com.example.timespotter.Utils.Result;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;

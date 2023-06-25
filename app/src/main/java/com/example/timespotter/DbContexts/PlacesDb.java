@@ -1,7 +1,8 @@
-package com.example.timespotter;
+package com.example.timespotter.DbContexts;
 
 import android.util.Log;
 
+import com.example.timespotter.Utils.AppData;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;

@@ -6,7 +6,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.timespotter.AppData;
+import com.example.timespotter.Utils.AppData;
 import com.example.timespotter.DataModels.TableItem;
 import com.example.timespotter.R;
 

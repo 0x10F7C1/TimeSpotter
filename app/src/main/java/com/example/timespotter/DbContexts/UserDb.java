@@ -1,9 +1,11 @@
-package com.example.timespotter;
+package com.example.timespotter.DbContexts;
 
-import android.net.Uri;
 import android.util.Log;
 
 import com.example.timespotter.DataModels.User;
+import com.example.timespotter.Enums.EventType;
+import com.example.timespotter.Utils.AppData;
+import com.example.timespotter.Utils.Result;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -44,7 +46,6 @@ public class UserDb {
                         user = data.getValue(User.class);
                     }
                     if (user != null && user.getPassword().equals(password)) {
-                        //EventBus.getDefault().post(new MainActivityEvent.UserLoginSuccess(user));
                         result.operationStatus = Result.SUCCESS;
                         result.event = EventType.USER_LOGIN;
                         result.result = user;
@@ -54,7 +55,6 @@ public class UserDb {
                         result.event = EventType.USER_LOGIN;
                         result.errMsg = "Username/Password is invalid!";
                         EventBus.getDefault().post(result);
-                        //Log.d(TAG, "Username/Password is invalid!");
                     }
                 })
                 .addOnFailureListener(error -> {

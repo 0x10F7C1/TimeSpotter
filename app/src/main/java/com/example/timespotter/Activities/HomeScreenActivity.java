@@ -46,7 +46,6 @@ public class HomeScreenActivity extends AppCompatActivity {
             case R.id.leaderboard:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, leaderboardFragment).commit();
                 return true;
-            //break;
             case R.id.discover:
                 Intent intent = new Intent(HomeScreenActivity.this, MapActivity.class);
                 startActivity(intent);

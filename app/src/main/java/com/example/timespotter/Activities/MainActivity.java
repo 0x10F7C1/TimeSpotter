@@ -9,12 +9,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.timespotter.AppData;
+import com.example.timespotter.Utils.AppData;
 import com.example.timespotter.DataModels.User;
-import com.example.timespotter.EventType;
+import com.example.timespotter.Enums.EventType;
 import com.example.timespotter.R;
-import com.example.timespotter.Result;
-import com.example.timespotter.UserDb;
+import com.example.timespotter.Utils.Result;
+import com.example.timespotter.DbContexts.UserDb;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.greenrobot.eventbus.EventBus;
@@ -23,9 +23,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
-    //TODO -> Ubaciti promenu avatara
-    //TODO -> ubaciti jos ikonice za markere
-    private Button login, signup, forgetPass;
+    private Button login, signup;
     private TextInputLayout username, password;
 
     @Override
@@ -42,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private void bindViews() {
         login = findViewById(R.id.login);
         signup = findViewById(R.id.signup);
-        forgetPass = findViewById(R.id.forgetPass);
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
     }
@@ -50,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
     private void registerCallbackListeners() {
         login.setOnClickListener(this::loginOnClick);
         signup.setOnClickListener(this::signUpOnClick);
-        forgetPass.setOnClickListener(this::loginOnClick);
     }
 
     private void loginOnClick(View view) {
@@ -89,9 +85,6 @@ public class MainActivity extends AppCompatActivity {
             makeToast(result.errMsg);
         }
     }
-
-
-    //Methods called by Android OS
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);

@@ -14,13 +14,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.timespotter.AppData;
+import com.example.timespotter.Utils.AppData;
 import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.DbContexts.LocationTemplateActivityDb;
 import com.example.timespotter.Events.LocationTemplateActivityEvent.PlaceAdded;
 import com.example.timespotter.Events.LocationTemplateActivityEvent.PlaceAddedPointsUpdated;
 import com.example.timespotter.R;
-import com.example.timespotter.UserDb;
+import com.example.timespotter.DbContexts.UserDb;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.timepicker.MaterialTimePicker;

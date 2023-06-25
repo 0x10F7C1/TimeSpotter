@@ -3,7 +3,7 @@ package com.example.timespotter.DbContexts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.timespotter.AppData;
+import com.example.timespotter.Utils.AppData;
 import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.DataModels.TableItem;
 import com.google.firebase.database.ChildEventListener;
@@ -19,11 +19,9 @@ import java.util.List;
 
 public class TableFragmentDb {
     private final DatabaseReference database;
-
     public TableFragmentDb() {
         database = FirebaseDatabase.getInstance().getReference();
     }
-
     public void loadTableEntries() {
         database
                 .child("Excluded markers")

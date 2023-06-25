@@ -70,7 +70,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/filter_start_time_layout"
+        android:id="@+id/start_date_filter_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -83,14 +83,15 @@
         app:layout_constraintTop_toBottomOf="@id/filter_radius_layout">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/start_date_filter"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:drawableEnd="@drawable/filter_start_time_icon"
+            android:drawableEnd="@drawable/start_calendar"
             android:hint="Select a start time" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/filter_close_time_layout"
+        android:id="@+id/end_date_filter_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -100,12 +101,13 @@
         app:boxStrokeColor="#20C114"
         app:hintEnabled="false"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/filter_start_time_layout">
+        app:layout_constraintTop_toBottomOf="@id/start_date_filter_layout">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/end_date_filter"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:drawableEnd="@drawable/filter_close_time_icon"
+            android:drawableEnd="@drawable/end_calendar"
             android:hint="Select a close time" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -120,7 +122,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/filter_close_time_layout">
+        app:layout_constraintTop_toBottomOf="@+id/end_date_filter_layout">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/filter_button"

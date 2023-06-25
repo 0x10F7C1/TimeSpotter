@@ -1,4 +1,4 @@
-package com.example.timespotter;
+package com.example.timespotter.Utils;
 
 import com.example.timespotter.DataModels.User;
 public class AppData {

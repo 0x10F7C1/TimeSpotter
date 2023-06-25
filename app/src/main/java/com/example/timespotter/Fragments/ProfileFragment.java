@@ -17,13 +17,12 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.timespotter.Activities.MainActivity;
-import com.example.timespotter.AppData;
+import com.example.timespotter.Utils.AppData;
 import com.example.timespotter.DataModels.User;
 import com.example.timespotter.DbContexts.ProfileFragmentDb;
-import com.example.timespotter.EventType;
-import com.example.timespotter.Events.MyProfileEvent;
+import com.example.timespotter.Enums.EventType;
 import com.example.timespotter.R;
-import com.example.timespotter.Result;
+import com.example.timespotter.Utils.Result;
 import com.github.abdularis.civ.CircleImageView;
 import com.google.android.material.textfield.TextInputLayout;
 

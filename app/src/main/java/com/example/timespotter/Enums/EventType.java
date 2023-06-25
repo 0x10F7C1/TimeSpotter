@@ -1,4 +1,4 @@
-package com.example.timespotter;
+package com.example.timespotter.Enums;
 
 import android.media.metrics.Event;
 

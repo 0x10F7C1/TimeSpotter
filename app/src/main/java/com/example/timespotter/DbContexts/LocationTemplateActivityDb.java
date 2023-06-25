@@ -2,7 +2,7 @@ package com.example.timespotter.DbContexts;
 
 import android.util.Log;
 
-import com.example.timespotter.AppData;
+import com.example.timespotter.Utils.AppData;
 import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.Events.LocationTemplateActivityEvent;
 import com.google.firebase.database.DatabaseReference;

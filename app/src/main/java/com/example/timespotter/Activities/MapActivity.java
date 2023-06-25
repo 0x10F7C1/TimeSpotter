@@ -1,13 +1,9 @@
 package com.example.timespotter.Activities;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -24,29 +20,29 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import com.example.timespotter.Adapters.MarkerInfoAdapter;
-import com.example.timespotter.AppData;
+import com.example.timespotter.Utils.AppData;
 import com.example.timespotter.DataModels.Place;
 import com.example.timespotter.DataModels.RateStar;
 import com.example.timespotter.DbContexts.MapActivityDb;
 import com.example.timespotter.Events.LeaderboardFragmentEvent;
 import com.example.timespotter.Events.MapActivityEvent;
 import com.example.timespotter.R;
+import com.example.timespotter.Utils.MapUtil;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.permissionx.guolindev.PermissionX;
 
@@ -136,6 +132,7 @@ public class MapActivity extends AppCompatActivity {
         filterDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         TextInputLayout usernameText, typeText, radiusText, startTimeText, closeTimeText;
+        TextInputEditText startDateFilter, endDateFilter;
         MaterialButton filterBtn, cancelBtn;
         materialSpinner = customDialog.findViewById(R.id.filter_material_spinner);
         String[] spinnerItems = getResources().getStringArray(R.array.filter_place_types);
@@ -147,19 +144,21 @@ public class MapActivity extends AppCompatActivity {
         materialSpinner.setAdapter(adapter);
         usernameText = customDialog.findViewById(R.id.filter_username_layout);
         radiusText = customDialog.findViewById(R.id.filter_radius_layout);
-        startTimeText = customDialog.findViewById(R.id.filter_start_time_layout);
-        closeTimeText = customDialog.findViewById(R.id.filter_close_time_layout);
+        startTimeText = customDialog.findViewById(R.id.start_date_filter_layout);
+        closeTimeText = customDialog.findViewById(R.id.end_date_filter_layout);
+        startDateFilter = customDialog.findViewById(R.id.start_date_filter);
+        endDateFilter = customDialog.findViewById(R.id.end_date_filter);
 
         datePicker = MaterialDatePicker.Builder.datePicker().build();
 
         filterBtn = customDialog.findViewById(R.id.filter_button);
         cancelBtn = customDialog.findViewById(R.id.cancel_button);
 
-        startTimeText.setOnClickListener(view -> {
+        startDateFilter.setOnClickListener(view -> {
             DATE_PICKER = START_DATE_PICKER;
             datePicker.show(getSupportFragmentManager(), "DatePicker");
         });
-        closeTimeText.setOnClickListener(view -> {
+        endDateFilter.setOnClickListener(view -> {
             DATE_PICKER = END_DATE_PICKER;
             datePicker.show(getSupportFragmentManager(), "Different fragment");
         });
@@ -373,11 +372,11 @@ public class MapActivity extends AppCompatActivity {
         globalMarker.remove();
         globalMarker = null;
         int starsCount = nameStar.value + typeStar.value + websiteStar.value + phoneStar.value + timeStar.value;
-        Toast.makeText(this, String.valueOf(starsCount), Toast.LENGTH_SHORT).show();
 
         mapActivityDb.updateUserPoints(2);
         mapActivityDb.updatePlaceCreatorPoints(place.getCreatorKey(), starsCount);
         mapActivityDb.excludeUserMarker(place.getKey());
+        rateDialog.dismiss();
     }
 
     private void addPlace(View view) {
@@ -467,15 +466,15 @@ public class MapActivity extends AppCompatActivity {
         LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
         BitmapDescriptor markerIcon = null;
         if (place.getType().equals("Library")) {
-            markerIcon = bitmapDescriptorFromVector(this, R.drawable.ic_library);
+            markerIcon = MapUtil.bitmapDescriptorFromVector(this, R.drawable.ic_library);
         } else if (place.getType().equals("Caffe")) {
-            markerIcon = bitmapDescriptorFromVector(this, R.drawable.ic_cafe);
+            markerIcon = MapUtil.bitmapDescriptorFromVector(this, R.drawable.ic_cafe);
         } else if (place.getType().equals("Hospital")) {
-            markerIcon = bitmapDescriptorFromVector(this, R.drawable.ic_hospital);
+            markerIcon = MapUtil.bitmapDescriptorFromVector(this, R.drawable.ic_hospital);
         } else if (place.getType().equals("Pizzeria")) {
-            markerIcon = bitmapDescriptorFromVector(this, R.drawable.ic_pizzeria);
+            markerIcon = MapUtil.bitmapDescriptorFromVector(this, R.drawable.ic_pizzeria);
         } else if (place.getType().equals("Florist")) {
-            markerIcon = bitmapDescriptorFromVector(this, R.drawable.flower);
+            markerIcon = MapUtil.bitmapDescriptorFromVector(this, R.drawable.flower);
         }
 
         MarkerOptions markerOptions = new MarkerOptions()
@@ -516,16 +515,6 @@ public class MapActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUserMarkerExcluded(MapActivityEvent.UserMarkerExcluded result) {
         Log.d(TAG, "Marker excluded for user");
-    }
-
-    //UTIL METHOD
-    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
-        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
-        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        vectorDrawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
     //METHODS CALLED BY ANDROID OS
